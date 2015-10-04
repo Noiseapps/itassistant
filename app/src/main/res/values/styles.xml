@@ -14,4 +14,11 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="AppTheme.WhiteText">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+    <style name="AppTheme.BlackText">
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
 </resources>

@@ -12,7 +12,22 @@ import android.view.MenuItem;
 
 import com.noiseapps.itassistant.fragment.IssueDetailFragment;
 
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.ViewById;
+
+@EActivity(R.layout.activity_issue_detail)
 public class IssueDetailActivity extends AppCompatActivity {
+
+    @ViewById
+    Toolbar toolbar;
+
+    @AfterViews
+    void init() {
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +45,6 @@ public class IssueDetailActivity extends AppCompatActivity {
             }
         });
 
-        // Show the Up button in the action bar.
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity

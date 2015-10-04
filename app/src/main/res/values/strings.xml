@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">ITAssistant</string>
     <string name="title_issue_detail">Issue Detail</string>
+    <string name="jira">Jira</string>
+    <string name="stash">Stash</string>
+    <string name="jenkins">Jenkins</string>
+    <string name="feedback">Post feedback</string>
+    <string name="aboutApp">About app</string>
+    <string name="settings">Settings</string>
+    <string name="fetchingData">Trwa pobieranie danych…</string>
 </resources>
