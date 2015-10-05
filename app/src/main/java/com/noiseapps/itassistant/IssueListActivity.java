@@ -171,7 +171,6 @@ public class IssueListActivity extends AppCompatActivity
             public void onItemClicked(JiraProject jiraProject, BaseAccount baseAccount) {
                 drawerLayout.closeDrawer(GravityCompat.START);
                 listFragment.setProject(jiraProject, baseAccount);
-                // todo download items, fill list
             }
         });
         final RecyclerView.Adapter wrappedAdapter = manager.createWrappedAdapter(adapter);

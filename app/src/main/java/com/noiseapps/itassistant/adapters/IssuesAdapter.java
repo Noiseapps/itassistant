@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import com.noiseapps.itassistant.R;
+import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.squareup.picasso.Picasso;
 
@@ -49,13 +50,17 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
     public class IssueViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView title;
+        private final TextView assignee;
         private final ImageView issuePriority;
         private final ImageView issueType;
         private Issue issue;
+        private final TextView issueKey;
 
         public IssueViewHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.issueTitle);
+            issueKey = (TextView) itemView.findViewById(R.id.issueKey);
+            assignee = (TextView) itemView.findViewById(R.id.assignee);
             issuePriority = (ImageView) itemView.findViewById(R.id.issuePriority);
             issueType = (ImageView) itemView.findViewById(R.id.issueType);
         }
@@ -64,8 +69,15 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
             this.issue = issue;
             loadIssueType();
             loadIssuePriority();
-            final String text = issue.getKey() + " " + issue.getFields().getSummary();
-            title.setText(text);
+            title.setText(issue.getFields().getSummary());
+            issueKey.setText(issue.getKey());
+            issue.getFields().getAggregateprogress().getPercent();
+            final Assignee issueAssignee = issue.getFields().getAssignee();
+            if(issueAssignee != null) {
+                assignee.setText(context.getString(R.string.assignee, issueAssignee.getDisplayName()));
+            } else {
+                assignee.setVisibility(View.GONE);
+            }
         }
 
         private void loadIssuePriority() {

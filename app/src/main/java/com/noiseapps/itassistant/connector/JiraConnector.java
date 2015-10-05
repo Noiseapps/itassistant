@@ -61,7 +61,7 @@ public class JiraConnector {
         if(apiService == null) {
             return;
         }
-        apiService.getProjectIssues("project=" + projectKey, callback);
+        apiService.getProjectIssues(String.format("project=\"%s\"", projectKey), callback);
     }
 
     @AfterInject

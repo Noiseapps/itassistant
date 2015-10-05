@@ -153,20 +153,23 @@ public class NavigationMenuAdapter extends AbstractExpandableItemAdapter<Navigat
     }
 
     class ChildViewHolder extends AbstractViewHolder implements View.OnClickListener {
-        private final TextView textView;
+        private final TextView projectName;
+        private final TextView projectKey;
         private JiraProject jiraProject;
         private BaseAccount baseAccount;
 
         public ChildViewHolder(View itemView) {
             super(itemView);
-            textView = (TextView) itemView.findViewById(R.id.projectName);
+            projectName = (TextView) itemView.findViewById(R.id.projectName);
+            projectKey = (TextView) itemView.findViewById(R.id.projectKey);
             itemView.setOnClickListener(this);
         }
 
         public void bind(JiraProject jiraProject, BaseAccount baseAccount) {
             this.jiraProject = jiraProject;
             this.baseAccount = baseAccount;
-            textView.setText(String.format("%s: %s", jiraProject.getKey(), jiraProject.getName()));
+            projectKey.setText(jiraProject.getKey());
+            projectName.setText(jiraProject.getName());
         }
 
         @Override

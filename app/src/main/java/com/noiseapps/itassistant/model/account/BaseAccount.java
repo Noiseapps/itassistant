@@ -1,6 +1,9 @@
 package com.noiseapps.itassistant.model.account;
 
-public class BaseAccount {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class BaseAccount implements Parcelable {
 
     private final int id;
     private final String username;
@@ -83,4 +86,38 @@ public class BaseAccount {
         result = 31 * result + accountType;
         return result;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
+        dest.writeString(this.username);
+        dest.writeString(this.password);
+        dest.writeString(this.url);
+        dest.writeString(this.avatarPath);
+        dest.writeInt(this.accountType);
+    }
+
+    protected BaseAccount(Parcel in) {
+        this.id = in.readInt();
+        this.username = in.readString();
+        this.password = in.readString();
+        this.url = in.readString();
+        this.avatarPath = in.readString();
+        this.accountType = in.readInt();
+    }
+
+    public static final Parcelable.Creator<BaseAccount> CREATOR = new Parcelable.Creator<BaseAccount>() {
+        public BaseAccount createFromParcel(Parcel source) {
+            return new BaseAccount(source);
+        }
+
+        public BaseAccount[] newArray(int size) {
+            return new BaseAccount[size];
+        }
+    };
 }

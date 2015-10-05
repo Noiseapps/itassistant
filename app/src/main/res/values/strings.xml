@@ -14,4 +14,5 @@
     <string name="openDrawer">Otwórz menu</string>
     <string name="closeDrawer">Zamknij menu</string>
     <string name="noData">Brak danych</string>
+    <string name="assignee">Assigned to %1$s</string>
 </resources>

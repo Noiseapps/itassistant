@@ -1,16 +1,24 @@
 package com.noiseapps.itassistant.fragment;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.IssuesAdapter;
 import com.noiseapps.itassistant.connector.JiraConnector;
@@ -19,6 +27,7 @@ import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.issues.JiraIssue;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 
+import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
@@ -33,17 +42,27 @@ import retrofit.client.Response;
 public class IssueListFragment extends Fragment {
 
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
-
+    private static Callbacks sDummyCallbacks = new Callbacks() {
+        @Override
+        public void onItemSelected(String id) {
+        }
+    };
     private Callbacks mCallbacks = sDummyCallbacks;
-    private JiraProject jiraProject;
     @Bean
     JiraConnector jiraConnector;
-    private IssuesAdapter adapter;
-    @ViewById(R.id.issueList)
-    RecyclerView recyclerView;
     @ViewById
-    LinearLayout loadingView, emptyView;
-    private List<Issue> issues;
+    LinearLayout loadingView, tabView;
+    @ViewById
+    ViewPager viewPager;
+    @ViewById
+    TabLayout tabLayout;
+    private JiraProject jiraProject;
+    private IssuesAdapter adapter;
+
+    @AfterViews
+    void init() {
+        mCallbacks = (Callbacks) getActivity();
+    }
 
     public void setProject(JiraProject jiraProject, BaseAccount baseAccount) {
         this.jiraProject = jiraProject;
@@ -52,8 +71,8 @@ public class IssueListFragment extends Fragment {
     }
 
     private void showProgress() {
+        tabView.setVisibility(View.GONE);
         loadingView.setVisibility(View.VISIBLE);
-        recyclerView.setVisibility(View.GONE);
     }
 
     @Background
@@ -62,45 +81,36 @@ public class IssueListFragment extends Fragment {
         jiraConnector.getProjectIssues(jiraProject.getKey(), new Callback<JiraIssue>() {
             @Override
             public void success(JiraIssue jiraIssue, Response response) {
-                updateListAdapter(jiraIssue);
+                final PagerAdapter adapter = makeAdapter(jiraIssue);
+                viewPager.setAdapter(adapter);
+                tabLayout.setupWithViewPager(viewPager);
+                hideProgress();
             }
 
             @Override
             public void failure(RetrofitError error) {
-                updateListAdapter(null);
             }
         });
     }
 
-    private void updateListAdapter(@Nullable JiraIssue jiraIssue) {
-        issues = jiraIssue == null ? new ArrayList<Issue>() : jiraIssue.getIssues();
-        adapter = new IssuesAdapter(getContext(), issues);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(adapter);
-        hideProgress();
+    @NonNull
+    private PagerAdapter makeAdapter(JiraIssue jiraIssue) {
+        final Set<WorkflowObject> workflows = new HashSet<>();
+        final ListMultimap<String, Issue> issuesInWorkflow = ArrayListMultimap.create();
+        for (Issue issue : jiraIssue.getIssues()) {
+            final String id = issue.getFields().getStatus().getId();
+            final String name = issue.getFields().getStatus().getName();
+            workflows.add(new WorkflowObject(id, name));
+            issuesInWorkflow.put(name, issue);
+        }
+        return new WorkflowAdapter(workflows, issuesInWorkflow);
     }
 
     @UiThread
     void hideProgress() {
+        tabView.setVisibility(View.VISIBLE);
         loadingView.setVisibility(View.GONE);
-        if(issues.isEmpty()) {
-            emptyView.setVisibility(View.VISIBLE);
-            recyclerView.setVisibility(View.GONE);
-        } else {
-            emptyView.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.VISIBLE);
-        }
     }
-
-    public interface Callbacks {
-        void onItemSelected(String id);
-    }
-
-    private static Callbacks sDummyCallbacks = new Callbacks() {
-        @Override
-        public void onItemSelected(String id) {
-        }
-    };
 
     @Override
     public void onAttach(Context activity) {
@@ -112,5 +122,86 @@ public class IssueListFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mCallbacks = sDummyCallbacks;
+    }
+
+    public interface Callbacks {
+        void onItemSelected(String id);
+    }
+
+    private class WorkflowObject {
+        final int order;
+        final String name;
+
+        private WorkflowObject(String order, String name) {
+            this.order = Integer.parseInt(order);
+            this.name = name;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            WorkflowObject that = (WorkflowObject) o;
+
+            if (order != that.order) return false;
+            return !(name != null ? !name.equals(that.name) : that.name != null);
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = order;
+            result = 31 * result + (name != null ? name.hashCode() : 0);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "WorkflowObject{" +
+                    "order=" + order +
+                    ", name='" + name + '\'' +
+                    '}';
+        }
+    }
+
+    private class WorkflowAdapter extends FragmentPagerAdapter {
+        private List<WorkflowObject> workflows;
+        private final Fragment[] fragments;
+        private final ListMultimap<String, Issue> issuesInWorkflow;
+
+        public WorkflowAdapter(Set<WorkflowObject> workflows, ListMultimap<String, Issue> issuesInWorkflow) {
+            super(getChildFragmentManager());
+            this.issuesInWorkflow = issuesInWorkflow;
+            this.workflows = new ArrayList<>(workflows);
+            Collections.sort(this.workflows, new Comparator<WorkflowObject>() {
+                @Override
+                public int compare(WorkflowObject lhs, WorkflowObject rhs) {
+                    return lhs.order - rhs.order;
+                }
+            });
+            fragments = new Fragment[workflows.size()];
+        }
+
+        @Override
+        public int getCount() {
+            return workflows.size();
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return workflows.get(position).name;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            final String pageTitle = String.valueOf(getPageTitle(position));
+            if (fragments[position] == null) {
+                fragments[position] = JiraIssueListFragment_.builder().
+                        workflowName(pageTitle).build();
+            }
+            ((JiraIssueListFragment) fragments[position]).setIssues(issuesInWorkflow.get(pageTitle));
+            return fragments[position];
+        }
     }
 }
