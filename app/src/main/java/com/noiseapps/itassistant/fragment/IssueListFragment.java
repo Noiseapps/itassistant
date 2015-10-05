@@ -1,39 +1,97 @@
 package com.noiseapps.itassistant.fragment;
 
 import android.content.Context;
-import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.widget.ListView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.LinearLayout;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import com.noiseapps.itassistant.R;
+import com.noiseapps.itassistant.adapters.IssuesAdapter;
+import com.noiseapps.itassistant.connector.JiraConnector;
+import com.noiseapps.itassistant.model.account.BaseAccount;
+import com.noiseapps.itassistant.model.jira.issues.Issue;
+import com.noiseapps.itassistant.model.jira.issues.JiraIssue;
+import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 
+import org.androidannotations.annotations.Background;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.UiThread;
+import org.androidannotations.annotations.ViewById;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 @EFragment(R.layout.fragment_issue_list)
 public class IssueListFragment extends Fragment {
 
-    /**
-     * The serialization (saved instance state) Bundle key representing the
-     * activated item position. Only used on tablets.
-     */
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
-    /**
-     * The fragment's current callback object, which is notified of list item
-     * clicks.
-     */
     private Callbacks mCallbacks = sDummyCallbacks;
+    private JiraProject jiraProject;
+    @Bean
+    JiraConnector jiraConnector;
+    private IssuesAdapter adapter;
+    @ViewById(R.id.issueList)
+    RecyclerView recyclerView;
+    @ViewById
+    LinearLayout loadingView, emptyView;
+    private List<Issue> issues;
 
-    /**
-     * The current activated item position. Only used on tablets.
-     */
-    private int mActivatedPosition = ListView.INVALID_POSITION;
+    public void setProject(JiraProject jiraProject, BaseAccount baseAccount) {
+        this.jiraProject = jiraProject;
+        showProgress();
+        getIssues(baseAccount);
+    }
 
-    /**
-     * A callback interface that all activities containing this fragment must
-     * implement. This mechanism allows activities to be notified of item
-     * selections.
-     */
+    private void showProgress() {
+        loadingView.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+    }
+
+    @Background
+    void getIssues(BaseAccount baseAccount) {
+        jiraConnector.setCurrentConfig(baseAccount);
+        jiraConnector.getProjectIssues(jiraProject.getKey(), new Callback<JiraIssue>() {
+            @Override
+            public void success(JiraIssue jiraIssue, Response response) {
+                updateListAdapter(jiraIssue);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                updateListAdapter(null);
+            }
+        });
+    }
+
+    private void updateListAdapter(@Nullable JiraIssue jiraIssue) {
+        issues = jiraIssue == null ? new ArrayList<Issue>() : jiraIssue.getIssues();
+        adapter = new IssuesAdapter(getContext(), issues);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(adapter);
+        hideProgress();
+    }
+
+    @UiThread
+    void hideProgress() {
+        loadingView.setVisibility(View.GONE);
+        if(issues.isEmpty()) {
+            emptyView.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+        } else {
+            emptyView.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
+    }
+
     public interface Callbacks {
         void onItemSelected(String id);
     }
@@ -54,14 +112,5 @@ public class IssueListFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mCallbacks = sDummyCallbacks;
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (mActivatedPosition != ListView.INVALID_POSITION) {
-            // Serialize and persist the activated item position.
-            outState.putInt(STATE_ACTIVATED_POSITION, mActivatedPosition);
-        }
     }
 }

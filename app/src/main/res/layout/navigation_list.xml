@@ -15,7 +15,16 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/view6"
         android:layout_gravity="center_horizontal"
-        android:layout_above="@+id/actionSettings" />
+        android:layout_above="@+id/view"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorAccent"
+        android:id="@+id/view"
+        android:layout_above="@+id/actionSettings"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
 
     <TextView
         android:id="@+id/actionSettings"

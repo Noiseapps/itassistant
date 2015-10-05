@@ -3,6 +3,8 @@ package com.noiseapps.itassistant.connector;
 import android.support.annotation.NonNull;
 import android.util.Base64;
 
+import java.util.List;
+
 import com.noiseapps.itassistant.api.JiraAPI;
 import com.noiseapps.itassistant.database.PreferencesDAO;
 import com.noiseapps.itassistant.model.account.BaseAccount;
@@ -17,7 +19,6 @@ import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 
-import java.util.List;
 import retrofit.Callback;
 import retrofit.ErrorHandler;
 import retrofit.RequestInterceptor;
@@ -25,7 +26,7 @@ import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-@EBean
+@EBean(scope = EBean.Scope.Singleton)
 public class JiraConnector {
 
     @Bean
@@ -60,7 +61,7 @@ public class JiraConnector {
         if(apiService == null) {
             return;
         }
-        apiService.getProjectIssues(projectKey, callback);
+        apiService.getProjectIssues("project=" + projectKey, callback);
     }
 
     @AfterInject
