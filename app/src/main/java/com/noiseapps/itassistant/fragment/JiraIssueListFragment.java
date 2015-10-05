@@ -20,7 +20,7 @@ import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 
 @EFragment(R.layout.fragment_jira_list)
-public class JiraIssueListFragment extends Fragment{
+public class JiraIssueListFragment extends Fragment {
     @FragmentArg
     String workflowName;
     @FragmentArg
@@ -30,10 +30,17 @@ public class JiraIssueListFragment extends Fragment{
     @ViewById
     RecyclerView issuesRecycler;
     private List<Issue> issues;
+    private IssueListCallback callback;
+
+    public interface IssueListCallback {
+        void onItemSelected(Issue selectedIssue);
+    }
+
 
     @AfterViews
     void init() {
         context = getActivity();
+        callback = (IssueListCallback) getParentFragment();
         setAdapter();
     }
 
@@ -43,7 +50,12 @@ public class JiraIssueListFragment extends Fragment{
 
     private void setAdapter() {
         issuesRecycler.setLayoutManager(new LinearLayoutManager(context));
-        final IssuesAdapter adapter = new IssuesAdapter(context, issues);
+        final IssuesAdapter adapter = new IssuesAdapter(context, issues, new IssuesAdapter.IssueAdapterCallback() {
+            @Override
+            public void onItemClicked(Issue selectedIssue) {
+                callback.onItemSelected(selectedIssue);
+            }
+        });
         issuesRecycler.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
         adapter.setPicasso(AuthenticatedPicasso.getAuthPicasso(context, apiConfig));
         issuesRecycler.setAdapter(adapter);

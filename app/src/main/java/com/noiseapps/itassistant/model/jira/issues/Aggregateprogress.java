@@ -109,11 +109,13 @@ public class Aggregateprogress {
         if (other == this) {
             return true;
         }
-        if ((other instanceof Aggregateprogress) == false) {
+        if (!(other instanceof Aggregateprogress)) {
             return false;
         }
         Aggregateprogress rhs = ((Aggregateprogress) other);
         return new EqualsBuilder().append(progress, rhs.progress).append(total, rhs.total).append(percent, rhs.percent).isEquals();
     }
+
+
 
 }

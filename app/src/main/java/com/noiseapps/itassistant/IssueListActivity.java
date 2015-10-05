@@ -28,6 +28,7 @@ import com.noiseapps.itassistant.fragment.IssueListFragment;
 import com.noiseapps.itassistant.model.NavigationModel;
 import com.noiseapps.itassistant.model.account.AccountTypes;
 import com.noiseapps.itassistant.model.account.BaseAccount;
+import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 import com.noiseapps.itassistant.model.jira.user.JiraUser;
 
@@ -188,7 +189,7 @@ public class IssueListActivity extends AppCompatActivity
     }
 
     @Override
-    public void onItemSelected(String id) {
+    public void onItemSelected(Issue id) {
         if (mTwoPane) {
             final Bundle arguments = new Bundle();
             arguments.putString(IssueDetailFragment.ARG_ITEM_ID, id);

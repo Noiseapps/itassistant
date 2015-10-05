@@ -20,11 +20,17 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
 
     private final Context context;
     private final List<Issue> issueList;
+    private final IssueAdapterCallback callback;
     private Picasso authPicasso;
 
-    public IssuesAdapter(Context context, List<Issue> issueList) {
+    public interface IssueAdapterCallback {
+        void onItemClicked(Issue selectedIssue);
+    }
+
+    public IssuesAdapter(Context context, List<Issue> issueList, IssueAdapterCallback callback) {
         this.context = context;
         this.issueList = issueList;
+        this.callback = callback;
     }
 
     @Override
@@ -47,7 +53,7 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
         this.authPicasso = authPicasso;
     }
 
-    public class IssueViewHolder extends RecyclerView.ViewHolder {
+    public class IssueViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private final TextView title;
         private final TextView assignee;
@@ -63,6 +69,7 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
             assignee = (TextView) itemView.findViewById(R.id.assignee);
             issuePriority = (ImageView) itemView.findViewById(R.id.issuePriority);
             issueType = (ImageView) itemView.findViewById(R.id.issueType);
+            itemView.setOnClickListener(this);
         }
 
         public void build(Issue issue) {
@@ -78,6 +85,11 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
             } else {
                 assignee.setVisibility(View.GONE);
             }
+        }
+
+        @Override
+        public void onClick(View v) {
+            callback.onItemClicked(issue);
         }
 
         private void loadIssuePriority() {

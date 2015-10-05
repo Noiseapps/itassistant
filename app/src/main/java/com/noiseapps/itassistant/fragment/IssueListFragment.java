@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -39,12 +39,12 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 @EFragment(R.layout.fragment_issue_list)
-public class IssueListFragment extends Fragment {
+public class IssueListFragment extends Fragment implements JiraIssueListFragment.IssueListCallback {
 
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
-        public void onItemSelected(String id) {
+        public void onItemSelected(Issue id) {
         }
     };
     private Callbacks mCallbacks = sDummyCallbacks;
@@ -58,6 +58,11 @@ public class IssueListFragment extends Fragment {
     TabLayout tabLayout;
     private JiraProject jiraProject;
     private IssuesAdapter adapter;
+
+    @Override
+    public void onItemSelected(Issue selectedIssue) {
+        mCallbacks.onItemSelected(selectedIssue);
+    }
 
     @AfterViews
     void init() {
@@ -125,7 +130,7 @@ public class IssueListFragment extends Fragment {
     }
 
     public interface Callbacks {
-        void onItemSelected(String id);
+        void onItemSelected(Issue id);
     }
 
     private class WorkflowObject {
@@ -165,7 +170,7 @@ public class IssueListFragment extends Fragment {
         }
     }
 
-    private class WorkflowAdapter extends FragmentPagerAdapter {
+    private class WorkflowAdapter extends FragmentStatePagerAdapter {
         private List<WorkflowObject> workflows;
         private final Fragment[] fragments;
         private final ListMultimap<String, Issue> issuesInWorkflow;
@@ -191,6 +196,11 @@ public class IssueListFragment extends Fragment {
         @Override
         public CharSequence getPageTitle(int position) {
             return workflows.get(position).name;
+        }
+
+        @Override
+         public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
 
         @Override
