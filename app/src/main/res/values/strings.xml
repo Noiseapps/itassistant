@@ -15,4 +15,13 @@
     <string name="closeDrawer">Zamknij menu</string>
     <string name="noData">Brak danych</string>
     <string name="assignee">Assigned to %1$s</string>
+    <string name="issueDetails">Issue details</string>
+    <string name="issueType">Type</string>
+    <string name="issueStatus">Status</string>
+    <string name="issueLabels">Labels</string>
+    <string name="issuePriority">Priority</string>
+    <string name="people">People</string>
+    <string name="issueReporter">Reporter</string>
+    <string name="issueAssignee">Assignee</string>
+    <string name="issueDescription">Description</string>
 </resources>

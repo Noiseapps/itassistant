@@ -21,4 +21,8 @@
         <item name="android:textColor">@android:color/black</item>
     </style>
 
+    <style name="AppTheme.LabelTheme">
+        <item name="android:textColor">@color/textLabel</item>
+    </style>
+
 </resources>

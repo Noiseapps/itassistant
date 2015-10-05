@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="loadingMask">#cc000000</color>
+    <color name="textLabel">#666666</color>
     <color name="groupHeaderBackground">#E0F7FA</color>
     <color name="listItemHighlight">#E0E0E0</color>
     <color name="listItemBackground">#ffffff</color>
