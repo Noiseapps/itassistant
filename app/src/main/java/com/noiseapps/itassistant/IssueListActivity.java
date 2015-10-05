@@ -35,6 +35,7 @@ import com.noiseapps.itassistant.model.jira.user.JiraUser;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.FragmentById;
 import org.androidannotations.annotations.UiThread;
@@ -68,12 +69,31 @@ public class IssueListActivity extends AppCompatActivity
     @AfterViews
     void init() {
         if(accountsDao.getAll().isEmpty()) {
-            accountsDao.add(new BaseAccount(0, "tomasz.scibiorek", "kotek77@", "http://jira.exaco.pl", "", AccountTypes.ACC_JIRA));
+            showNoAccountsDialog();
+        } else {
+            downloadData();
         }
-        downloadData();
-
         initToolbar();
         isTwoPane();
+    }
+
+    private void showNoAccountsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.noAccounts);
+        builder.setMessage(R.string.noAccountsMsg);
+        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                AccountsActivity_.intent(IssueListActivity.this).start();
+            }
+        });
+        builder.setNegativeButton(R.string.quit, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+        builder.show();
     }
 
     private void initToolbar() {
@@ -93,7 +113,6 @@ public class IssueListActivity extends AppCompatActivity
 
     @Background
     void downloadData() {
-        final long start = System.currentTimeMillis();
         showProgress();
         final List<NavigationModel> navigationModels = new ArrayList<>();
         for (final BaseAccount baseAccount : accountsDao.getAll()) {
@@ -198,5 +217,10 @@ public class IssueListActivity extends AppCompatActivity
         } else {
             IssueDetailActivity_.intent(this).issue(issue).start();
         }
+    }
+
+    @Click(R.id.actionAccounts)
+    void onAccountAction() {
+        AccountsActivity_.intent(this).start();
     }
 }

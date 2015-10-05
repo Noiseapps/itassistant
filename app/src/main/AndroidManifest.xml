@@ -29,6 +29,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".IssueListActivity" />
         </activity>
+        <activity
+            android:name=".AccountsActivity_"
+            android:label="@string/title_activity_accounts"
+            android:theme="@style/AppTheme" >
+        </activity>
     </application>
 
 </manifest>

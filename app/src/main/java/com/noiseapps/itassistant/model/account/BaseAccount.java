@@ -9,9 +9,10 @@ public class BaseAccount implements Parcelable {
     private final String username;
     private final String password;
     private final String url;
-    private final String avatarPath;
+    private String avatarPath;
     @AccountTypes.AccountType
     private final int accountType;
+
     public BaseAccount(int id, String username, String password, String url, String avatarPath, @AccountTypes.AccountType int accountType) {
         this.id = id;
         this.username = username;
@@ -22,7 +23,7 @@ public class BaseAccount implements Parcelable {
     }
 
     @AccountTypes.AccountType
-    public int getAccountType(){
+    public int getAccountType() {
         return accountType;
     }
 
@@ -44,6 +45,10 @@ public class BaseAccount implements Parcelable {
 
     public String getAvatarPath() {
         return avatarPath;
+    }
+
+    public void setAvatarPath(String avatarPath) {
+        this.avatarPath = avatarPath;
     }
 
     @Override
