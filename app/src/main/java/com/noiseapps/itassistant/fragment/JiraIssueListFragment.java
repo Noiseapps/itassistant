@@ -31,6 +31,7 @@ public class JiraIssueListFragment extends Fragment {
     RecyclerView issuesRecycler;
     private List<Issue> issues;
     private IssueListCallback callback;
+    private IssuesAdapter adapter;
 
     public interface IssueListCallback {
         void onItemSelected(Issue selectedIssue);
@@ -50,7 +51,7 @@ public class JiraIssueListFragment extends Fragment {
 
     private void setAdapter() {
         issuesRecycler.setLayoutManager(new LinearLayoutManager(context));
-        final IssuesAdapter adapter = new IssuesAdapter(context, issues, new IssuesAdapter.IssueAdapterCallback() {
+        adapter = new IssuesAdapter(context, issues, new IssuesAdapter.IssueAdapterCallback() {
             @Override
             public void onItemClicked(Issue selectedIssue) {
                 callback.onItemSelected(selectedIssue);

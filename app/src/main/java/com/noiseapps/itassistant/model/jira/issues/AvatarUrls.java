@@ -1,6 +1,9 @@
 
 package com.noiseapps.itassistant.model.jira.issues;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -9,7 +12,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 
-public class AvatarUrls {
+public class AvatarUrls implements Parcelable {
 
     @SerializedName("16x16")
     @Expose
@@ -139,4 +142,33 @@ public class AvatarUrls {
         return new EqualsBuilder().append(_16x16, rhs._16x16).append(_24x24, rhs._24x24).append(_32x32, rhs._32x32).append(_48x48, rhs._48x48).isEquals();
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this._16x16);
+        dest.writeString(this._24x24);
+        dest.writeString(this._32x32);
+        dest.writeString(this._48x48);
+    }
+
+    protected AvatarUrls(Parcel in) {
+        this._16x16 = in.readString();
+        this._24x24 = in.readString();
+        this._32x32 = in.readString();
+        this._48x48 = in.readString();
+    }
+
+    public static final Parcelable.Creator<AvatarUrls> CREATOR = new Parcelable.Creator<AvatarUrls>() {
+        public AvatarUrls createFromParcel(Parcel source) {
+            return new AvatarUrls(source);
+        }
+
+        public AvatarUrls[] newArray(int size) {
+            return new AvatarUrls[size];
+        }
+    };
 }

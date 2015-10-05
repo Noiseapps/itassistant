@@ -122,6 +122,7 @@ public class NavigationMenuAdapter extends AbstractExpandableItemAdapter<Navigat
             super(itemView);
             textView = (TextView) itemView.findViewById(R.id.accountName);
             avatarImage = (CircleImageView) itemView.findViewById(R.id.avatar);
+            itemView.callOnClick();
         }
         public void bind(JiraUser user, BaseAccount baseAccount) {
             textView.setText(user.getName());

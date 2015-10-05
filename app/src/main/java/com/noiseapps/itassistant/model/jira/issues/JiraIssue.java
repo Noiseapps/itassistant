@@ -1,6 +1,12 @@
 
 package com.noiseapps.itassistant.model.jira.issues;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -8,11 +14,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
 
+public class JiraIssue implements Parcelable {
 
-public class JiraIssue {
 
     @SerializedName("expand")
     @Expose
@@ -153,4 +157,35 @@ public class JiraIssue {
         return new EqualsBuilder().append(expand, rhs.expand).append(startAt, rhs.startAt).append(maxResults, rhs.maxResults).append(total, rhs.total).append(issues, rhs.issues).isEquals();
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.expand);
+        dest.writeLong(this.startAt);
+        dest.writeLong(this.maxResults);
+        dest.writeLong(this.total);
+        dest.writeTypedList(issues);
+    }
+
+    protected JiraIssue(Parcel in) {
+        this.expand = in.readString();
+        this.startAt = in.readLong();
+        this.maxResults = in.readLong();
+        this.total = in.readLong();
+        this.issues = in.createTypedArrayList(Issue.CREATOR);
+    }
+
+    public static final Parcelable.Creator<JiraIssue> CREATOR = new Parcelable.Creator<JiraIssue>() {
+        public JiraIssue createFromParcel(Parcel source) {
+            return new JiraIssue(source);
+        }
+
+        public JiraIssue[] newArray(int size) {
+            return new JiraIssue[size];
+        }
+    };
 }

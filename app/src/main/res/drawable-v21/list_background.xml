@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ripple android:color="@color/listItemBackgroundHighlight" xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@color/white"/>
+<ripple
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/listItemBackgroundHighlight">
+    <item>
+        <selector>
+            <item
+                android:drawable="@color/listItemHighlight"
+                android:state_activated="true"/>
+            <item android:drawable="@color/white"/>
+        </selector>
+    </item>
 </ripple>

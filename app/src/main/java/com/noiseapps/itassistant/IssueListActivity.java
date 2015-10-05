@@ -3,7 +3,6 @@ package com.noiseapps.itassistant;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -24,6 +23,7 @@ import com.noiseapps.itassistant.adapters.NavigationMenuAdapter;
 import com.noiseapps.itassistant.connector.JiraConnector;
 import com.noiseapps.itassistant.database.dao.AccountsDao;
 import com.noiseapps.itassistant.fragment.IssueDetailFragment;
+import com.noiseapps.itassistant.fragment.IssueDetailFragment_;
 import com.noiseapps.itassistant.fragment.IssueListFragment;
 import com.noiseapps.itassistant.model.NavigationModel;
 import com.noiseapps.itassistant.model.account.AccountTypes;
@@ -189,21 +189,14 @@ public class IssueListActivity extends AppCompatActivity
     }
 
     @Override
-    public void onItemSelected(Issue id) {
+    public void onItemSelected(Issue issue) {
         if (mTwoPane) {
-            final Bundle arguments = new Bundle();
-            arguments.putString(IssueDetailFragment.ARG_ITEM_ID, id);
-            final IssueDetailFragment fragment = new IssueDetailFragment();
-            fragment.setArguments(arguments);
+            final IssueDetailFragment fragment = IssueDetailFragment_.builder().issue(issue).build();
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.issue_detail_container, fragment)
                     .commit();
-
         } else {
-            // TODO change to AA
-            final Intent detailIntent = new Intent(this, IssueDetailActivity.class);
-            detailIntent.putExtra(IssueDetailFragment.ARG_ITEM_ID, id);
-            startActivity(detailIntent);
+            IssueDetailActivity_.intent(this).issue(issue).start();
         }
     }
 }

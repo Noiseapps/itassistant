@@ -1,6 +1,9 @@
 
 package com.noiseapps.itassistant.model.jira.issues;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -9,7 +12,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 
-public class Watches {
+public class Watches implements Parcelable {
 
     @SerializedName("self")
     @Expose
@@ -116,4 +119,31 @@ public class Watches {
         return new EqualsBuilder().append(self, rhs.self).append(watchCount, rhs.watchCount).append(isWatching, rhs.isWatching).isEquals();
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.self);
+        dest.writeLong(this.watchCount);
+        dest.writeByte(isWatching ? (byte) 1 : (byte) 0);
+    }
+
+    protected Watches(Parcel in) {
+        this.self = in.readString();
+        this.watchCount = in.readLong();
+        this.isWatching = in.readByte() != 0;
+    }
+
+    public static final Parcelable.Creator<Watches> CREATOR = new Parcelable.Creator<Watches>() {
+        public Watches createFromParcel(Parcel source) {
+            return new Watches(source);
+        }
+
+        public Watches[] newArray(int size) {
+            return new Watches[size];
+        }
+    };
 }

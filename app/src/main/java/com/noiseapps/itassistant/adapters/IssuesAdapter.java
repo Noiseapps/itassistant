@@ -22,9 +22,25 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
     private final List<Issue> issueList;
     private final IssueAdapterCallback callback;
     private Picasso authPicasso;
+    private int selectedPosition = -1;
 
     public interface IssueAdapterCallback {
         void onItemClicked(Issue selectedIssue);
+    }
+
+    public int getSelectedPosition() {
+        final int tmpPosition = selectedPosition;
+        selectedPosition = -1;
+        notifyDataSetChanged();
+        return tmpPosition;
+    }
+
+    public void setSelectedPosition(int selectedPosition) {
+        this.selectedPosition = selectedPosition;
+        notifyDataSetChanged();
+        if(selectedPosition != -1) {
+            callback.onItemClicked(issueList.get(selectedPosition));
+        }
     }
 
     public IssuesAdapter(Context context, List<Issue> issueList, IssueAdapterCallback callback) {
@@ -41,7 +57,7 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
 
     @Override
     public void onBindViewHolder(IssueViewHolder holder, int position) {
-        holder.build(issueList.get(position));
+        holder.build(position, issueList.get(position));
     }
 
     @Override
@@ -59,6 +75,7 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
         private final TextView assignee;
         private final ImageView issuePriority;
         private final ImageView issueType;
+        private int position;
         private Issue issue;
         private final TextView issueKey;
 
@@ -72,7 +89,8 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
             itemView.setOnClickListener(this);
         }
 
-        public void build(Issue issue) {
+        public void build(int position, Issue issue) {
+            this.position = position;
             this.issue = issue;
             loadIssueType();
             loadIssuePriority();
@@ -85,10 +103,13 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
             } else {
                 assignee.setVisibility(View.GONE);
             }
+//            itemView.setActivated(position == selectedPosition);
         }
 
         @Override
         public void onClick(View v) {
+            selectedPosition = position;
+            notifyDataSetChanged();
             callback.onItemClicked(issue);
         }
 

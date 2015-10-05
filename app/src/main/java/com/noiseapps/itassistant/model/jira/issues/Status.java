@@ -1,6 +1,9 @@
 
 package com.noiseapps.itassistant.model.jira.issues;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -9,7 +12,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 
-public class Status {
+public class Status implements Parcelable {
 
     @SerializedName("self")
     @Expose
@@ -162,4 +165,35 @@ public class Status {
         return new EqualsBuilder().append(self, rhs.self).append(description, rhs.description).append(iconUrl, rhs.iconUrl).append(name, rhs.name).append(id, rhs.id).isEquals();
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.self);
+        dest.writeString(this.description);
+        dest.writeString(this.iconUrl);
+        dest.writeString(this.name);
+        dest.writeString(this.id);
+    }
+
+    protected Status(Parcel in) {
+        this.self = in.readString();
+        this.description = in.readString();
+        this.iconUrl = in.readString();
+        this.name = in.readString();
+        this.id = in.readString();
+    }
+
+    public static final Parcelable.Creator<Status> CREATOR = new Parcelable.Creator<Status>() {
+        public Status createFromParcel(Parcel source) {
+            return new Status(source);
+        }
+
+        public Status[] newArray(int size) {
+            return new Status[size];
+        }
+    };
 }

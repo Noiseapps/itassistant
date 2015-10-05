@@ -1,6 +1,9 @@
 
 package com.noiseapps.itassistant.model.jira.issues;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -9,7 +12,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 
-public class Aggregateprogress {
+public class Aggregateprogress implements Parcelable {
 
     @SerializedName("progress")
     @Expose
@@ -117,5 +120,31 @@ public class Aggregateprogress {
     }
 
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.progress);
+        dest.writeLong(this.total);
+        dest.writeLong(this.percent);
+    }
+
+    protected Aggregateprogress(Parcel in) {
+        this.progress = in.readLong();
+        this.total = in.readLong();
+        this.percent = in.readLong();
+    }
+
+    public static final Parcelable.Creator<Aggregateprogress> CREATOR = new Parcelable.Creator<Aggregateprogress>() {
+        public Aggregateprogress createFromParcel(Parcel source) {
+            return new Aggregateprogress(source);
+        }
+
+        public Aggregateprogress[] newArray(int size) {
+            return new Aggregateprogress[size];
+        }
+    };
 }

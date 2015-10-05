@@ -1,9 +1,12 @@
 package com.noiseapps.itassistant.model.jira.issues;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Transition {
+public class Transition implements Parcelable {
 
     @SerializedName("id")
     @Expose
@@ -77,4 +80,32 @@ public class Transition {
         result = 31 * result + (to != null ? to.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
+        dest.writeString(this.name);
+        dest.writeParcelable(this.to, 0);
+    }
+
+    protected Transition(Parcel in) {
+        this.id = in.readString();
+        this.name = in.readString();
+        this.to = in.readParcelable(TransitionTo.class.getClassLoader());
+    }
+
+    public static final Parcelable.Creator<Transition> CREATOR = new Parcelable.Creator<Transition>() {
+        public Transition createFromParcel(Parcel source) {
+            return new Transition(source);
+        }
+
+        public Transition[] newArray(int size) {
+            return new Transition[size];
+        }
+    };
 }

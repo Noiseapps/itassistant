@@ -1,12 +1,15 @@
 package com.noiseapps.itassistant.model.jira.issues;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by tomasz on 28.09.15.
  */
-public class TransitionTo {
+public class TransitionTo implements Parcelable {
 
     @SerializedName("self")
     @Expose
@@ -111,4 +114,36 @@ public class TransitionTo {
     public void setId(String id) {
         this.id = id;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.self);
+        dest.writeString(this.description);
+        dest.writeString(this.iconUrl);
+        dest.writeString(this.name);
+        dest.writeString(this.id);
+    }
+
+    protected TransitionTo(Parcel in) {
+        this.self = in.readString();
+        this.description = in.readString();
+        this.iconUrl = in.readString();
+        this.name = in.readString();
+        this.id = in.readString();
+    }
+
+    public static final Parcelable.Creator<TransitionTo> CREATOR = new Parcelable.Creator<TransitionTo>() {
+        public TransitionTo createFromParcel(Parcel source) {
+            return new TransitionTo(source);
+        }
+
+        public TransitionTo[] newArray(int size) {
+            return new TransitionTo[size];
+        }
+    };
 }

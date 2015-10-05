@@ -1,6 +1,9 @@
 
 package com.noiseapps.itassistant.model.jira.issues;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -9,7 +12,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 
-public class Reporter {
+public class Reporter implements Parcelable {
 
     @SerializedName("self")
     @Expose
@@ -185,4 +188,37 @@ public class Reporter {
         return new EqualsBuilder().append(self, rhs.self).append(name, rhs.name).append(emailAddress, rhs.emailAddress).append(avatarUrls, rhs.avatarUrls).append(displayName, rhs.displayName).append(active, rhs.active).isEquals();
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.self);
+        dest.writeString(this.name);
+        dest.writeString(this.emailAddress);
+        dest.writeParcelable(this.avatarUrls, 0);
+        dest.writeString(this.displayName);
+        dest.writeByte(active ? (byte) 1 : (byte) 0);
+    }
+
+    protected Reporter(Parcel in) {
+        this.self = in.readString();
+        this.name = in.readString();
+        this.emailAddress = in.readString();
+        this.avatarUrls = in.readParcelable(AvatarUrls.class.getClassLoader());
+        this.displayName = in.readString();
+        this.active = in.readByte() != 0;
+    }
+
+    public static final Parcelable.Creator<Reporter> CREATOR = new Parcelable.Creator<Reporter>() {
+        public Reporter createFromParcel(Parcel source) {
+            return new Reporter(source);
+        }
+
+        public Reporter[] newArray(int size) {
+            return new Reporter[size];
+        }
+    };
 }

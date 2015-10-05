@@ -1,6 +1,9 @@
 
 package com.noiseapps.itassistant.model.jira.issues;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -9,7 +12,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 
-public class Issuetype {
+public class Issuetype implements Parcelable {
 
     @SerializedName("self")
     @Expose
@@ -185,4 +188,37 @@ public class Issuetype {
         return new EqualsBuilder().append(self, rhs.self).append(id, rhs.id).append(description, rhs.description).append(iconUrl, rhs.iconUrl).append(name, rhs.name).append(subtask, rhs.subtask).isEquals();
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.self);
+        dest.writeString(this.id);
+        dest.writeString(this.description);
+        dest.writeString(this.iconUrl);
+        dest.writeString(this.name);
+        dest.writeByte(subtask ? (byte) 1 : (byte) 0);
+    }
+
+    protected Issuetype(Parcel in) {
+        this.self = in.readString();
+        this.id = in.readString();
+        this.description = in.readString();
+        this.iconUrl = in.readString();
+        this.name = in.readString();
+        this.subtask = in.readByte() != 0;
+    }
+
+    public static final Parcelable.Creator<Issuetype> CREATOR = new Parcelable.Creator<Issuetype>() {
+        public Issuetype createFromParcel(Parcel source) {
+            return new Issuetype(source);
+        }
+
+        public Issuetype[] newArray(int size) {
+            return new Issuetype[size];
+        }
+    };
 }

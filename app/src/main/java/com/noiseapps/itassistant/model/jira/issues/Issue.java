@@ -1,12 +1,15 @@
 package com.noiseapps.itassistant.model.jira.issues;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.util.List;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
-public class Issue {
+
+public class Issue implements Parcelable {
 
     @SerializedName("expand")
     @Expose
@@ -125,4 +128,38 @@ public class Issue {
     public void setTransitions(List<Transition> transitions) {
         this.transitions = transitions;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.expand);
+        dest.writeString(this.id);
+        dest.writeString(this.self);
+        dest.writeString(this.key);
+        dest.writeParcelable(this.fields, flags);
+        dest.writeTypedList(transitions);
+    }
+
+    protected Issue(Parcel in) {
+        this.expand = in.readString();
+        this.id = in.readString();
+        this.self = in.readString();
+        this.key = in.readString();
+        this.fields = in.readParcelable(Fields.class.getClassLoader());
+        this.transitions = in.createTypedArrayList(Transition.CREATOR);
+    }
+
+    public static final Parcelable.Creator<Issue> CREATOR = new Parcelable.Creator<Issue>() {
+        public Issue createFromParcel(Parcel source) {
+            return new Issue(source);
+        }
+
+        public Issue[] newArray(int size) {
+            return new Issue[size];
+        }
+    };
 }
