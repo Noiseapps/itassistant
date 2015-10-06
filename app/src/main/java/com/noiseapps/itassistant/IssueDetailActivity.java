@@ -1,5 +1,6 @@
 package com.noiseapps.itassistant;
 
+import android.content.pm.ActivityInfo;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -21,11 +22,20 @@ public class IssueDetailActivity extends AppCompatActivity {
 
     @AfterViews
     void init() {
+        setTablet();
         initToolbar();
         final IssueDetailFragment fragment = IssueDetailFragment_.builder().issue(issue).build();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.issue_detail_container, fragment)
                 .commit();
+    }
+    
+    private void setTablet() {
+        if (getResources().getBoolean(R.bool.tabletSize)) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+        }
     }
 
     @ViewById(R.id.detail_toolbar)

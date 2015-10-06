@@ -26,8 +26,7 @@ import org.androidannotations.annotations.ViewById;
 public class IssueDetailFragment extends Fragment {
 
     @ViewById
-    View scrollView, loadingComments, comments;
-
+    View scrollView, loadingComments;
     @FragmentArg
     Issue issue;
     @Bean
@@ -54,13 +53,15 @@ public class IssueDetailFragment extends Fragment {
         getActivity().finish();
     }
 
-
     final class PagerAdapter extends FragmentStatePagerAdapter {
 
         private final Fragment[] fragments = new Fragment[2];
+        private final String[] titles;
+
         public PagerAdapter() {
             super(getChildFragmentManager());
             initFragments();
+            titles = getActivity().getResources().getStringArray(R.array.accountDetailsSections);
         }
 
         private void initFragments() {
@@ -75,8 +76,7 @@ public class IssueDetailFragment extends Fragment {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            // TODO change
-            return "";
+            return titles[position];
         }
 
         @Override

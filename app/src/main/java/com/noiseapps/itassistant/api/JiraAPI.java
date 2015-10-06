@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import java.util.List;
 
 import com.noiseapps.itassistant.model.jira.issues.JiraIssue;
+import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comments;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 import com.noiseapps.itassistant.model.jira.session.SessionRequest;
@@ -35,4 +36,7 @@ public interface JiraAPI {
 
     @GET("/rest/api/2/issue/{issueIdOrKey}/comment")
     void getIssueComments(@Path("issueIdOrKey") String issueId, @NonNull Callback<Comments> callback);
+
+    @POST("/rest/api/2/issue/{issueIdOrKey}/comment")
+    void addIssueComment(@Path("issueIdOrKey") String issueId, @Body Comment comment, @NonNull Callback<Comment> callback);
 }

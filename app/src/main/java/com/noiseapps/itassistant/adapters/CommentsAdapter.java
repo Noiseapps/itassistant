@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.noiseapps.itassistant.R;
@@ -16,14 +18,13 @@ import com.noiseapps.itassistant.utils.Consts;
 import org.joda.time.DateTime;
 
 public class CommentsAdapter extends BaseAdapter {
-
-
     private final Context context;
     private final List<Comment> comments;
 
     public CommentsAdapter(Context context, List<Comment> comments) {
         this.context = context;
         this.comments = comments;
+        sort();
     }
 
     @Override
@@ -58,6 +59,26 @@ public class CommentsAdapter extends BaseAdapter {
         }
         holder.bind(getItem(position));
         return convertView;
+    }
+
+    public void addItem(Comment comment) {
+        comments.add(comment);
+        sort();
+    }
+
+    public void sort() {
+        Collections.sort(comments, new Comparator<Comment>() {
+            @Override
+            public int compare(Comment lhs, Comment rhs) {
+                return DateTime.parse(lhs.getCreated()).compareTo(DateTime.parse(rhs.getCreated()));
+            }
+        });
+        notifyDataSetChanged();
+    }
+
+    public void addItems(List<Comment> commentList) {
+        comments.addAll(commentList);
+        sort();
     }
 
     private class ViewHolder {

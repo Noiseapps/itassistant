@@ -63,5 +63,11 @@
     <string name="loadingComments">Loading comments…</string>
     <string name="issueComments">Comments</string>
     <string name="fetchingIssues">Getting issue list…</string>
-    <string name="noComments">Brak komentarzy</string>
+    <string name="noComments">No comments for selected issue</string>
+    <string name="postComment">Post comment for %s</string>
+    <string name="postingComment">Posting comment…</string>
+    <string name="post">Post</string>
+    <string name="cancel">Cancel</string>
+    <string name="failedToAddComment">Failed to add issue comment</string>
+    <string name="enterCommentBody">Enter comment…</string>
 </resources>

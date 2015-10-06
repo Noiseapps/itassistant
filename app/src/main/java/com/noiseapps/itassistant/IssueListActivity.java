@@ -3,6 +3,7 @@ package com.noiseapps.itassistant;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -79,6 +80,7 @@ public class IssueListActivity extends AppCompatActivity
 
     @AfterViews
     void init() {
+        setTablet();
         mainLayout.setVisibility(View.GONE);
         if(accountsDao.getAll().isEmpty()) {
             showNoAccountsDialog();
@@ -87,6 +89,14 @@ public class IssueListActivity extends AppCompatActivity
         }
         initToolbar();
         isTwoPane();
+    }
+
+    private void setTablet() {
+        if (getResources().getBoolean(R.bool.tabletSize)) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+        }
     }
 
     private void showNoAccountsDialog() {

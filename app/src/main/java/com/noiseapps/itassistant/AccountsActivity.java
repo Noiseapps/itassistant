@@ -1,5 +1,6 @@
 package com.noiseapps.itassistant;
 
+import android.content.pm.ActivityInfo;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -54,7 +55,16 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
 
     @AfterViews
     void init() {
+        setTablet();
         setResult(RESULT_CANCELED);
         getSupportFragmentManager().beginTransaction().replace(R.id.container, AccountsListFragment_.builder().build()).commit();
+    }
+
+    private void setTablet() {
+        if (getResources().getBoolean(R.bool.tabletSize)) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+        }
     }
 }
