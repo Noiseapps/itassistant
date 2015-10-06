@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.provider.Settings;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -14,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +28,14 @@ import com.noiseapps.itassistant.fragment.IssueDetailFragment;
 import com.noiseapps.itassistant.fragment.IssueDetailFragment_;
 import com.noiseapps.itassistant.fragment.IssueListFragment;
 import com.noiseapps.itassistant.model.NavigationModel;
-import com.noiseapps.itassistant.model.account.AccountTypes;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 import com.noiseapps.itassistant.model.jira.user.JiraUser;
+import com.noiseapps.itassistant.utils.DividerItemDecoration;
+import com.noiseapps.itassistant.utils.events.EventBusAction;
+import com.noiseapps.itassistant.utils.events.OpenDrawerEvent;
+import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -38,9 +43,11 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.FragmentById;
+import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
+import de.greenrobot.event.EventBus;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -49,12 +56,15 @@ import retrofit.client.Response;
 public class IssueListActivity extends AppCompatActivity
         implements IssueListFragment.Callbacks {
 
+    public static final int ACCOUNTS_REQUEST = 633;
     private boolean mTwoPane;
 
     @ViewById
     Toolbar toolbar;
     @ViewById
     RecyclerView recyclerView;
+    @ViewById
+    View mainLayout, emptyList;
     @ViewById
     DrawerLayout drawerLayout;
     @FragmentById(R.id.issue_list)
@@ -65,9 +75,11 @@ public class IssueListActivity extends AppCompatActivity
     @Bean
     JiraConnector jiraConnector;
     private ProgressDialog progressDialog;
+    private NavigationMenuAdapter adapter;
 
     @AfterViews
     void init() {
+        mainLayout.setVisibility(View.GONE);
         if(accountsDao.getAll().isEmpty()) {
             showNoAccountsDialog();
         } else {
@@ -84,7 +96,7 @@ public class IssueListActivity extends AppCompatActivity
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                AccountsActivity_.intent(IssueListActivity.this).start();
+                startAccountsActivity();
             }
         });
         builder.setNegativeButton(R.string.quit, new DialogInterface.OnClickListener() {
@@ -94,6 +106,10 @@ public class IssueListActivity extends AppCompatActivity
             }
         });
         builder.show();
+    }
+
+    private void startAccountsActivity() {
+        AccountsActivity_.intent(this).startForResult(ACCOUNTS_REQUEST);
     }
 
     private void initToolbar() {
@@ -186,15 +202,18 @@ public class IssueListActivity extends AppCompatActivity
 
     private void initNavigation(List<NavigationModel> navigationModels) {
         final RecyclerViewExpandableItemManager manager = new RecyclerViewExpandableItemManager(null);
-        final NavigationMenuAdapter adapter = new NavigationMenuAdapter(this, navigationModels, new NavigationMenuAdapter.AdapterCallbacks() {
+        adapter = new NavigationMenuAdapter(this, navigationModels, new NavigationMenuAdapter.AdapterCallbacks() {
             @Override
             public void onItemClicked(JiraProject jiraProject, BaseAccount baseAccount) {
+                mainLayout.setVisibility(View.VISIBLE);
+                emptyList.setVisibility(View.GONE);
                 drawerLayout.closeDrawer(GravityCompat.START);
                 listFragment.setProject(jiraProject, baseAccount);
             }
         });
         final RecyclerView.Adapter wrappedAdapter = manager.createWrappedAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(wrappedAdapter);
         manager.attachRecyclerView(recyclerView);
@@ -219,8 +238,46 @@ public class IssueListActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    protected void onPause() {
+        EventBus.getDefault().unregister(this);
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        EventBus.getDefault().register(this);
+        super.onResume();
+    }
+
+    @Click(R.id.openDrawer)
+    void openDrawer() {
+        onEvent(null);
+    }
+
+    @EventBusAction
+    public void onEvent(@Nullable OpenDrawerEvent event) {
+        drawerLayout.openDrawer(GravityCompat.START);
+    }
+
     @Click(R.id.actionAccounts)
     void onAccountAction() {
-        AccountsActivity_.intent(this).start();
+        startAccountsActivity();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Logger.w("" + requestCode);
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @OnActivityResult(ACCOUNTS_REQUEST)
+    void onAccountAdded(int resultCode) {
+        Logger.w("" + resultCode);
+        if(resultCode == RESULT_OK) {
+            downloadData();
+        } else if (accountsDao.getAll().isEmpty()) {
+            showNoAccountsDialog();
+        }
     }
 }

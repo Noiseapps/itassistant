@@ -7,13 +7,13 @@
     <string name="feedback">Post feedback</string>
     <string name="aboutApp">About app</string>
     <string name="settings">Settings</string>
-    <string name="fetchingData">Trwa pobieranie danych…</string>
-    <string name="errorDownloading">Błąd pobierania danych</string>
-    <string name="errorDownloadingMsg">Nie udało się pobrać danych. Sprawdź połączenie i spróbuj ponownie.</string>
-    <string name="ok">ok</string>
-    <string name="openDrawer">Otwórz menu</string>
-    <string name="closeDrawer">Zamknij menu</string>
-    <string name="noData">Brak danych</string>
+    <string name="fetchingData">Downloading data…</string>
+    <string name="errorDownloading">Download error</string>
+    <string name="errorDownloadingMsg">Failed to fetch data. Check your settings and try again.</string>
+    <string name="ok">OK</string>
+    <string name="openDrawer">Open menu</string>
+    <string name="closeDrawer">Close menu</string>
+    <string name="noData">No data available</string>
     <string name="assignee">Assigned to %1$s</string>
     <string name="issueDetails">Issue details</string>
     <string name="issueType">Type</string>
@@ -48,4 +48,6 @@
     <string name="noAccountsMsg">You didn\'t configure any accounts yet. Do you want to do it now?</string>
     <string name="yes">Yes</string>
     <string name="quit">Quit</string>
+    <string name="selectProject">No issues.\nTry selecting other project from the menu.</string>
+    <string name="optionUnavailable">This feature is not yet available</string>
 </resources>

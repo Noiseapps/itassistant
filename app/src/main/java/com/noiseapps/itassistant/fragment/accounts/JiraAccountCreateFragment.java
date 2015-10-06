@@ -16,6 +16,9 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
@@ -39,9 +42,6 @@ import org.androidannotations.annotations.EditorAction;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.ViewById;
-
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -93,8 +93,15 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
         handler = new Handler();
         callbacks = (AccountsActivityCallbacks) getActivity();
         initToolbar();
+        initData();
         validator = new Validator(this);
         validator.setValidationListener(this);
+    }
+
+    private void initData() {
+        host.setText("jira.exaco.pl");
+        username.setText("tomasz.scibiorek");
+        password.setText("kotek77@");
     }
 
     void saveAccount() {

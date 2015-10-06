@@ -31,6 +31,7 @@
         </activity>
         <activity
             android:name=".AccountsActivity_"
+            android:windowSoftInputMode="adjustResize"
             android:label="@string/title_activity_accounts"
             android:theme="@style/AppTheme" >
         </activity>

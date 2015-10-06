@@ -2,6 +2,7 @@ package com.noiseapps.itassistant.fragment;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -26,14 +27,17 @@ import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.issues.JiraIssue;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
+import com.noiseapps.itassistant.utils.events.OpenDrawerEvent;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
+import de.greenrobot.event.EventBus;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -51,13 +55,14 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     @Bean
     JiraConnector jiraConnector;
     @ViewById
-    LinearLayout loadingView, tabView;
+    LinearLayout loadingView, tabView, emptyList;
     @ViewById
     ViewPager viewPager;
     @ViewById
     TabLayout tabLayout;
     private JiraProject jiraProject;
     private IssuesAdapter adapter;
+    private boolean isEmpty;
 
     @Override
     public void onItemSelected(Issue selectedIssue) {
@@ -76,6 +81,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     }
 
     private void showProgress() {
+        emptyList.setVisibility(View.GONE);
         tabView.setVisibility(View.GONE);
         loadingView.setVisibility(View.VISIBLE);
     }
@@ -86,6 +92,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         jiraConnector.getProjectIssues(jiraProject.getKey(), new Callback<JiraIssue>() {
             @Override
             public void success(JiraIssue jiraIssue, Response response) {
+                isEmpty = jiraIssue.getIssues().isEmpty();
                 final PagerAdapter adapter = makeAdapter(jiraIssue);
                 viewPager.setAdapter(adapter);
                 tabLayout.setupWithViewPager(viewPager);
@@ -113,8 +120,14 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
 
     @UiThread
     void hideProgress() {
-        tabView.setVisibility(View.VISIBLE);
         loadingView.setVisibility(View.GONE);
+        if(isEmpty) {
+            emptyList.setVisibility(View.VISIBLE);
+            tabView.setVisibility(View.GONE);
+        } else {
+            tabView.setVisibility(View.VISIBLE);
+            emptyList.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -123,10 +136,20 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         mCallbacks = (Callbacks) activity;
     }
 
+    @Click(R.id.openDrawer)
+    void onOpenDrawer() {
+        EventBus.getDefault().post(new OpenDrawerEvent());
+    }
+
     @Override
     public void onDetach() {
         super.onDetach();
         mCallbacks = sDummyCallbacks;
+    }
+
+    @Click(R.id.addIssueFab)
+    void onAddNewIssue() {
+        Snackbar.make(tabView, R.string.optionUnavailable, Snackbar.LENGTH_LONG).show();
     }
 
     public interface Callbacks {

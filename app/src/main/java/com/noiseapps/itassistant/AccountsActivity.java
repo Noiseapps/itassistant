@@ -3,7 +3,6 @@ package com.noiseapps.itassistant;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.widget.FrameLayout;
 
 import com.noiseapps.itassistant.fragment.accounts.AccountTypeSelectFragment_;
@@ -20,8 +19,6 @@ import org.androidannotations.annotations.ViewById;
 @EActivity(R.layout.activity_accounts)
 public class AccountsActivity extends AppCompatActivity implements AccountsActivityCallbacks {
 
-    @ViewById
-    Toolbar toolbar;
     @ViewById
     FrameLayout container;
 
@@ -43,6 +40,7 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
     public void onAccountSaved() {
         clearBackstack();
         init();
+        setResult(RESULT_OK);
         Snackbar.make(container, R.string.accountSaved, Snackbar.LENGTH_LONG).show();
     }
 
@@ -54,14 +52,9 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
         }
     }
 
-
     @AfterViews
     void init() {
+        setResult(RESULT_CANCELED);
         getSupportFragmentManager().beginTransaction().replace(R.id.container, AccountsListFragment_.builder().build()).commit();
-        setupToolbar();
-    }
-
-    private void setupToolbar() {
-        setSupportActionBar(toolbar);
     }
 }

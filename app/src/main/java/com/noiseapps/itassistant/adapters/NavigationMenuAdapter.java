@@ -101,6 +101,10 @@ public class NavigationMenuAdapter extends AbstractExpandableItemAdapter<Navigat
         return true;
     }
 
+    public boolean isEmpty() {
+        return navigationModels.isEmpty();
+    }
+
     public interface AdapterCallbacks {
         void onItemClicked(JiraProject jiraProject, BaseAccount baseAccount);
     }

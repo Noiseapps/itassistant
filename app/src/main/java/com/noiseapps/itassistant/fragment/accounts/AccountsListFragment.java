@@ -14,6 +14,7 @@ import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.AccountListAdapter;
 import com.noiseapps.itassistant.database.dao.AccountsDao;
 import com.noiseapps.itassistant.model.account.BaseAccount;
+import com.noiseapps.itassistant.utils.DividerItemDecoration;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
