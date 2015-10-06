@@ -45,14 +45,5 @@
             <include layout="@layout/issue_timetracker"/>
         </android.support.v7.widget.CardView>
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/comments"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp">
-
-            <include layout="@layout/issue_comments"/>
-        </android.support.v7.widget.CardView>
-
     </LinearLayout>
 </ScrollView>

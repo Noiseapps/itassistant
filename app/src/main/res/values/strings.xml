@@ -63,4 +63,5 @@
     <string name="loadingComments">Loading comments…</string>
     <string name="issueComments">Comments</string>
     <string name="fetchingIssues">Getting issue list…</string>
+    <string name="noComments">Brak komentarzy</string>
 </resources>

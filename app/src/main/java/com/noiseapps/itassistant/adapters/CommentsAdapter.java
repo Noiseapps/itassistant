@@ -1,6 +1,6 @@
 package com.noiseapps.itassistant.adapters;
 
-import android.support.v4.app.FragmentActivity;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,11 +18,11 @@ import org.joda.time.DateTime;
 public class CommentsAdapter extends BaseAdapter {
 
 
-    private final FragmentActivity activity;
+    private final Context context;
     private final List<Comment> comments;
 
-    public CommentsAdapter(FragmentActivity activity, List<Comment> comments) {
-        this.activity = activity;
+    public CommentsAdapter(Context context, List<Comment> comments) {
+        this.context = context;
         this.comments = comments;
     }
 
@@ -50,7 +50,7 @@ public class CommentsAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         if(convertView == null) {
-            convertView = LayoutInflater.from(activity).inflate(R.layout.item_comment, parent, false);
+            convertView = LayoutInflater.from(context).inflate(R.layout.item_comment, parent, false);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
         } else {
