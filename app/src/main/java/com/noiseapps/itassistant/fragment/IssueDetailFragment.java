@@ -2,6 +2,10 @@ package com.noiseapps.itassistant.fragment;
 
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -56,12 +60,28 @@ public class IssueDetailFragment extends Fragment {
     @AfterViews
     void init() {
         initComments();
+        initToolbar();
         setHasOptionsMenu(true);
         final Fields issueFields = issue.getFields();
         setIssueDetailsData(issueFields);
         setProgressData(issueFields);
         setDatesData(issueFields);
         setPeopleData(issueFields);
+    }
+
+    @ViewById(R.id.detail_toolbar)
+    Toolbar toolbar;
+
+    private void initToolbar() {
+        final AppCompatActivity activity = (AppCompatActivity) getActivity();
+        activity.setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(ContextCompat.getColor(getContext(), R.color.white));
+        final ActionBar supportActionBar = activity.getSupportActionBar();
+        if(supportActionBar != null) {
+            supportActionBar.setDisplayHomeAsUpEnabled(true);
+            supportActionBar.setHomeButtonEnabled(true);
+            supportActionBar.setTitle(String.format("%s (%s)", issue.getFields().getSummary(), issue.getKey()));
+        }
     }
 
     private void initComments() {

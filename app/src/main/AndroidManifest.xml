@@ -25,7 +25,7 @@
             android:name=".IssueDetailActivity_"
             android:label="@string/title_issue_detail"
             android:parentActivityName=".IssueListActivity"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:theme="@style/AppTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".IssueListActivity" />
