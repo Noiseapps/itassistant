@@ -36,6 +36,7 @@ public class IssueDetailActivity extends AppCompatActivity {
         final ActionBar supportActionBar = getSupportActionBar();
         if(supportActionBar != null) {
             supportActionBar.setDisplayHomeAsUpEnabled(true);
+            supportActionBar.setHomeButtonEnabled(true);
             supportActionBar.setTitle(String.format("%s (%s)", issue.getFields().getSummary(), issue.getKey()));
         }
     }

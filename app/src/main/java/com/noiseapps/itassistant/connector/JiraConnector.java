@@ -9,6 +9,7 @@ import com.noiseapps.itassistant.api.JiraAPI;
 import com.noiseapps.itassistant.database.PreferencesDAO;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.JiraIssue;
+import com.noiseapps.itassistant.model.jira.issues.comments.Comments;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 import com.noiseapps.itassistant.model.jira.session.SessionRequest;
 import com.noiseapps.itassistant.model.jira.session.SessionResponse;
@@ -62,6 +63,13 @@ public class JiraConnector {
             return;
         }
         apiService.getProjectIssues(String.format("project=\"%s\"", projectKey), callback);
+    }
+
+    public void getIssueComments(@NonNull String issueId, Callback<Comments> callback) {
+        if(apiService == null) {
+            return;
+        }
+        apiService.getIssueComments(issueId, callback);
     }
 
     @AfterInject

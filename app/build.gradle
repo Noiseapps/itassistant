@@ -78,6 +78,8 @@ dependencies {
     }
     compile 'com.google.guava:guava:19.0-rc2'
     compile 'com.jonathanfinerty.once:once:0.4.0'
+    compile 'com.akexorcist:RoundCornerProgressBar:2.0.3'
+    compile 'net.danlew:android.joda:2.8.1'
 }
 
 apt {

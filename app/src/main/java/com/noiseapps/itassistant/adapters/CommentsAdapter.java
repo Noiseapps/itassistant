@@ -1,0 +1,79 @@
+package com.noiseapps.itassistant.adapters;
+
+import android.support.v4.app.FragmentActivity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.TextView;
+
+import java.util.List;
+
+import com.noiseapps.itassistant.R;
+import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
+import com.noiseapps.itassistant.utils.Consts;
+
+import org.joda.time.DateTime;
+
+public class CommentsAdapter extends BaseAdapter {
+
+
+    private final FragmentActivity activity;
+    private final List<Comment> comments;
+
+    public CommentsAdapter(FragmentActivity activity, List<Comment> comments) {
+        this.activity = activity;
+        this.comments = comments;
+    }
+
+    @Override
+    public boolean hasStableIds() {
+        return true;
+    }
+
+    @Override
+    public int getCount() {
+        return comments.size();
+    }
+
+    @Override
+    public Comment getItem(int position) {
+        return comments.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder holder;
+        if(convertView == null) {
+            convertView = LayoutInflater.from(activity).inflate(R.layout.item_comment, parent, false);
+            holder = new ViewHolder(convertView);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+        holder.bind(getItem(position));
+        return convertView;
+    }
+
+    private class ViewHolder {
+        TextView body, creator, date;
+
+        public ViewHolder(View root) {
+            body = (TextView) root.findViewById(R.id.commentBody);
+            creator = (TextView) root.findViewById(R.id.commentCreator);
+            date = (TextView) root.findViewById(R.id.commentDate);
+        }
+
+        public void bind(Comment item) {
+            body.setText(item.getBody());
+            creator.setText(item.getAuthor().getDisplayName());
+            final String dateString = DateTime.parse(item.getCreated()).toString(Consts.DATE_TIME_FORMAT);
+            date.setText(dateString);
+        }
+    }
+}

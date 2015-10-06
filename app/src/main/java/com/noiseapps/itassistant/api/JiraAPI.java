@@ -3,17 +3,20 @@ package com.noiseapps.itassistant.api;
 
 import android.support.annotation.NonNull;
 
+import java.util.List;
+
 import com.noiseapps.itassistant.model.jira.issues.JiraIssue;
+import com.noiseapps.itassistant.model.jira.issues.comments.Comments;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 import com.noiseapps.itassistant.model.jira.session.SessionRequest;
 import com.noiseapps.itassistant.model.jira.session.SessionResponse;
 import com.noiseapps.itassistant.model.jira.user.JiraUser;
 
-import java.util.List;
 import retrofit.Callback;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.POST;
+import retrofit.http.Path;
 import retrofit.http.Query;
 
 public interface JiraAPI {
@@ -29,4 +32,7 @@ public interface JiraAPI {
 
     @GET("/rest/api/2/search?maxResults=150&expand=transitions")
     void getProjectIssues(@Query("jql") String projectId, @NonNull Callback<JiraIssue> callback);
+
+    @GET("/rest/api/2/issue/{issueIdOrKey}/comment")
+    void getIssueComments(@Path("issueIdOrKey") String issueId, @NonNull Callback<Comments> callback);
 }
