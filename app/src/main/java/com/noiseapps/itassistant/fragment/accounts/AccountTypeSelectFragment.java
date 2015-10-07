@@ -14,7 +14,6 @@ import com.noiseapps.itassistant.model.account.AccountTypes;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.OptionsItem;
-import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.ViewById;
 
 
@@ -30,6 +29,7 @@ public class AccountTypeSelectFragment extends Fragment {
 
     @AfterViews
     void init() {
+        setHasOptionsMenu(true);
         callbacks = (AccountsActivityCallbacks) getActivity();
         final String[] values = getResources().getStringArray(R.array.accountTypes);
         final AccountTypeListAdapter adapter = new AccountTypeListAdapter(getContext(), values, new Callbacks());

@@ -70,4 +70,10 @@
     <string name="cancel">Cancel</string>
     <string name="failedToAddComment">Failed to add issue comment</string>
     <string name="enterCommentBody">Enter comment…</string>
+    <string name="commentAdded">Comment added successfully</string>
+    <string name="couldNotGetComments">Failed to download comments</string>
+    <string name="loadingWorkLogs">Loading work logs…</string>
+    <string name="noWorkLogs">No work logged for this issue</string>
+    <string name="coulNotGetWorkLogs">Could not get work logs</string>
+    <string name="logged">%1$s logged %2$s</string>
 </resources>

@@ -90,6 +90,7 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
 
     @AfterViews
     void init() {
+        setHasOptionsMenu(true);
         handler = new Handler();
         callbacks = (AccountsActivityCallbacks) getActivity();
         initToolbar();

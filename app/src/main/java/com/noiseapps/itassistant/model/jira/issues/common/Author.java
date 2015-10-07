@@ -1,4 +1,4 @@
-package com.noiseapps.itassistant.model.jira.issues.comments;
+package com.noiseapps.itassistant.model.jira.issues.common;
 
 public class Author {
     private String displayName;

@@ -1,5 +1,7 @@
 package com.noiseapps.itassistant.model.jira.issues.comments;
 
+import com.noiseapps.itassistant.model.jira.issues.common.Author;
+
 public class Comment {
     private String id;
     private Author author;

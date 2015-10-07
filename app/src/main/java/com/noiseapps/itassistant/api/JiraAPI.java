@@ -8,6 +8,8 @@ import java.util.List;
 import com.noiseapps.itassistant.model.jira.issues.JiraIssue;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comments;
+import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogItem;
+import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogs;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 import com.noiseapps.itassistant.model.jira.session.SessionRequest;
 import com.noiseapps.itassistant.model.jira.session.SessionResponse;
@@ -39,4 +41,10 @@ public interface JiraAPI {
 
     @POST("/rest/api/2/issue/{issueIdOrKey}/comment")
     void addIssueComment(@Path("issueIdOrKey") String issueId, @Body Comment comment, @NonNull Callback<Comment> callback);
+
+    @GET("/rest/api/2/issue/{issueIdOrKey}/worklog")
+    void getIssueWorkLog(@Path("issueIdOrKey") String issueId, @NonNull Callback<WorkLogs> callback);
+
+    @POST("/rest/api/2/issue/{issueIdOrKey}/worklog")
+    void postIssueWorkLog(@Path("issueIdOrKey") String issueId, @Body WorkLogItem comment, @NonNull Callback<WorkLogItem> callback);
 }

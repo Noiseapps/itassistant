@@ -47,4 +47,11 @@
         <item name="android:padding">8dp</item>
     </style>
 
+    <style name="AppTheme.TabLayoutStyle" parent="Widget.Design.TabLayout">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="tabTextColor">@color/white</item>
+        <item name="tabSelectedTextColor">@color/colorAccent</item>
+    </style>
+
 </resources>

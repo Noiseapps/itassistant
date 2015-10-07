@@ -11,6 +11,7 @@ import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.connector.JiraConnector;
 import com.noiseapps.itassistant.fragment.issuedetails.CommentsFragment_;
 import com.noiseapps.itassistant.fragment.issuedetails.GeneralInfoFragment_;
+import com.noiseapps.itassistant.fragment.issuedetails.WorkLogFragment_;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 
 import org.androidannotations.annotations.AfterViews;
@@ -39,6 +40,7 @@ public class IssueDetailFragment extends Fragment {
     @AfterViews
     void init() {
         setHasOptionsMenu(true);
+        viewPager.setOffscreenPageLimit(3);
         viewPager.setAdapter(new PagerAdapter());
         tabLayout.setupWithViewPager(viewPager);
     }
@@ -55,7 +57,7 @@ public class IssueDetailFragment extends Fragment {
 
     final class PagerAdapter extends FragmentStatePagerAdapter {
 
-        private final Fragment[] fragments = new Fragment[2];
+        private final Fragment[] fragments = new Fragment[3];
         private final String[] titles;
 
         public PagerAdapter() {
@@ -67,6 +69,7 @@ public class IssueDetailFragment extends Fragment {
         private void initFragments() {
             fragments[0] = GeneralInfoFragment_.builder().issue(issue).build();
             fragments[1] = CommentsFragment_.builder().issue(issue).build();
+            fragments[2] = WorkLogFragment_.builder().issue(issue).build();
         }
 
         @Override

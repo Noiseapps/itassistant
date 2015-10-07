@@ -11,9 +11,9 @@ import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.JiraIssue;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comments;
+import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogItem;
+import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogs;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
-import com.noiseapps.itassistant.model.jira.session.SessionRequest;
-import com.noiseapps.itassistant.model.jira.session.SessionResponse;
 import com.noiseapps.itassistant.model.jira.user.JiraUser;
 import com.orhanobut.logger.Logger;
 
@@ -36,14 +36,6 @@ public class JiraConnector {
 
     private BaseAccount currentConfig;
     private JiraAPI apiService;
-
-    public void createSession(Callback<SessionResponse> callback) {
-        if(apiService == null) {
-            return;
-        }
-        final SessionRequest request = new SessionRequest(currentConfig.getUsername(), currentConfig.getPassword());
-        apiService.newSession(request, callback);
-    }
 
     public void getUserData(Callback<JiraUser> callback) {
         if(apiService == null) {
@@ -80,6 +72,20 @@ public class JiraConnector {
         apiService.addIssueComment(issueId, comment, callback);
     }
 
+    public void getIssueWorkLog(@NonNull String issueId, Callback<WorkLogs> callback) {
+        if(apiService == null) {
+            return;
+        }
+        apiService.getIssueWorkLog(issueId, callback);
+    }
+
+    public void postIssueWorkLog(String issueId, WorkLogItem workLog, Callback<WorkLogItem> callback){
+        if(apiService == null) {
+            return;
+        }
+        apiService.postIssueWorkLog(issueId, workLog, callback);
+    }
+
     @AfterInject
     void init() {
         initApiService();
@@ -101,7 +107,6 @@ public class JiraConnector {
         currentConfig = newConfig;
         initApiService();
     }
-
 
     private String getBasicAuth() {
         String usernameString = currentConfig.getUsername() + ":" + currentConfig.getPassword();

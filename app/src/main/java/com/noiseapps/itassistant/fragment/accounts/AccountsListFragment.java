@@ -10,11 +10,14 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.AccountListAdapter;
 import com.noiseapps.itassistant.database.dao.AccountsDao;
 import com.noiseapps.itassistant.model.account.BaseAccount;
-import com.noiseapps.itassistant.utils.DividerItemDecoration;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -22,10 +25,6 @@ import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.ViewById;
-
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 
 @EFragment(R.layout.fragment_accounts)
@@ -43,6 +42,7 @@ public class AccountsListFragment extends Fragment {
 
     @AfterViews
     void init() {
+        setHasOptionsMenu(true);
         callbacks = (AccountsActivityCallbacks) getActivity();
         initToolbar();
         readAllAccounts();

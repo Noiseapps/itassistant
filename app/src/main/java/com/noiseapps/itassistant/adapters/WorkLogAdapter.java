@@ -7,31 +7,33 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import com.noiseapps.itassistant.R;
-import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
+import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogItem;
 import com.noiseapps.itassistant.utils.Consts;
 
 import org.joda.time.DateTime;
 
-public class CommentsAdapter extends BaseAdapter {
-    private final Context context;
-    private final List<Comment> comments;
+public class WorkLogAdapter extends BaseAdapter {
 
-    public CommentsAdapter(Context context, List<Comment> comments) {
+    private final Context context;
+    private final ArrayList<WorkLogItem> workLogItems;
+
+    public WorkLogAdapter(Context context, ArrayList<WorkLogItem> workLogItems) {
         this.context = context;
-        this.comments = comments;
+        this.workLogItems = workLogItems;
         sort();
     }
 
     public void sort() {
-        Collections.sort(comments, new Comparator<Comment>() {
+        Collections.sort(workLogItems, new Comparator<WorkLogItem>() {
             @Override
-            public int compare(Comment lhs, Comment rhs) {
-                return DateTime.parse(lhs.getCreated()).compareTo(DateTime.parse(rhs.getCreated()));
+            public int compare(WorkLogItem lhs, WorkLogItem rhs) {
+                return DateTime.parse(lhs.getStarted()).compareTo(DateTime.parse(rhs.getStarted()));
             }
         });
         notifyDataSetChanged();
@@ -44,12 +46,12 @@ public class CommentsAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return comments.size();
+        return workLogItems.size();
     }
 
     @Override
-    public Comment getItem(int position) {
-        return comments.get(position);
+    public WorkLogItem getItem(int position) {
+        return workLogItems.get(position);
     }
 
     @Override
@@ -71,14 +73,16 @@ public class CommentsAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public void addItem(Comment comment) {
-        comments.add(comment);
+    public void addItem(WorkLogItem workLogItem) {
+        workLogItems.add(workLogItem);
         sort();
     }
 
-    public void addItems(List<Comment> commentList) {
-        comments.addAll(commentList);
+    public void setItems(List<WorkLogItem> worklogs) {
+        workLogItems.clear();
+        workLogItems.addAll(worklogs);
         sort();
+        notifyDataSetChanged();
     }
 
     private class ViewHolder {
@@ -90,10 +94,10 @@ public class CommentsAdapter extends BaseAdapter {
             date = (TextView) root.findViewById(R.id.commentDate);
         }
 
-        public void bind(Comment item) {
-            body.setText(item.getBody());
-            creator.setText(item.getAuthor().getDisplayName());
-            final String dateString = DateTime.parse(item.getCreated()).toString(Consts.DATE_TIME_FORMAT);
+        public void bind(WorkLogItem item) {
+            body.setText(item.getComment());
+            creator.setText(context.getString(R.string.logged, item.getAuthor().getDisplayName(), item.getTimeSpent()));
+            final String dateString = DateTime.parse(item.getStarted()).toString(Consts.DATE_FORMAT);
             date.setText(dateString);
         }
     }

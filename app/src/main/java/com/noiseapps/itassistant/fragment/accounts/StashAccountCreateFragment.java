@@ -15,6 +15,9 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
@@ -35,9 +38,6 @@ import org.androidannotations.annotations.EditorAction;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.ViewById;
-
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -85,6 +85,7 @@ public class StashAccountCreateFragment extends Fragment implements Validator.Va
 
     @AfterViews
     void init() {
+        setHasOptionsMenu(true);
         handler = new Handler();
         callbacks = (AccountsActivityCallbacks) getActivity();
         initToolbar();

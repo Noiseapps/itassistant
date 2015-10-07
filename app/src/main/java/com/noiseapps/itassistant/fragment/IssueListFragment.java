@@ -2,6 +2,7 @@ package com.noiseapps.itassistant.fragment;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -18,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.github.jorgecastilloprz.FABProgressCircle;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.noiseapps.itassistant.R;
@@ -58,6 +60,10 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     LinearLayout loadingView, tabView, emptyList;
     @ViewById
     ViewPager viewPager;
+    @ViewById
+    FloatingActionButton addIssueFab;
+    @ViewById
+    FABProgressCircle fabProgressCircle;
     @ViewById
     TabLayout tabLayout;
     private JiraProject jiraProject;
@@ -121,6 +127,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     @UiThread
     void hideProgress() {
         loadingView.setVisibility(View.GONE);
+        fabProgressCircle.setVisibility(View.VISIBLE);
         if(isEmpty) {
             emptyList.setVisibility(View.VISIBLE);
             tabView.setVisibility(View.GONE);

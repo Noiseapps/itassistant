@@ -180,7 +180,13 @@ public class IssueListActivity extends AppCompatActivity
                 setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
+                        downloadData();
+                    }
+                }).
+                setNegativeButton(R.string.quit, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
                     }
                 }).
                 setNeutralButton(R.string.settings, new DialogInterface.OnClickListener() {
