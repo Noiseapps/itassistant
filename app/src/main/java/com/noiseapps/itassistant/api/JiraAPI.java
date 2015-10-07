@@ -46,5 +46,5 @@ public interface JiraAPI {
     void getIssueWorkLog(@Path("issueIdOrKey") String issueId, @NonNull Callback<WorkLogs> callback);
 
     @POST("/rest/api/2/issue/{issueIdOrKey}/worklog")
-    void postIssueWorkLog(@Path("issueIdOrKey") String issueId, @Body WorkLogItem comment, @NonNull Callback<WorkLogItem> callback);
+    void postIssueWorkLog(@Path("issueIdOrKey") String issueId, @Query("newEstimate") String newEstimate, @Body WorkLogItem comment, @NonNull Callback<WorkLogItem> callback);
 }

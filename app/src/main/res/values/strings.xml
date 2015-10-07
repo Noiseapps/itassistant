@@ -76,4 +76,10 @@
     <string name="noWorkLogs">No work logged for this issue</string>
     <string name="coulNotGetWorkLogs">Could not get work logs</string>
     <string name="logged">%1$s logged %2$s</string>
+    <string name="date">Date</string>
+    <string name="worked">Worked</string>
+    <string name="remaining">Remaining</string>
+    <string name="addWorkLog">Log work for %s</string>
+    <string name="workLogAdded">Work logged</string>
+    <string name="failedToLogWork">Failed to log work</string>
 </resources>

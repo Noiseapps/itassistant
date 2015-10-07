@@ -79,11 +79,11 @@ public class JiraConnector {
         apiService.getIssueWorkLog(issueId, callback);
     }
 
-    public void postIssueWorkLog(String issueId, WorkLogItem workLog, Callback<WorkLogItem> callback){
+    public void postIssueWorkLog(String issueId, String newEstimate, WorkLogItem workLog, Callback<WorkLogItem> callback){
         if(apiService == null) {
             return;
         }
-        apiService.postIssueWorkLog(issueId, workLog, callback);
+        apiService.postIssueWorkLog(issueId, newEstimate, workLog, callback);
     }
 
     @AfterInject

@@ -5,7 +5,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.View;
 
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.connector.JiraConnector;
@@ -26,8 +25,6 @@ import org.androidannotations.annotations.ViewById;
 @OptionsMenu(R.menu.menu_issue_details)
 public class IssueDetailFragment extends Fragment {
 
-    @ViewById
-    View scrollView, loadingComments;
     @FragmentArg
     Issue issue;
     @Bean
@@ -47,7 +44,7 @@ public class IssueDetailFragment extends Fragment {
 
     @OptionsItem(R.id.action_edit)
     void onEditIssue() {
-        Snackbar.make(scrollView, R.string.optionUnavailable, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(viewPager, R.string.optionUnavailable, Snackbar.LENGTH_LONG).show();
     }
 
     @OptionsItem(android.R.id.home)
