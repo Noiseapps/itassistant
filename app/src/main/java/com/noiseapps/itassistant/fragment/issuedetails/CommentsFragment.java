@@ -131,8 +131,8 @@ public class CommentsFragment extends Fragment {
         jiraConnector.postIssueComment(issue.getId(), comment, new Callback<Comment>() {
             @Override
             public void success(Comment comment, Response response) {
-                fabProgressCircle.hide();
-                Snackbar.make(commentsList, R.string.commentAdded, Snackbar.LENGTH_LONG).show();
+                fabProgressCircle.beginFinalAnimation();
+                Snackbar.make(fabProgressCircle, R.string.commentAdded, Snackbar.LENGTH_LONG).show();
                 addCommentFab.setEnabled(true);
                 adapter.addItem(comment);
                 noCommentsView.setVisibility(View.GONE);
@@ -143,7 +143,7 @@ public class CommentsFragment extends Fragment {
             public void failure(RetrofitError error) {
                 addCommentFab.setEnabled(true);
                 fabProgressCircle.hide();
-                Snackbar.make(commentsList, R.string.failedToAddComment, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(fabProgressCircle, R.string.failedToAddComment, Snackbar.LENGTH_LONG).show();
             }
         });
         alertDialog.dismiss();

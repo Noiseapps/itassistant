@@ -119,8 +119,8 @@ public class WorkLogFragment extends Fragment {
         jiraConnector.postIssueWorkLog(issue.getId(), newEstimate, logItem, new Callback<WorkLogItem>() {
             @Override
             public void success(WorkLogItem logItem, Response response) {
-                fabProgressCircle.hide();
-                Snackbar.make(workLogList, R.string.workLogAdded, Snackbar.LENGTH_LONG).show();
+                fabProgressCircle.beginFinalAnimation();
+                Snackbar.make(fabProgressCircle, R.string.workLogAdded, Snackbar.LENGTH_LONG).show();
                 addWorkLogFab.setEnabled(true);
                 adapter.addItem(logItem);
                 noWorkLogsView.setVisibility(View.GONE);
@@ -131,7 +131,7 @@ public class WorkLogFragment extends Fragment {
             public void failure(RetrofitError error) {
                 addWorkLogFab.setEnabled(true);
                 fabProgressCircle.hide();
-                Snackbar.make(workLogList, R.string.failedToLogWork, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(fabProgressCircle, R.string.failedToLogWork, Snackbar.LENGTH_LONG).show();
             }
         });
         alertDialog.dismiss();
