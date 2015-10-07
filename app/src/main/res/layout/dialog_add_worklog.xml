@@ -41,6 +41,7 @@
             android:id="@+id/workedText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:singleLine="true"
             android:ems="10"
             android:hint="@string/worked"/>
     </android.support.design.widget.TextInputLayout>
@@ -51,6 +52,7 @@
 
         <EditText
             android:id="@+id/remainingText"
+            android:singleLine="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/noWorkLogsView"
@@ -12,10 +12,10 @@
         android:orientation="vertical">
 
         <TextView
-            android:drawableTop="@drawable/ic_access_time_24dp"
             android:layout_width="wrap_content"
-            android:alpha=".5"
             android:layout_height="wrap_content"
+            android:alpha=".5"
+            android:drawableTop="@drawable/ic_access_time_24dp"
             android:text="@string/noWorkLogs"
             android:textAppearance="?android:attr/textAppearanceLarge" />
     </LinearLayout>
@@ -43,17 +43,17 @@
 
     <LinearLayout
         android:id="@+id/errorView"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <TextView
-            android:drawableTop="@drawable/ic_error"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:alpha=".5"
+            android:drawableTop="@drawable/ic_error"
             android:text="@string/coulNotGetWorkLogs"
             android:textAppearance="?android:attr/textAppearanceLarge" />
     </LinearLayout>
@@ -65,12 +65,12 @@
 
     <com.github.jorgecastilloprz.FABProgressCircle
         android:id="@+id/fabProgressCircle"
-        app:reusable="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom|right|end"
         app:arcColor="@color/colorPrimary"
         app:arcWidth="4dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        app:reusable="true">
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/addWorkLogFab"

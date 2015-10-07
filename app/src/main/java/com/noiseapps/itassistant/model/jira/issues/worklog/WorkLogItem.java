@@ -12,9 +12,7 @@ public class WorkLogItem {
 
     private String timeSpent;
 
-    private int timeSpentSeconds;
-
-    private int id;
+    private String id;
 
     @Override
     public String toString() {
@@ -23,7 +21,6 @@ public class WorkLogItem {
                 ", comment='" + comment + '\'' +
                 ", started='" + started + '\'' +
                 ", timeSpent='" + timeSpent + '\'' +
-                ", timeSpentSeconds=" + timeSpentSeconds +
                 ", id=" + id +
                 '}';
     }
@@ -35,12 +32,12 @@ public class WorkLogItem {
 
         WorkLogItem that = (WorkLogItem) o;
 
-        if (timeSpentSeconds != that.timeSpentSeconds) return false;
-        if (id != that.id) return false;
         if (author != null ? !author.equals(that.author) : that.author != null) return false;
         if (comment != null ? !comment.equals(that.comment) : that.comment != null) return false;
         if (started != null ? !started.equals(that.started) : that.started != null) return false;
-        return !(timeSpent != null ? !timeSpent.equals(that.timeSpent) : that.timeSpent != null);
+        if (timeSpent != null ? !timeSpent.equals(that.timeSpent) : that.timeSpent != null)
+            return false;
+        return !(id != null ? !id.equals(that.id) : that.id != null);
 
     }
 
@@ -50,8 +47,7 @@ public class WorkLogItem {
         result = 31 * result + (comment != null ? comment.hashCode() : 0);
         result = 31 * result + (started != null ? started.hashCode() : 0);
         result = 31 * result + (timeSpent != null ? timeSpent.hashCode() : 0);
-        result = 31 * result + timeSpentSeconds;
-        result = 31 * result + id;
+        result = 31 * result + (id != null ? id.hashCode() : 0);
         return result;
     }
 
@@ -87,19 +83,11 @@ public class WorkLogItem {
         this.timeSpent = timeSpent;
     }
 
-    public int getTimeSpentSeconds() {
-        return timeSpentSeconds;
-    }
-
-    public void setTimeSpentSeconds(int timeSpentSeconds) {
-        this.timeSpentSeconds = timeSpentSeconds;
-    }
-
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 }
