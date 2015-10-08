@@ -107,6 +107,8 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
 
             @Override
             public void failure(RetrofitError error) {
+                isEmpty = true;
+                hideProgress();
             }
         });
     }

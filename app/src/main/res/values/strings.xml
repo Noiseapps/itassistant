@@ -82,4 +82,6 @@
     <string name="addWorkLog">Log work for %s</string>
     <string name="workLogAdded">Work logged</string>
     <string name="failedToLogWork">Failed to log work</string>
+    <string name="invalidFormat">Invalid field format</string>
+    <string name="noIssuesForProject">No issues for selected project</string>
 </resources>
