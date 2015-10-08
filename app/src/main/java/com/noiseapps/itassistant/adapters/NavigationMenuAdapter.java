@@ -131,7 +131,10 @@ public class NavigationMenuAdapter extends AbstractExpandableItemAdapter<Navigat
         public void bind(JiraUser user, BaseAccount baseAccount) {
             textView.setText(user.getName());
             if(avatarBitmap == null) {
-                AuthenticatedPicasso.getAuthPicasso(context, baseAccount).load("file:" + baseAccount.getAvatarPath()).into(new LoadTarget());
+                AuthenticatedPicasso.getAuthPicasso(context, baseAccount).
+                        load("file:" + baseAccount.getAvatarPath()).
+                        placeholder(R.drawable.ic_action_account_circle).
+                        error(R.drawable.ic_action_account_circle).into(new LoadTarget());
             } else {
                 avatarImage.setImageBitmap(avatarBitmap);
             }

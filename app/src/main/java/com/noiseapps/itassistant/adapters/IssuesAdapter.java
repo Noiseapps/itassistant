@@ -62,7 +62,7 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.issueTitle);
             issueKey = (TextView) itemView.findViewById(R.id.issueKey);
-            assignee = (TextView) itemView.findViewById(R.id.assignee);
+            assignee = (TextView) itemView.findViewById(R.id.title);
             issuePriority = (ImageView) itemView.findViewById(R.id.issuePriority);
             issueType = (ImageView) itemView.findViewById(R.id.issueType);
             itemView.setOnClickListener(this);

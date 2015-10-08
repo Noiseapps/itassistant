@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.JiraIssue;
+import com.noiseapps.itassistant.model.jira.issues.Priority;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comments;
 import com.noiseapps.itassistant.model.jira.issues.common.IssueStatus;
@@ -59,6 +60,9 @@ public interface JiraAPI {
 
     @GET("/rest/api/2/user/assignable/search")
     void getProjectMembers(@Query("project") String projectKey, @NonNull Callback<List<Assignee>> callback);
+
+    @GET("/rest/api/2/priority")
+    void getIssuePriorities(@NonNull Callback<List<Priority>> callback);
 
 
 }

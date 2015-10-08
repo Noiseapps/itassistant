@@ -1,4 +1,4 @@
-package com.noiseapps.itassistant.adapters;
+package com.noiseapps.itassistant.adapters.newissue;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,24 +7,22 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import java.util.List;
-
 import com.noiseapps.itassistant.R;
-import com.noiseapps.itassistant.model.jira.issues.Assignee;
+import com.noiseapps.itassistant.model.jira.issues.common.IssueType;
 import com.squareup.picasso.Picasso;
+
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class AssigneeSpinnerAdapter extends BaseAdapter {
+public class TypeSpinnerAdapter extends BaseAdapter {
 
     private final Context context;
-    private final List<Assignee> assignees;
-    private final Picasso authPicasso;
+    private final List<IssueType> issueTypes;
 
-    public AssigneeSpinnerAdapter(Context context, List<Assignee> assignees, Picasso authPicasso) {
+    public TypeSpinnerAdapter(Context context, List<IssueType> issueTypes) {
         this.context = context;
-        this.assignees = assignees;
-        this.authPicasso = authPicasso;
+        this.issueTypes = issueTypes;
     }
 
     @Override
@@ -34,12 +32,12 @@ public class AssigneeSpinnerAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return assignees.size();
+        return issueTypes.size();
     }
 
     @Override
-    public Assignee getItem(int position) {
-        return assignees.get(position);
+    public IssueType getItem(int position) {
+        return issueTypes.get(position);
     }
 
     @Override
@@ -51,7 +49,7 @@ public class AssigneeSpinnerAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         if(convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.item_spinner_assignee, parent, false);
+            convertView = LayoutInflater.from(context).inflate(R.layout.item_spinner_subtitle, parent, false);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
         } else {
@@ -62,17 +60,20 @@ public class AssigneeSpinnerAdapter extends BaseAdapter {
     }
 
     private class ViewHolder {
-        private final TextView assignee;
+        private final TextView title;
+        private final TextView subtitle;
         private final CircleImageView avatar;
 
         public ViewHolder(View convertView) {
-            assignee = (TextView) convertView.findViewById(R.id.assignee);
             avatar = (CircleImageView) convertView.findViewById(R.id.avatar);
+            title = (TextView) convertView.findViewById(R.id.title);
+            subtitle = (TextView) convertView.findViewById(R.id.subTitle);
         }
 
-        public void bind(Assignee item) {
-            assignee.setText(item.getDisplayName());
-            authPicasso.load(item.getAvatarUrls().get48x48()).into(avatar);
+        public void bind(IssueType item) {
+            title.setText(item.getName());
+            subtitle.setText(item.getDescription());
+            Picasso.with(context).load(item.getIconUrl()).into(avatar);
         }
     }
 }

@@ -4,20 +4,19 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.Toast;
-
-import java.util.List;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.noiseapps.itassistant.R;
-import com.noiseapps.itassistant.adapters.AssigneeSpinnerAdapter;
+import com.noiseapps.itassistant.adapters.newissue.AssigneeSpinnerAdapter;
+import com.noiseapps.itassistant.adapters.newissue.PrioritySpinnerAdapter;
+import com.noiseapps.itassistant.adapters.newissue.TypeSpinnerAdapter;
 import com.noiseapps.itassistant.connector.JiraConnector;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
+import com.noiseapps.itassistant.model.jira.issues.Priority;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 import com.noiseapps.itassistant.model.jira.projects.details.JiraProjectDetails;
 import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
@@ -29,12 +28,14 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 
+import java.util.List;
+
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 @EFragment(R.layout.fragment_new_issue)
-public class NewIssueFragment extends Fragment{
+public class NewIssueFragment extends Fragment {
 
     @FragmentArg
     Issue issue;
@@ -55,13 +56,13 @@ public class NewIssueFragment extends Fragment{
     @AfterViews
     void init() {
         getProjectDetails();
-        if(issue != null) {
+        if (issue != null) {
             initValues();
         }
     }
 
     private void initValues() {
-        
+
     }
 
     @Click(R.id.saveIssueFab)
@@ -74,27 +75,18 @@ public class NewIssueFragment extends Fragment{
         jiraConnector.getProjectDetails(project.getId(), new GetDetailsCallback());
     }
 
-    private void showForm(JiraProjectDetails jiraProjectDetails, List<Assignee> assignees) {
+    private void showForm(JiraProjectDetails jiraProjectDetails, List<Assignee> assignees, List<Priority> priorities) {
         hideProgress();
         noProjectData.setVisibility(View.GONE);
         newIssueForm.setVisibility(View.VISIBLE);
-        fillForm(jiraProjectDetails, assignees);
+        fillForm(jiraProjectDetails, assignees, priorities);
     }
 
-    private void fillForm(JiraProjectDetails jiraProjectDetails, final List<Assignee> assignees) {
+    private void fillForm(JiraProjectDetails jiraProjectDetails, final List<Assignee> assignees, List<Priority> priorities) {
         final BaseAccount currentConfig = jiraConnector.getCurrentConfig();
+        issueTypeSpinner.setAdapter(new TypeSpinnerAdapter(getContext(), jiraProjectDetails.getIssueTypes()));
+        issuePrioritySpinner.setAdapter(new PrioritySpinnerAdapter(getContext(), priorities));
         assigneeSpinner.setAdapter(new AssigneeSpinnerAdapter(getContext(), assignees, AuthenticatedPicasso.getAuthPicasso(getContext(), currentConfig)));
-        assigneeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getContext(), assignees.get(position).getDisplayName(), Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
     }
 
     private void showError() {
@@ -127,7 +119,27 @@ public class NewIssueFragment extends Fragment{
 
         @Override
         public void success(List<Assignee> assignees, Response response) {
-            showForm(jiraProjectDetails, assignees);
+            jiraConnector.getIssuePriorities(new GetPrioritiesCallback(jiraProjectDetails, assignees));
+        }
+
+        @Override
+        public void failure(RetrofitError error) {
+            showError();
+        }
+    }
+
+    private class GetPrioritiesCallback implements Callback<List<Priority>> {
+        private final JiraProjectDetails jiraProjectDetails;
+        private final List<Assignee> assignees;
+
+        public GetPrioritiesCallback(JiraProjectDetails jiraProjectDetails, List<Assignee> assignees) {
+            this.jiraProjectDetails = jiraProjectDetails;
+            this.assignees = assignees;
+        }
+
+        @Override
+        public void success(List<Priority> priorities, Response response) {
+            showForm(jiraProjectDetails, assignees, priorities);
         }
 
         @Override

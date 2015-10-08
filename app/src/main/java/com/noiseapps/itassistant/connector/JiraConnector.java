@@ -10,6 +10,7 @@ import com.noiseapps.itassistant.database.PreferencesDAO;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.JiraIssue;
+import com.noiseapps.itassistant.model.jira.issues.Priority;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comments;
 import com.noiseapps.itassistant.model.jira.issues.common.IssueStatus;
@@ -87,6 +88,13 @@ public class JiraConnector {
             return;
         }
         apiService.getProjectDetails(projectId, callback);
+    }
+
+    public void getIssuePriorities(@NonNull Callback<List<Priority>> callback) {
+        if(apiService == null) {
+            return;
+        }
+        apiService.getIssuePriorities(callback);
     }
 
     public void postIssueWorkLog(String issueId, String newEstimate, WorkLogItem workLog, Callback<WorkLogItem> callback){

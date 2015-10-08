@@ -16,6 +16,5 @@
         android:layout_gravity="center_vertical"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Large Text"
-        android:layout_margin="16dp"
-        android:id="@+id/assignee"/>
+        android:id="@+id/title"/>
 </LinearLayout>
