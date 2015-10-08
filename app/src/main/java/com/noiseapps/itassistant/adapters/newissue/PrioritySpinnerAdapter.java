@@ -8,7 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.noiseapps.itassistant.R;
-import com.noiseapps.itassistant.model.jira.issues.Priority;
+import com.noiseapps.itassistant.model.jira.projects.createmeta.AllowedValue;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -18,11 +18,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class PrioritySpinnerAdapter extends BaseAdapter {
 
     private final Context context;
-    private final List<Priority> assignees;
+    private final List<AllowedValue> allowedValues;
 
-    public PrioritySpinnerAdapter(Context context, List<Priority> assignees) {
+    public PrioritySpinnerAdapter(Context context, List<AllowedValue> allowedValues) {
         this.context = context;
-        this.assignees = assignees;
+        this.allowedValues = allowedValues;
     }
 
     @Override
@@ -32,12 +32,12 @@ public class PrioritySpinnerAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return assignees.size();
+        return allowedValues.size();
     }
 
     @Override
-    public Priority getItem(int position) {
-        return assignees.get(position);
+    public AllowedValue getItem(int position) {
+        return allowedValues.get(position);
     }
 
     @Override
@@ -59,6 +59,12 @@ public class PrioritySpinnerAdapter extends BaseAdapter {
         return convertView;
     }
 
+    public void setItems(List<AllowedValue> allowedValues) {
+        this.allowedValues.clear();
+        this.allowedValues.addAll(allowedValues);
+        notifyDataSetChanged();
+    }
+
     private class ViewHolder {
         private final TextView assignee;
         private final CircleImageView avatar;
@@ -68,7 +74,7 @@ public class PrioritySpinnerAdapter extends BaseAdapter {
             avatar = (CircleImageView) convertView.findViewById(R.id.avatar);
         }
 
-        public void bind(Priority item) {
+        public void bind(AllowedValue item) {
             assignee.setText(item.getName());
             Picasso.with(context).load(item.getIconUrl()).into(avatar);
         }

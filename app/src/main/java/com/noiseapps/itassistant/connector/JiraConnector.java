@@ -14,6 +14,8 @@ import com.noiseapps.itassistant.model.jira.issues.Priority;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comments;
 import com.noiseapps.itassistant.model.jira.issues.common.IssueStatus;
+import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueModel;
+import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueResponse;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.CreateMetaModel;
 import com.noiseapps.itassistant.model.jira.projects.details.JiraProjectDetails;
 import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogItem;
@@ -124,6 +126,14 @@ public class JiraConnector {
             return;
         }
         apiService.getCreateMeta(projectKey, callback);
+    }
+
+
+    public void postNewIssue(@NonNull CreateIssueModel issueModel, Callback<CreateIssueResponse> callback) {
+        if(apiService == null) {
+            return;
+        }
+        apiService.postNewIssue(issueModel, callback);
     }
 
     @AfterInject

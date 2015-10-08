@@ -4,6 +4,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
@@ -16,11 +18,16 @@ import com.noiseapps.itassistant.connector.JiraConnector;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
-import com.noiseapps.itassistant.model.jira.issues.Priority;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
+import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueModel;
+import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueModel.Fields.IdField;
+import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueModel.Fields.NameField;
+import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueResponse;
+import com.noiseapps.itassistant.model.jira.projects.createissue.FieldsBuilder;
+import com.noiseapps.itassistant.model.jira.projects.createmeta.AllowedValue;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.CreateMetaModel;
+import com.noiseapps.itassistant.model.jira.projects.createmeta.IssueType;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.Project;
-import com.noiseapps.itassistant.model.jira.projects.details.JiraProjectDetails;
 import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 
 import org.androidannotations.annotations.AfterViews;
@@ -31,6 +38,7 @@ import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 
 import java.util.List;
+import java.util.ListIterator;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -41,11 +49,14 @@ public class NewIssueFragment extends Fragment {
 
     @FragmentArg
     Issue issue;
-
+    @FragmentArg
+    Issue parent;
     @FragmentArg
     JiraProject project;
     @ViewById
     LinearLayout fetchingDataProgress, noProjectData, newIssueForm;
+    @ViewById
+    EditText issueDescription, issueSummary;
     @ViewById
     Spinner issueTypeSpinner, issuePrioritySpinner, assigneeSpinner;
     @ViewById
@@ -54,13 +65,19 @@ public class NewIssueFragment extends Fragment {
     FABProgressCircle fabProgressCircle;
     @Bean
     JiraConnector jiraConnector;
+    private BaseAccount currentConfig;
+    private NewIssueCallbacks callbacks;
+
+
+    public interface NewIssueCallbacks {
+        void onIssueCreated();
+    }
 
     @AfterViews
     void init() {
+        callbacks = (NewIssueCallbacks) getActivity();
+        currentConfig = jiraConnector.getCurrentConfig();
         getProjectDetails();
-        if (issue != null) {
-            initValues();
-        }
     }
 
     private void initValues() {
@@ -69,53 +86,92 @@ public class NewIssueFragment extends Fragment {
 
     @Click(R.id.saveIssueFab)
     void onSaveIssue() {
-        Snackbar.make(fabProgressCircle, R.string.optionUnavailable, Snackbar.LENGTH_LONG).show();
+        fabProgressCircle.show();
+        final CreateIssueModel.Fields fields = getFields();
+        jiraConnector.postNewIssue(new CreateIssueModel(fields), new Callback<CreateIssueResponse>() {
+            @Override
+            public void success(CreateIssueResponse createIssueResponse, Response response) {
+                fabProgressCircle.beginFinalAnimation();
+                Snackbar.make(fabProgressCircle, R.string.issueAdded, Snackbar.LENGTH_LONG).show();
+                callbacks.onIssueCreated();
+                //TODO show issue details if in two pane
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fabProgressCircle.hide();
+                Snackbar.make(fabProgressCircle, R.string.failedToPostIssue, Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private CreateIssueModel.Fields getFields() {
+        final FieldsBuilder builder = new FieldsBuilder();
+        builder.setProject(new IdField(project.getId()));
+        final AllowedValue selectedValue = (AllowedValue) issuePrioritySpinner.getSelectedItem();
+        builder.setPriority(new IdField(selectedValue.getId()));
+        final IssueType selectedType = (IssueType) issueTypeSpinner.getSelectedItem();
+        builder.setIssuetype(new IdField(selectedType.getId()));
+        builder.setSummary(issueSummary.getText().toString());
+        builder.setDescription(issueDescription.getText().toString());
+        builder.setReporter(new NameField(currentConfig.getUsername()));
+        final Assignee selectedAssignee = (Assignee) assigneeSpinner.getSelectedItem();
+        builder.setAssignee(new NameField(selectedAssignee.getName()));
+        return builder.createFields();
     }
 
     void getProjectDetails() {
         fetchingDataProgress.setVisibility(View.VISIBLE);
-//        jiraConnector.getCreateMeta(project.getKey(), new Callback<CreateMetaModel>() {
-//            @Override
-//            public void success(CreateMetaModel createMetaModel, Response response) {
-//                showForm(createMetaModel);
-//            }
-//
-//            @Override
-//            public void failure(RetrofitError error) {
-//
-//            }
-//        });
-
-        jiraConnector.getProjectDetails(project.getId(), new GetDetailsCallback());
+        jiraConnector.getCreateMeta(project.getKey(), new GetCreateMetaCallback());
     }
 
-//    private void showForm(CreateMetaModel createMetaModel) {
-//        hideProgress();
-//        noProjectData.setVisibility(View.GONE);
-//        newIssueForm.setVisibility(View.VISIBLE);
-//        fillForm(createMetaModel);
-//    }
-//
-//    private void fillForm(CreateMetaModel createMetaModel) {
-//        final BaseAccount currentConfig = jiraConnector.getCurrentConfig();
-//        final Project project = createMetaModel.getProjects().get(0);
-//        new TypeSpinnerAdapter(getActivity(), project.getIssueTypes());
-//        new PrioritySpinnerAdapter(getActivity(), project.getIssueTypes().get(0).getFields().getPriority().getAllowedValues());
-//        new AssigneeSpinnerAdapter(getActivity(), project.getIssueTypes().get(0).getFields().getAssignee().)
-//    }
-
-    private void showForm(JiraProjectDetails jiraProjectDetails, List<Assignee> assignees, List<Priority> priorities) {
+    private void showForm(CreateMetaModel createMetaModel, List<Assignee> assignees) {
         hideProgress();
         noProjectData.setVisibility(View.GONE);
         newIssueForm.setVisibility(View.VISIBLE);
-        fillForm(jiraProjectDetails, assignees, priorities);
+        fillForm(createMetaModel, assignees);
+
+        if (issue != null) {
+            initValues();
+        }
     }
 
-    private void fillForm(JiraProjectDetails jiraProjectDetails, final List<Assignee> assignees, List<Priority> priorities) {
-        final BaseAccount currentConfig = jiraConnector.getCurrentConfig();
-//        issueTypeSpinner.setAdapter(new TypeSpinnerAdapter(getContext(), jiraProjectDetails.getIssueTypes()));
-//        issuePrioritySpinner.setAdapter(new PrioritySpinnerAdapter(getContext(), priorities));
-//        assigneeSpinner.setAdapter(new AssigneeSpinnerAdapter(getContext(), assignees, AuthenticatedPicasso.getAuthPicasso(getContext(), currentConfig)));
+    private void fillForm(CreateMetaModel createMetaModel, List<Assignee> assignees) {
+        final Project project = createMetaModel.getProjects().get(0);
+        final List<IssueType> issueTypes = project.getIssueTypes();
+        if (parent != null) {
+            filterSubtasks(issueTypes);
+        }
+        final TypeSpinnerAdapter typeSpinnerAdapter = new TypeSpinnerAdapter(getActivity(), issueTypes);
+        final PrioritySpinnerAdapter prioritySpinnerAdapter = new PrioritySpinnerAdapter(getActivity(), issueTypes.get(0).getFields().getPriority().getAllowedValues());
+        final AssigneeSpinnerAdapter assigneeSpinnerAdapter = new AssigneeSpinnerAdapter(getActivity(), assignees, AuthenticatedPicasso.getAuthPicasso(getActivity(), currentConfig));
+        configureSpinners(issueTypes, typeSpinnerAdapter, prioritySpinnerAdapter, assigneeSpinnerAdapter);
+    }
+
+    private void configureSpinners(final List<IssueType> issueTypes, TypeSpinnerAdapter typeSpinnerAdapter, final PrioritySpinnerAdapter prioritySpinnerAdapter, AssigneeSpinnerAdapter assigneeSpinnerAdapter) {
+        issueTypeSpinner.setAdapter(typeSpinnerAdapter);
+        issueTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                prioritySpinnerAdapter.setItems(issueTypes.get(position).getFields().getPriority().getAllowedValues());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        issuePrioritySpinner.setAdapter(prioritySpinnerAdapter);
+        assigneeSpinner.setAdapter(assigneeSpinnerAdapter);
+    }
+
+    private void filterSubtasks(List<IssueType> issueTypes) {
+        for (ListIterator<IssueType> iterator = issueTypes.listIterator(); iterator.hasNext(); ) {
+            final IssueType issueType = iterator.next();
+            if (issueType.isSubtask()) {
+                iterator.remove();
+            }
+        }
     }
 
     private void showError() {
@@ -127,28 +183,16 @@ public class NewIssueFragment extends Fragment {
         fetchingDataProgress.setVisibility(View.GONE);
     }
 
-    private class GetDetailsCallback implements Callback<JiraProjectDetails> {
-        @Override
-        public void success(final JiraProjectDetails jiraProjectDetails, Response response) {
-            jiraConnector.getProjectMembers(project.getKey(), new GetMembersCallback(jiraProjectDetails));
-        }
+    private class GetProjectMembersCallback implements Callback<List<Assignee>> {
+        private CreateMetaModel createMetaModel;
 
-        @Override
-        public void failure(RetrofitError error) {
-            showError();
-        }
-    }
-
-    private class GetMembersCallback implements Callback<List<Assignee>> {
-        private final JiraProjectDetails jiraProjectDetails;
-
-        public GetMembersCallback(JiraProjectDetails jiraProjectDetails) {
-            this.jiraProjectDetails = jiraProjectDetails;
+        public GetProjectMembersCallback(CreateMetaModel createMetaModel) {
+            this.createMetaModel = createMetaModel;
         }
 
         @Override
         public void success(List<Assignee> assignees, Response response) {
-            jiraConnector.getIssuePriorities(new GetPrioritiesCallback(jiraProjectDetails, assignees));
+            showForm(createMetaModel, assignees);
         }
 
         @Override
@@ -157,18 +201,11 @@ public class NewIssueFragment extends Fragment {
         }
     }
 
-    private class GetPrioritiesCallback implements Callback<List<Priority>> {
-        private final JiraProjectDetails jiraProjectDetails;
-        private final List<Assignee> assignees;
-
-        public GetPrioritiesCallback(JiraProjectDetails jiraProjectDetails, List<Assignee> assignees) {
-            this.jiraProjectDetails = jiraProjectDetails;
-            this.assignees = assignees;
-        }
-
+    private class GetCreateMetaCallback implements Callback<CreateMetaModel> {
         @Override
-        public void success(List<Priority> priorities, Response response) {
-            showForm(jiraProjectDetails, assignees, priorities);
+        public void success(final CreateMetaModel createMetaModel, Response response) {
+            final GetProjectMembersCallback callback = new GetProjectMembersCallback(createMetaModel);
+            jiraConnector.getProjectMembers(project.getKey(), callback);
         }
 
         @Override
@@ -177,4 +214,6 @@ public class NewIssueFragment extends Fragment {
         }
     }
 
+    {
+    }
 }

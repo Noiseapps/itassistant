@@ -8,7 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.noiseapps.itassistant.R;
-import com.noiseapps.itassistant.model.jira.issues.common.IssueType;
+import com.noiseapps.itassistant.model.jira.projects.createmeta.IssueType;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;

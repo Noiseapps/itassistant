@@ -94,4 +94,6 @@
     <string name="fetchingProjectDetails">Fetching data…</string>
     <string name="summary">Summary</string>
     <string name="endDate">Estimated end date</string>
+    <string name="failedToPostIssue">Failed to add issue</string>
+    <string name="issueAdded">Issue added</string>
 </resources>

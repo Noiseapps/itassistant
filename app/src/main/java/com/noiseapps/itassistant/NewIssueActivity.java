@@ -17,7 +17,7 @@ import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.ViewById;
 
 @EActivity(R.layout.activity_new_issue)
-public class NewIssueActivity extends AppCompatActivity {
+public class NewIssueActivity extends AppCompatActivity implements NewIssueFragment.NewIssueCallbacks {
 
     @ViewById
     Toolbar toolbar;
@@ -28,6 +28,7 @@ public class NewIssueActivity extends AppCompatActivity {
 
     @AfterViews
     void init() {
+        setResult(RESULT_CANCELED);
         initToolbar();
         final NewIssueFragment fragment = NewIssueFragment_.builder().project(project).issue(issue).build();
         getSupportFragmentManager().beginTransaction()
@@ -52,6 +53,12 @@ public class NewIssueActivity extends AppCompatActivity {
 
     @OptionsItem(android.R.id.home)
     void onHome() {
+        finish();
+    }
+
+    @Override
+    public void onIssueCreated() {
+        setResult(RESULT_OK);
         finish();
     }
 }

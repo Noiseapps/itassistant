@@ -57,9 +57,10 @@ import retrofit.client.Response;
 
 @EActivity(R.layout.activity_issue_app_bar)
 public class IssueListActivity extends AppCompatActivity
-        implements IssueListFragment.Callbacks {
+        implements IssueListFragment.Callbacks, NewIssueFragment.NewIssueCallbacks {
 
     public static final int ACCOUNTS_REQUEST = 633;
+    public static final int NEW_ISSUE_REQUEST = 5135;
     private boolean mTwoPane;
 
     @ViewById
@@ -264,7 +265,7 @@ public class IssueListActivity extends AppCompatActivity
                     .replace(R.id.issue_detail_container, fragment)
                     .commit();
         } else {
-            NewIssueActivity_.intent(this).project(jiraProject).start();
+            NewIssueActivity_.intent(this).project(jiraProject).startForResult(NEW_ISSUE_REQUEST);
         }
     }
 
@@ -295,12 +296,6 @@ public class IssueListActivity extends AppCompatActivity
         startAccountsActivity();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Logger.w("" + requestCode);
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
     @OnActivityResult(ACCOUNTS_REQUEST)
     void onAccountAdded(int resultCode) {
         Logger.w("" + resultCode);
@@ -309,5 +304,18 @@ public class IssueListActivity extends AppCompatActivity
         } else if (accountsDao.getAll().isEmpty()) {
             showNoAccountsDialog();
         }
+    }
+
+    @OnActivityResult(NEW_ISSUE_REQUEST)
+    void onIssueAdded(int resultCode) {
+        Logger.w("" + resultCode);
+        if(resultCode == RESULT_OK) {
+            // todo reload issue list
+        }
+    }
+
+    @Override
+    public void onIssueCreated() {
+
     }
 }
