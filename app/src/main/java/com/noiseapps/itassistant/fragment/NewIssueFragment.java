@@ -18,6 +18,8 @@ import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.issues.Priority;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
+import com.noiseapps.itassistant.model.jira.projects.createmeta.CreateMetaModel;
+import com.noiseapps.itassistant.model.jira.projects.createmeta.Project;
 import com.noiseapps.itassistant.model.jira.projects.details.JiraProjectDetails;
 import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 
@@ -72,8 +74,35 @@ public class NewIssueFragment extends Fragment {
 
     void getProjectDetails() {
         fetchingDataProgress.setVisibility(View.VISIBLE);
+//        jiraConnector.getCreateMeta(project.getKey(), new Callback<CreateMetaModel>() {
+//            @Override
+//            public void success(CreateMetaModel createMetaModel, Response response) {
+//                showForm(createMetaModel);
+//            }
+//
+//            @Override
+//            public void failure(RetrofitError error) {
+//
+//            }
+//        });
+
         jiraConnector.getProjectDetails(project.getId(), new GetDetailsCallback());
     }
+
+//    private void showForm(CreateMetaModel createMetaModel) {
+//        hideProgress();
+//        noProjectData.setVisibility(View.GONE);
+//        newIssueForm.setVisibility(View.VISIBLE);
+//        fillForm(createMetaModel);
+//    }
+//
+//    private void fillForm(CreateMetaModel createMetaModel) {
+//        final BaseAccount currentConfig = jiraConnector.getCurrentConfig();
+//        final Project project = createMetaModel.getProjects().get(0);
+//        new TypeSpinnerAdapter(getActivity(), project.getIssueTypes());
+//        new PrioritySpinnerAdapter(getActivity(), project.getIssueTypes().get(0).getFields().getPriority().getAllowedValues());
+//        new AssigneeSpinnerAdapter(getActivity(), project.getIssueTypes().get(0).getFields().getAssignee().)
+//    }
 
     private void showForm(JiraProjectDetails jiraProjectDetails, List<Assignee> assignees, List<Priority> priorities) {
         hideProgress();
@@ -84,9 +113,9 @@ public class NewIssueFragment extends Fragment {
 
     private void fillForm(JiraProjectDetails jiraProjectDetails, final List<Assignee> assignees, List<Priority> priorities) {
         final BaseAccount currentConfig = jiraConnector.getCurrentConfig();
-        issueTypeSpinner.setAdapter(new TypeSpinnerAdapter(getContext(), jiraProjectDetails.getIssueTypes()));
-        issuePrioritySpinner.setAdapter(new PrioritySpinnerAdapter(getContext(), priorities));
-        assigneeSpinner.setAdapter(new AssigneeSpinnerAdapter(getContext(), assignees, AuthenticatedPicasso.getAuthPicasso(getContext(), currentConfig)));
+//        issueTypeSpinner.setAdapter(new TypeSpinnerAdapter(getContext(), jiraProjectDetails.getIssueTypes()));
+//        issuePrioritySpinner.setAdapter(new PrioritySpinnerAdapter(getContext(), priorities));
+//        assigneeSpinner.setAdapter(new AssigneeSpinnerAdapter(getContext(), assignees, AuthenticatedPicasso.getAuthPicasso(getContext(), currentConfig)));
     }
 
     private void showError() {

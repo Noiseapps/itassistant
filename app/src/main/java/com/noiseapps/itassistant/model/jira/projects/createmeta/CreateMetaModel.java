@@ -12,9 +12,25 @@ public class CreateMetaModel {
 
     @SerializedName("expand")
     @Expose
-    public String expand;
+    private String expand;
     @SerializedName("projects")
     @Expose
-    public List<Project> projects = new ArrayList<Project>();
+    private List<Project> projects = new ArrayList<Project>();
 
+
+    public String getExpand() {
+        return expand;
+    }
+
+    public void setExpand(String expand) {
+        this.expand = expand;
+    }
+
+    public List<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<Project> projects) {
+        this.projects = projects;
+    }
 }

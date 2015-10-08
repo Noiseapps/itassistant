@@ -12,18 +12,57 @@ public class Components {
 
     @SerializedName("required")
     @Expose
-    public boolean required;
+    private boolean required;
     @SerializedName("schema")
     @Expose
-    public Schema schema;
+    private Schema schema;
     @SerializedName("name")
     @Expose
-    public String name;
+    private String name;
     @SerializedName("operations")
     @Expose
-    public List<String> operations = new ArrayList<String>();
+    private List<String> operations = new ArrayList<String>();
     @SerializedName("allowedValues")
     @Expose
-    public List<Object> allowedValues = new ArrayList<Object>();
+    private List<Object> allowedValues = new ArrayList<Object>();
 
+    public boolean isRequired() {
+        return required;
+    }
+
+    public void setRequired(boolean required) {
+        this.required = required;
+    }
+
+    public Schema getSchema() {
+        return schema;
+    }
+
+    public void setSchema(Schema schema) {
+        this.schema = schema;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<String> getOperations() {
+        return operations;
+    }
+
+    public void setOperations(List<String> operations) {
+        this.operations = operations;
+    }
+
+    public List<Object> getAllowedValues() {
+        return allowedValues;
+    }
+
+    public void setAllowedValues(List<Object> allowedValues) {
+        this.allowedValues = allowedValues;
+    }
 }

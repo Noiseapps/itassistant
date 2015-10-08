@@ -11,6 +11,7 @@ import com.noiseapps.itassistant.model.jira.issues.Priority;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comments;
 import com.noiseapps.itassistant.model.jira.issues.common.IssueStatus;
+import com.noiseapps.itassistant.model.jira.projects.createmeta.CreateMetaModel;
 import com.noiseapps.itassistant.model.jira.projects.details.JiraProjectDetails;
 import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogItem;
 import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogs;
@@ -63,6 +64,8 @@ public interface JiraAPI {
 
     @GET("/rest/api/2/priority")
     void getIssuePriorities(@NonNull Callback<List<Priority>> callback);
+    @GET("/rest/api/2/issue/createmeta?&expand=projects.issuetypes.fields")
+    void getCreateMeta(@Query("projectKeys") String projectKey, @NonNull Callback<CreateMetaModel> callback);
 
 
 }

@@ -4,7 +4,8 @@ package com.noiseapps.itassistant.model.jira.projects.createmeta;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class AllowedValue {
+
+public class IssueType {
 
     @SerializedName("self")
     @Expose
@@ -24,6 +25,12 @@ public class AllowedValue {
     @SerializedName("subtask")
     @Expose
     private boolean subtask;
+    @SerializedName("expand")
+    @Expose
+    private String expand;
+    @SerializedName("fields")
+    @Expose
+    private Fields fields;
 
     public String getSelf() {
         return self;
@@ -71,5 +78,21 @@ public class AllowedValue {
 
     public void setSubtask(boolean subtask) {
         this.subtask = subtask;
+    }
+
+    public String getExpand() {
+        return expand;
+    }
+
+    public void setExpand(String expand) {
+        this.expand = expand;
+    }
+
+    public Fields getFields() {
+        return fields;
+    }
+
+    public void setFields(Fields fields) {
+        this.fields = fields;
     }
 }
