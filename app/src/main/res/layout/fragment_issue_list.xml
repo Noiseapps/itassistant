@@ -1,64 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
              android:layout_width="match_parent"
-             android:background="@color/white"
              android:layout_height="match_parent"
-             xmlns:app="http://schemas.android.com/apk/res-auto">
+             android:background="@color/white">
+
     <LinearLayout
         android:id="@+id/tabView"
-        android:orientation="vertical" android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <android.support.design.widget.TabLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="2dp"
-        app:tabMode="scrollable"
-        app:tabTextAppearance="?android:attr/textAppearanceLarge"
-        android:id="@+id/tabLayout"
-        android:layout_gravity="center_horizontal" />
+            android:id="@+id/tabLayout"
+            style="@style/AppTheme.TabLayoutStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:elevation="2dp"
+            app:tabMode="scrollable"
+            app:tabTextAppearance="?android:attr/textAppearanceLarge"/>
 
         <android.support.v4.view.ViewPager
+            android:id="@+id/viewPager"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"/>
+    </LinearLayout>
+
+    <com.github.jorgecastilloprz.FABProgressCircle
+        android:id="@+id/fabProgressCircle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/viewPager"
-        android:layout_gravity="center_horizontal" />
-    </LinearLayout>
+        android:layout_gravity="bottom|right|end"
+        app:arcColor="@color/colorPrimary"
+        android:visibility="gone"
+        app:arcWidth="4dp"
+        app:reusable="true">
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/addIssueFab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_add_white_24px"
+            app:layout_anchor="@id/tabView"/>
+    </com.github.jorgecastilloprz.FABProgressCircle>
 
     <LinearLayout
-        android:orientation="vertical"
-        android:visibility="gone"
         android:id="@+id/loadingView"
-        android:gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <ProgressBar
+            android:id="@+id/progressBar"
             style="?android:attr/progressBarStyleLarge"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/progressBar"/>
+            android:layout_height="wrap_content"/>
 
         <TextView
+            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/fetchingData"
-            android:id="@+id/textView"/>
+            android:text="@string/fetchingIssues"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
     </LinearLayout>
 
     <LinearLayout
-        android:orientation="vertical"
-        android:visibility="gone"
-        android:id="@+id/emptyView"
-        android:gravity="center"
+        android:id="@+id/emptyList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/noData"/>
+            android:gravity="center"
+            android:text="@string/selectProject"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        <Button
+            android:id="@+id/openDrawer"
+            style="@style/AppTheme.ButtonPrimary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/openDrawer"/>
+
     </LinearLayout>
 </FrameLayout>

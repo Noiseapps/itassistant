@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/issueTimeTracker"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="8dp"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/AppTheme.LabelTheme.Progress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="@string/trackerEstimated"/>
+
+        <com.akexorcist.roundcornerprogressbar.TextRoundCornerProgressBar
+            android:id="@+id/estimated"
+            android:layout_width="0dp"
+            android:layout_height="20dp"
+            android:layout_weight="3"
+            app:rcBackgroundColor="@android:color/transparent"
+            app:rcRadius="4dp"
+            app:rcMax="100"
+            app:rcProgressColor="@color/colorPrimary"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="8dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            style="@style/AppTheme.LabelTheme.Progress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="@string/trackerLeft"/>
+
+        <com.akexorcist.roundcornerprogressbar.TextRoundCornerProgressBar
+            android:id="@+id/left"
+            android:layout_width="0dp"
+            android:layout_height="20dp"
+            android:layout_weight="3"
+            app:rcBackgroundColor="@android:color/transparent"
+            app:rcRadius="4dp"
+            app:rcMax="100"
+            app:rcProgressColor="@color/colorPrimary"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="8dp"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/AppTheme.LabelTheme.Progress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="@string/trackerLogged"/>
+
+        <com.akexorcist.roundcornerprogressbar.TextRoundCornerProgressBar
+            android:id="@+id/logged"
+            android:layout_width="0dp"
+            android:layout_height="20dp"
+            android:layout_weight="3"
+            app:rcBackgroundColor="@android:color/transparent"
+            app:rcRadius="4dp"
+            app:rcMax="100"
+            app:rcProgressColor="@color/colorPrimary"/>
+    </LinearLayout>
+</LinearLayout>

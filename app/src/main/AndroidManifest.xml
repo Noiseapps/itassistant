@@ -6,6 +6,7 @@
 
     <application
         android:allowBackup="true"
+        android:name=".AssistantApplication_"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
@@ -13,7 +14,7 @@
         <activity
             android:name=".IssueListActivity_"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:theme="@style/AppTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,10 +25,16 @@
             android:name=".IssueDetailActivity_"
             android:label="@string/title_issue_detail"
             android:parentActivityName=".IssueListActivity"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:theme="@style/AppTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".IssueListActivity" />
+        </activity>
+        <activity
+            android:name=".AccountsActivity_"
+            android:windowSoftInputMode="adjustResize"
+            android:label="@string/title_activity_accounts"
+            android:theme="@style/AppTheme" >
         </activity>
     </application>
 

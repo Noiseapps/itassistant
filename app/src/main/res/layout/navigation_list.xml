@@ -13,50 +13,69 @@
         android:id="@+id/recyclerView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/view"
         android:layout_below="@+id/view6"
-        android:layout_gravity="center_horizontal"
-        android:layout_above="@+id/view"/>
+        android:layout_gravity="center_horizontal" />
 
     <View
+        android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:background="@color/colorAccent"
-        android:id="@+id/view"
         android:layout_above="@+id/actionSettings"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"/>
+        android:layout_alignParentStart="true"
+        android:background="@color/colorAccent" />
 
     <TextView
         android:id="@+id/actionSettings"
-        android:layout_width="wrap_content"
+        style="@style/AppTheme.MenuItem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/actionAccounts"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:clickable="true"
+        android:drawableLeft="@drawable/ic_action_settings"
+        android:drawableStart="@drawable/ic_action_settings"
+        android:text="@string/settings" />
+
+    <TextView
+        android:id="@+id/actionAccounts"
+        style="@style/AppTheme.MenuItem"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/actionAbout"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_margin="8dp"
-        android:text="@string/settings"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:clickable="true"
+        android:drawableLeft="@drawable/ic_action_people"
+        android:drawableStart="@drawable/ic_action_people"
+        android:text="@string/accounts" />
 
     <TextView
         android:id="@+id/actionAbout"
-        android:layout_width="wrap_content"
+        style="@style/AppTheme.MenuItem"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/actionFeedback"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_margin="8dp"
-        android:text="@string/aboutApp"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:clickable="true"
+        android:drawableLeft="@drawable/ic_action_info"
+        android:drawableStart="@drawable/ic_action_info"
+        android:text="@string/aboutApp" />
 
     <TextView
         android:id="@+id/actionFeedback"
-        android:layout_width="wrap_content"
+        style="@style/AppTheme.MenuItem"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_margin="8dp"
-        android:text="@string/feedback"
-        android:textAppearance="?android:attr/textAppearanceLarge"/>
+        android:clickable="true"
+        android:drawableLeft="@drawable/ic_action_feedback"
+        android:drawableStart="@drawable/ic_action_feedback"
+        android:text="@string/feedback" />
 
 </RelativeLayout>

@@ -101,6 +101,10 @@ public class NavigationMenuAdapter extends AbstractExpandableItemAdapter<Navigat
         return true;
     }
 
+    public boolean isEmpty() {
+        return navigationModels.isEmpty();
+    }
+
     public interface AdapterCallbacks {
         void onItemClicked(JiraProject jiraProject, BaseAccount baseAccount);
     }
@@ -127,7 +131,7 @@ public class NavigationMenuAdapter extends AbstractExpandableItemAdapter<Navigat
         public void bind(JiraUser user, BaseAccount baseAccount) {
             textView.setText(user.getName());
             if(avatarBitmap == null) {
-                AuthenticatedPicasso.getAuthPicasso(context, baseAccount).load(user.getAvatarUrls().getAvatar48()).into(new LoadTarget());
+                AuthenticatedPicasso.getAuthPicasso(context, baseAccount).load("file:" + baseAccount.getAvatarPath()).into(new LoadTarget());
             } else {
                 avatarImage.setImageBitmap(avatarBitmap);
             }
