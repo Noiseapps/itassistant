@@ -8,9 +8,12 @@ import java.util.List;
 import com.noiseapps.itassistant.api.JiraAPI;
 import com.noiseapps.itassistant.database.PreferencesDAO;
 import com.noiseapps.itassistant.model.account.BaseAccount;
+import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.JiraIssue;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comments;
+import com.noiseapps.itassistant.model.jira.issues.common.IssueStatus;
+import com.noiseapps.itassistant.model.jira.projects.details.JiraProjectDetails;
 import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogItem;
 import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogs;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
@@ -79,11 +82,32 @@ public class JiraConnector {
         apiService.getIssueWorkLog(issueId, callback);
     }
 
+    public void getProjectDetails(@NonNull String projectId, Callback<JiraProjectDetails> callback) {
+        if(apiService == null) {
+            return;
+        }
+        apiService.getProjectDetails(projectId, callback);
+    }
+
     public void postIssueWorkLog(String issueId, String newEstimate, WorkLogItem workLog, Callback<WorkLogItem> callback){
         if(apiService == null) {
             return;
         }
         apiService.postIssueWorkLog(issueId, newEstimate, workLog, callback);
+    }
+
+    public void getProjectStatuses(@NonNull String issueId, Callback<List<IssueStatus>> callback) {
+        if(apiService == null) {
+            return;
+        }
+        apiService.getProjectStatuses(issueId, callback);
+    }
+
+    public void getProjectMembers(@NonNull String projectKey, Callback<List<Assignee>> callback) {
+        if(apiService == null) {
+            return;
+        }
+        apiService.getProjectMembers(projectKey, callback);
     }
 
     @AfterInject
@@ -101,6 +125,10 @@ public class JiraConnector {
                 setErrorHandler(new JiraErrorHandler()).
                 setEndpoint(currentConfig.getUrl()).build();
         apiService = adapter.create(JiraAPI.class);
+    }
+
+    public BaseAccount getCurrentConfig() {
+        return currentConfig;
     }
 
     public void setCurrentConfig(BaseAccount newConfig) {

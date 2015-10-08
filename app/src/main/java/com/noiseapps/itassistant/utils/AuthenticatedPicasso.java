@@ -16,7 +16,6 @@ import com.squareup.okhttp.Request;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
-
 public class AuthenticatedPicasso {
 
     public static Picasso getAuthPicasso(Context context, final BaseAccount config) {

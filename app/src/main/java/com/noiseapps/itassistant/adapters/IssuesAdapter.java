@@ -74,7 +74,7 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
             loadIssuePriority();
             title.setText(issue.getFields().getSummary());
             issueKey.setText(issue.getKey());
-            issue.getFields().getAggregateprogress().getPercent();
+            issue.getFields().getAggregateProgress().getPercent();
             final Assignee issueAssignee = issue.getFields().getAssignee();
             if(issueAssignee != null) {
                 assignee.setText(context.getString(R.string.assignee, issueAssignee.getDisplayName()));
@@ -96,7 +96,7 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
         }
 
         private void loadIssueType() {
-            final String iconUrl = issue.getFields().getIssuetype().getIconUrl();
+            final String iconUrl = issue.getFields().getIssueType().getIconUrl();
             Picasso.with(context).load(iconUrl).noFade().into(issueType);
         }
     }

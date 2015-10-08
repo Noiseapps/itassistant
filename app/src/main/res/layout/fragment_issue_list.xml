@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:background="@color/white">
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                 xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                 android:layout_width="match_parent"
+                                                 android:layout_height="match_parent"
+                                                 android:background="@color/white">
 
     <LinearLayout
         android:id="@+id/tabView"
@@ -27,26 +27,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"/>
     </LinearLayout>
-
-    <com.github.jorgecastilloprz.FABProgressCircle
-        android:id="@+id/fabProgressCircle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right|end"
-        app:arcColor="@color/colorPrimary"
-        android:visibility="gone"
-        app:arcWidth="4dp"
-        app:reusable="true">
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/addIssueFab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin"
-            android:src="@drawable/ic_add_white_24px"
-            app:layout_anchor="@id/tabView"/>
-    </com.github.jorgecastilloprz.FABProgressCircle>
 
     <LinearLayout
         android:id="@+id/loadingView"
@@ -78,13 +58,35 @@
         android:orientation="vertical">
 
         <TextView
-            android:drawableTop="@drawable/ic_warning_24dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:alpha=".5"
+            android:drawableTop="@drawable/ic_warning_24dp"
+            android:gravity="center"
             android:text="@string/noIssuesForProject"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
 
     </LinearLayout>
-</FrameLayout>
+
+
+    <com.github.jorgecastilloprz.FABProgressCircle
+        android:id="@+id/fabProgressCircle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right|end"
+        android:visibility="gone"
+        app:arcColor="@color/colorPrimary"
+        app:arcWidth="4dp"
+        app:layout_behavior="com.noiseapps.itassistant.utils.FabBehavior"
+        app:reusable="true">
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/addIssueFab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_add_white_24px"
+            app:layout_anchor="@id/tabView"/>
+    </com.github.jorgecastilloprz.FABProgressCircle>
+</android.support.design.widget.CoordinatorLayout>

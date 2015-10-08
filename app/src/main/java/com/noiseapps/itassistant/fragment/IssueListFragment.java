@@ -3,12 +3,13 @@ package com.noiseapps.itassistant.fragment;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -23,13 +24,11 @@ import com.github.jorgecastilloprz.FABProgressCircle;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.noiseapps.itassistant.R;
-import com.noiseapps.itassistant.adapters.IssuesAdapter;
 import com.noiseapps.itassistant.connector.JiraConnector;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.issues.JiraIssue;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
-import com.noiseapps.itassistant.utils.events.OpenDrawerEvent;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -39,7 +38,6 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
-import de.greenrobot.event.EventBus;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -47,12 +45,17 @@ import retrofit.client.Response;
 @EFragment(R.layout.fragment_issue_list)
 public class IssueListFragment extends Fragment implements JiraIssueListFragment.IssueListCallback {
 
-    private static final String STATE_ACTIVATED_POSITION = "activated_position";
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
         public void onItemSelected(Issue id) {
         }
+
+        @Override
+        public void onAddNewIssue(JiraProject jiraProject) {
+
+        }
     };
+    @NonNull
     private Callbacks mCallbacks = sDummyCallbacks;
     @Bean
     JiraConnector jiraConnector;
@@ -67,7 +70,6 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     @ViewById
     TabLayout tabLayout;
     private JiraProject jiraProject;
-    private IssuesAdapter adapter;
     private boolean isEmpty;
 
     @Override
@@ -78,6 +80,10 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     @AfterViews
     void init() {
         mCallbacks = (Callbacks) getActivity();
+        final ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (supportActionBar != null) {
+            supportActionBar.setTitle(jiraProject.getName());
+        }
     }
 
     public void setProject(JiraProject jiraProject, BaseAccount baseAccount) {
@@ -145,11 +151,6 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         mCallbacks = (Callbacks) activity;
     }
 
-    @Click(R.id.openDrawer)
-    void onOpenDrawer() {
-        EventBus.getDefault().post(new OpenDrawerEvent());
-    }
-
     @Override
     public void onDetach() {
         super.onDetach();
@@ -158,11 +159,13 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
 
     @Click(R.id.addIssueFab)
     void onAddNewIssue() {
-        Snackbar.make(tabView, R.string.optionUnavailable, Snackbar.LENGTH_LONG).show();
+        mCallbacks.onAddNewIssue(jiraProject);
     }
 
     public interface Callbacks {
         void onItemSelected(Issue id);
+
+        void onAddNewIssue(JiraProject jiraProject);
     }
 
     private class WorkflowObject {

@@ -84,4 +84,14 @@
     <string name="failedToLogWork">Failed to log work</string>
     <string name="invalidFormat">Invalid field format</string>
     <string name="noIssuesForProject">No issues for selected project</string>
+    <string name="title_activity_new_issue">NewIssueActivity</string>
+    <string name="editingIssue">Editing %s</string>
+    <string name="newIssueForProject">Add issue for %s project</string>
+    <string name="projectDetails">Project details</string>
+    <string name="failedToFetchDetails">Failed to get project details</string>
+    <string name="detailsForProject">Details for %s</string>
+    <string name="close">Close</string>
+    <string name="fetchingProjectDetails">Fetching data…</string>
+    <string name="summary">Summary</string>
+    <string name="endDate">Estimated end date</string>
 </resources>

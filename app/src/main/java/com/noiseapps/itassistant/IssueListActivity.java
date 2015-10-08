@@ -28,6 +28,8 @@ import com.noiseapps.itassistant.database.dao.AccountsDao;
 import com.noiseapps.itassistant.fragment.IssueDetailFragment;
 import com.noiseapps.itassistant.fragment.IssueDetailFragment_;
 import com.noiseapps.itassistant.fragment.IssueListFragment;
+import com.noiseapps.itassistant.fragment.NewIssueFragment;
+import com.noiseapps.itassistant.fragment.NewIssueFragment_;
 import com.noiseapps.itassistant.model.NavigationModel;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
@@ -251,6 +253,18 @@ public class IssueListActivity extends AppCompatActivity
                     .commit();
         } else {
             IssueDetailActivity_.intent(this).issue(issue).start();
+        }
+    }
+
+    @Override
+    public void onAddNewIssue(JiraProject jiraProject) {
+        if (mTwoPane) {
+            final NewIssueFragment fragment = NewIssueFragment_.builder().project(jiraProject).build();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.issue_detail_container, fragment)
+                    .commit();
+        } else {
+            NewIssueActivity_.intent(this).project(jiraProject).start();
         }
     }
 

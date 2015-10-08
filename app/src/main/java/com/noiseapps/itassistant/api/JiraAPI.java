@@ -5,9 +5,12 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
+import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.JiraIssue;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comments;
+import com.noiseapps.itassistant.model.jira.issues.common.IssueStatus;
+import com.noiseapps.itassistant.model.jira.projects.details.JiraProjectDetails;
 import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogItem;
 import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogs;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
@@ -33,6 +36,9 @@ public interface JiraAPI {
     @GET("/rest/api/2/project")
     void getUserProjects(@NonNull Callback<List<JiraProject>> callback);
 
+    @GET("/rest/api/2/project/{projectIdOrKey}")
+    void getProjectDetails(@Path("projectIdOrKey") String projectId, @NonNull Callback<JiraProjectDetails> callback);
+
     @GET("/rest/api/2/search?maxResults=150&expand=transitions")
     void getProjectIssues(@Query("jql") String projectId, @NonNull Callback<JiraIssue> callback);
 
@@ -47,4 +53,12 @@ public interface JiraAPI {
 
     @POST("/rest/api/2/issue/{issueIdOrKey}/worklog?adjustEstimate=new")
     void postIssueWorkLog(@Path("issueIdOrKey") String issueId, @Query("newEstimate") String newEstimate, @Body WorkLogItem comment, @NonNull Callback<WorkLogItem> callback);
+
+    @GET("/rest/api/2/project/{projectIdOrKey}/statuses")
+    void getProjectStatuses(@Path("projectIdOrKey") String projectId, @NonNull Callback<List<IssueStatus>> callback);
+
+    @GET("/rest/api/2/user/assignable/search")
+    void getProjectMembers(@Query("project") String projectKey, @NonNull Callback<List<Assignee>> callback);
+
+
 }

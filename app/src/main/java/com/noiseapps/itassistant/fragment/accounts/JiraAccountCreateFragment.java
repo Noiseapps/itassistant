@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
+import com.noiseapps.itassistant.BuildConfig;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.connector.JiraConnector;
 import com.noiseapps.itassistant.database.dao.AccountsDao;
@@ -100,9 +101,11 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
     }
 
     private void initData() {
-        host.setText("jira.exaco.pl");
-        username.setText("tomasz.scibiorek");
-        password.setText("kotek77@");
+        if(BuildConfig.DEBUG) {
+            host.setText("jira.exaco.pl");
+            username.setText("tomasz.scibiorek");
+            password.setText("kotek77@");
+        }
     }
 
     void saveAccount() {

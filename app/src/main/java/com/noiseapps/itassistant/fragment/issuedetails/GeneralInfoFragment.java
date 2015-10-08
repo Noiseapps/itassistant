@@ -39,7 +39,7 @@ public class GeneralInfoFragment extends Fragment {
 
 
     private void setIssueDetailsData(Fields issueFields) {
-        type.setText(issueFields.getIssuetype().getName());
+        type.setText(issueFields.getIssueType().getName());
         priority.setText(issueFields.getPriority().getName());
         status.setText(issueFields.getStatus().getName());
         labels.setText(StringUtils.join(issueFields.getLabels(), ", "));
