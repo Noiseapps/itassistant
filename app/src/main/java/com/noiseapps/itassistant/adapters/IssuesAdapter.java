@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.noiseapps.itassistant.R;
@@ -21,31 +22,14 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
     private final Context context;
     private final List<Issue> issueList;
     private final IssueAdapterCallback callback;
-    private Picasso authPicasso;
-    private int selectedPosition = -1;
 
     public interface IssueAdapterCallback {
         void onItemClicked(Issue selectedIssue);
     }
 
-    public int getSelectedPosition() {
-        final int tmpPosition = selectedPosition;
-        selectedPosition = -1;
-        notifyDataSetChanged();
-        return tmpPosition;
-    }
-
-    public void setSelectedPosition(int selectedPosition) {
-        this.selectedPosition = selectedPosition;
-        notifyDataSetChanged();
-        if(selectedPosition != -1) {
-            callback.onItemClicked(issueList.get(selectedPosition));
-        }
-    }
-
     public IssuesAdapter(Context context, List<Issue> issueList, IssueAdapterCallback callback) {
         this.context = context;
-        this.issueList = issueList;
+        this.issueList = issueList == null ? new ArrayList<Issue>() : issueList;
         this.callback = callback;
     }
 
@@ -57,16 +41,12 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
 
     @Override
     public void onBindViewHolder(IssueViewHolder holder, int position) {
-        holder.build(position, issueList.get(position));
+        holder.build(issueList.get(position));
     }
 
     @Override
     public int getItemCount() {
         return issueList.size();
-    }
-
-    public void setPicasso(Picasso authPicasso) {
-        this.authPicasso = authPicasso;
     }
 
     public class IssueViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -75,7 +55,6 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
         private final TextView assignee;
         private final ImageView issuePriority;
         private final ImageView issueType;
-        private int position;
         private Issue issue;
         private final TextView issueKey;
 
@@ -89,8 +68,7 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
             itemView.setOnClickListener(this);
         }
 
-        public void build(int position, Issue issue) {
-            this.position = position;
+        public void build(Issue issue) {
             this.issue = issue;
             loadIssueType();
             loadIssuePriority();
@@ -108,7 +86,6 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
 
         @Override
         public void onClick(View v) {
-            selectedPosition = position;
             notifyDataSetChanged();
             callback.onItemClicked(issue);
         }

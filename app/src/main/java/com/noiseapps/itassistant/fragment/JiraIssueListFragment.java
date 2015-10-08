@@ -11,7 +11,6 @@ import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.IssuesAdapter;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
-import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 import com.noiseapps.itassistant.utils.DividerItemDecoration;
 
 import org.androidannotations.annotations.AfterViews;
@@ -58,7 +57,6 @@ public class JiraIssueListFragment extends Fragment {
             }
         });
         issuesRecycler.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
-        adapter.setPicasso(AuthenticatedPicasso.getAuthPicasso(context, apiConfig));
         issuesRecycler.setAdapter(adapter);
     }
 }
