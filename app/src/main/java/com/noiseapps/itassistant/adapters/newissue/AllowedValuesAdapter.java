@@ -7,22 +7,23 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.AllowedValue;
 import com.squareup.picasso.Picasso;
 
-import java.util.List;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class PrioritySpinnerAdapter extends BaseAdapter {
+public class AllowedValuesAdapter extends BaseAdapter {
 
     private final Context context;
-    private final List<AllowedValue> allowedValues;
+    private final List<AllowedValue> allowedValues = new ArrayList<>();
 
-    public PrioritySpinnerAdapter(Context context, List<AllowedValue> allowedValues) {
+    public AllowedValuesAdapter(Context context, List<AllowedValue> allowedValues) {
         this.context = context;
-        this.allowedValues = allowedValues;
+        this.allowedValues.addAll(allowedValues);
     }
 
     @Override

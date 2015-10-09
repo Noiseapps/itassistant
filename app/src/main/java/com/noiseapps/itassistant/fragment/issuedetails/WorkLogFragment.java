@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.noiseapps.itassistant.R;
@@ -42,7 +41,6 @@ import retrofit.client.Response;
 @EFragment(R.layout.fragment_work_log)
 public class WorkLogFragment extends Fragment {
 
-    public static final Pattern PATTERN = Pattern.compile("([0-9]+w){0,1}( *[0-9]+d){0,1}( *[0-9]+h){0,1}( *[0-9]+m){0,1}( *[0-9]+s){0,1}", Pattern.CASE_INSENSITIVE);
     @Bean
     JiraConnector jiraConnector;
     @FragmentArg
@@ -162,7 +160,7 @@ public class WorkLogFragment extends Fragment {
     }
 
     public boolean validateWorkLog(String workLog) {
-        return !workLog.isEmpty() && PATTERN.matcher(workLog).matches();
+        return !workLog.isEmpty() && Consts.PATTERN.matcher(workLog).matches();
     }
 
     private void onPositiveButtonClicked(WorkLogItem logItem, String newEstimate, final AlertDialog alertDialog, final View dialogRoot) {

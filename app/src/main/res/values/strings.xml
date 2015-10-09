@@ -74,7 +74,7 @@
     <string name="couldNotGetComments">Failed to download comments</string>
     <string name="loadingWorkLogs">Loading work logs…</string>
     <string name="noWorkLogs">No work logged for this issue</string>
-    <string name="coulNotGetWorkLogs">Could not get work logs</string>
+    <string name="couldNotGetWorkLogs">Could not get work logs</string>
     <string name="logged">%1$s logged %2$s</string>
     <string name="date">Date</string>
     <string name="worked">Worked</string>
@@ -96,4 +96,13 @@
     <string name="endDate">Estimated end date</string>
     <string name="failedToPostIssue">Failed to add issue</string>
     <string name="issueAdded">Issue added</string>
+    <string name="environment">Environment</string>
+    <string name="issueVersion">Version</string>
+    <string name="fixedInVersion">Fixed in version</string>
+    <string name="issueEpicLink">Epic link</string>
+    <string name="issueSprint">Sprint</string>
+    <string name="remainingWorkTime">Remaining work time</string>
+    <string name="estimatedWorkTime">Estimated work time</string>
+    <string name="issueAttachment">Attachment</string>
+    <string name="none">Brak</string>
 </resources>

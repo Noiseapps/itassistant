@@ -7,7 +7,7 @@
               android:padding="16dp">
 
     <RelativeLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="8dp">
@@ -18,7 +18,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/date"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@+id/editWorkLogDate"/>
 
         <TextView
             android:id="@+id/editWorkLogDate"

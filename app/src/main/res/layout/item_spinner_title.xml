@@ -10,10 +10,13 @@
         android:layout_gravity="center_vertical"
         android:layout_margin="16dp"
         android:id="@+id/avatar"/>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:singleLine="true"
+        android:ellipsize="end"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Large Text"
         android:id="@+id/title"/>

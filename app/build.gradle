@@ -22,7 +22,7 @@ android {
     buildToolsVersion buildTools
     defaultConfig {
         applicationId appId
-        minSdkVersion 15
+        minSdkVersion 17
         targetSdkVersion 23
         versionCode System.getenv("BUILD_NUMBER") as Integer ?: 0
         versionName System.getenv("VERSION_NAME") as String ?: "dev"

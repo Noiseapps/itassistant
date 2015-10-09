@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              xmlns:tools="http://schemas.android.com/tools"
               android:background="@drawable/list_background"
               android:clickable="true"
               android:orientation="horizontal"
@@ -42,7 +43,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:text="AI-45"
+            tools:text="AI-45"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/colorPrimary"/>
 
@@ -51,7 +52,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:text="ASDF movie"
+            tools:text="Issue title"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
 
         <TextView
@@ -59,8 +60,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:gravity="right"
-            android:text="Assigned to: John Doe"
+            android:gravity="end"
+            tools:text="Assigned to: John Doe"
             android:textAppearance="?android:attr/textAppearanceSmall"/>
     </LinearLayout>
 

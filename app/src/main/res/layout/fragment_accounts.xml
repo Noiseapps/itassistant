@@ -6,49 +6,40 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <android.support.v4.widget.NestedScrollView
-        android:id="@+id/emptyContainer"
+    <LinearLayout
+        android:id="@+id/emptyView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="bottom"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:gravity="center"
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/emptyView"
+        <ImageView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:alpha=".2"
+            android:src="@drawable/ic_group_big"/>
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
             android:gravity="center"
-            android:orientation="vertical">
+            android:text="@string/noAccounts"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/textSecondary"/>
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:alpha=".2"
-                android:src="@drawable/ic_group_big"/>
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:gravity="center"
-                android:text="@string/noAccounts"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/textSecondary"/>
-
-            <Button
-                android:id="@+id/addAccount"
-                style="@style/AppTheme.ButtonPrimary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/addAccount"/>
+        <Button
+            android:id="@+id/addAccount"
+            style="@style/AppTheme.ButtonPrimary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/addAccount"/>
 
 
-        </LinearLayout>
-
-    </android.support.v4.widget.NestedScrollView>
+    </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/list"
@@ -78,9 +69,9 @@
         android:id="@+id/addAccountFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
         android:layout_margin="16dp"
         android:clickable="true"
-        android:layout_gravity="bottom|right"
         android:src="@drawable/ic_add_white_24px"
         app:backgroundTint="@color/colorAccent"
         app:elevation="6dp"/>
