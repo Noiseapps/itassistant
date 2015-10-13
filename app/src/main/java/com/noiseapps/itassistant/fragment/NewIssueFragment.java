@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -32,9 +33,13 @@ import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueMode
 import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueResponse;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.AllowedValue;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.CreateMetaModel;
+import com.noiseapps.itassistant.model.jira.projects.createmeta.Environment;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.Fields;
+import com.noiseapps.itassistant.model.jira.projects.createmeta.FixVersions;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.IssueType;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.Project;
+import com.noiseapps.itassistant.model.jira.projects.createmeta.Timetracking;
+import com.noiseapps.itassistant.model.jira.projects.createmeta.Versions;
 import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 import com.noiseapps.itassistant.utils.Consts;
 
@@ -159,20 +164,24 @@ public class NewIssueFragment extends Fragment {
             valid = false;
         }
         final AllowedValue selectedVersion = (AllowedValue) versionSpinner.getSelectedItem();
-        if(selectedIssueType.getFields().getVersions().isRequired() && selectedVersion.getId().isEmpty()) {
+        final Versions versions = selectedIssueType.getFields().getVersions();
+        if(versions != null && versions.isRequired() && selectedVersion.getId().isEmpty()) {
             valid = false;
         }
         final AllowedValue selectedFixVersion = (AllowedValue) fixedInVersionSpinner.getSelectedItem();
-        if(selectedIssueType.getFields().getVersions().isRequired() && selectedFixVersion.getId().isEmpty()) {
+        final FixVersions fixVersions = selectedIssueType.getFields().getFixVersions();
+        if(fixVersions != null && fixVersions.isRequired() && selectedFixVersion.getId().isEmpty()) {
             valid = false;
         }
-        if(selectedIssueType.getFields().getEnvironment().isRequired() && issueEnvironment.getText().toString().isEmpty()) {
+        final Environment environment = selectedIssueType.getFields().getEnvironment();
+        if(environment != null && environment.isRequired() && issueEnvironment.getText().toString().isEmpty()) {
             issueEnvironment.setError(getString(R.string.fieldRequired));
             valid = false;
         }
 
         final String estimatedWorkLog = issueEstimatedWorkLog.getText().toString();
-        if(selectedIssueType.getFields().getTimetracking().isRequired() && estimatedWorkLog.isEmpty()) {
+        final Timetracking timetracking = selectedIssueType.getFields().getTimetracking();
+        if(timetracking != null && timetracking.isRequired() && estimatedWorkLog.isEmpty()) {
             issueEstimatedWorkLog.setError(getString(R.string.fieldRequired));
             valid = false;
         }
@@ -182,7 +191,7 @@ public class NewIssueFragment extends Fragment {
         }
 
         final String remainingWorkLog = issueRemainingWorkLog.getText().toString();
-        if(selectedIssueType.getFields().getTimetracking().isRequired() && remainingWorkLog.isEmpty()) {
+        if(timetracking != null && timetracking.isRequired() && remainingWorkLog.isEmpty()) {
             issueRemainingWorkLog.setError(getString(R.string.fieldRequired));
             valid = false;
         }
@@ -274,12 +283,10 @@ public class NewIssueFragment extends Fragment {
 
         final AllowedValuesAdapter priorityAdapter = new AllowedValuesAdapter(getActivity(), fields.getPriority().getAllowedValues());
 
-        final List<AllowedValue> allowedVersions = fields.getVersions().getAllowedValues();
-        addNoItem(allowedVersions);
+        final List<AllowedValue> allowedVersions = getVersions(fields);
         final AllowedValuesAdapter versionsAdapter = new AllowedValuesAdapter(getActivity(), allowedVersions);
 
-        final List<AllowedValue> allowedFixVersions = fields.getFixVersions().getAllowedValues();
-        addNoItem(allowedFixVersions);
+        final List<AllowedValue> allowedFixVersions = getFixVersions(fields);
         final AllowedValuesAdapter fixedInVersionAdapter = new AllowedValuesAdapter(getActivity(), allowedFixVersions);
 
         final AssigneeSpinnerAdapter assigneeSpinnerAdapter = new AssigneeSpinnerAdapter(getActivity(), assignees, AuthenticatedPicasso.getAuthPicasso(getActivity(), currentConfig));
@@ -300,6 +307,30 @@ public class NewIssueFragment extends Fragment {
         }
     }
 
+    private List<AllowedValue> getVersions(Fields fields) {
+        final Versions versions = fields.getVersions();
+        final List<AllowedValue> allowedVersions;
+        if(versions != null) {
+            allowedVersions = versions.getAllowedValues();
+        } else {
+            allowedVersions = new ArrayList<>();
+        }
+        addNoItem(allowedVersions);
+        return allowedVersions;
+    }
+
+    private List<AllowedValue> getFixVersions(Fields fields) {
+        final FixVersions fixVersions = fields.getFixVersions();
+        final List<AllowedValue> allowedFixVersions;
+        if(fixVersions  != null) {
+            allowedFixVersions = fixVersions.getAllowedValues();
+        } else {
+            allowedFixVersions = new ArrayList<>();
+        }
+        addNoItem(allowedFixVersions);
+        return allowedFixVersions;
+    }
+
     private void setIssueTypeSpinnerSelector(final List<IssueType> issueTypes, final AllowedValuesAdapter priorityAdapter, final AllowedValuesAdapter versionsAdapter, final AllowedValuesAdapter fixedInVersionAdapter) {
         issueTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -308,12 +339,17 @@ public class NewIssueFragment extends Fragment {
                 final Fields fields = selectedIssueType.getFields();
                 priorityAdapter.setItems(fields.getPriority().getAllowedValues());
 
-                final List<AllowedValue> allowedVersions = fields.getVersions().getAllowedValues();
+                final Versions versions = fields.getVersions();
+                final List<AllowedValue> allowedVersions;
+                if (versions != null) {
+                    allowedVersions = versions.getAllowedValues();
+                } else {
+                    allowedVersions = new ArrayList<>();
+                }
                 addNoItem(allowedVersions);
                 versionsAdapter.setItems(allowedVersions);
 
-                final List<AllowedValue> allowedFixVersions = fields.getFixVersions().getAllowedValues();
-                addNoItem(allowedFixVersions);
+                final List<AllowedValue> allowedFixVersions = getFixVersions(fields);
                 fixedInVersionAdapter.setItems(allowedFixVersions);
             }
 

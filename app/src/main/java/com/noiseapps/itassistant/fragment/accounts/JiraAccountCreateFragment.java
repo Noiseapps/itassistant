@@ -187,7 +187,14 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
             return;
         }
         connector.setCurrentConfig(currentConfig);
-        connector.getUserData(new UserDataCallback());
+        final JiraUser userData = connector.getUserData();
+        if(userData != null & !requestCanceled) {
+            final Picasso authPicasso = AuthenticatedPicasso.getAuthPicasso(getContext(), currentConfig);
+            authPicasso.load(userData.getAvatarUrls().getAvatar48()).placeholder(R.drawable.ic_action_account_circle).into(new LoadTarget());
+        } else {
+            hideProgress();
+            Snackbar.make(saveFab, R.string.couldNotFetchUserData, Snackbar.LENGTH_LONG).show();
+        }
     }
 
     private boolean existsInDb() {
@@ -217,22 +224,6 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
         validator.cancelAsync();
         requestCanceled = true;
         Snackbar.make(saveFab, R.string.userCanceledRequest, Snackbar.LENGTH_LONG).show();
-    }
-
-    private class UserDataCallback implements Callback<JiraUser> {
-        @Override
-        public void success(JiraUser jiraUser, Response response) {
-            if(!requestCanceled) {
-                final Picasso authPicasso = AuthenticatedPicasso.getAuthPicasso(getContext(), currentConfig);
-                authPicasso.load(jiraUser.getAvatarUrls().getAvatar48()).placeholder(R.drawable.ic_action_account_circle).into(new LoadTarget());
-            }
-        }
-
-        @Override
-        public void failure(RetrofitError error) {
-            hideProgress();
-            Snackbar.make(saveFab, R.string.couldNotFetchUserData, Snackbar.LENGTH_LONG).show();
-        }
     }
 
     class LoadTarget implements Target {

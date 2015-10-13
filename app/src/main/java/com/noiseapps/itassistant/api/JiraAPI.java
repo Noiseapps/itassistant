@@ -36,10 +36,10 @@ public interface JiraAPI {
     void newSession(@Body SessionRequest user, @NonNull Callback<SessionResponse> callback);
 
     @GET("/rest/api/2/user?expand=groups")
-    void getUserData(@Query("username") String username, @NonNull Callback<JiraUser> callback);
+    JiraUser getUserData(@Query("username") String username);
 
     @GET("/rest/api/2/project")
-    void getUserProjects(@NonNull Callback<List<JiraProject>> callback);
+    List<JiraProject> getUserProjects();
 
     @GET("/rest/api/2/project/{projectIdOrKey}")
     void getProjectDetails(@Path("projectIdOrKey") String projectId, @NonNull Callback<JiraProjectDetails> callback);

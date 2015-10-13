@@ -159,34 +159,20 @@ public class IssueListActivity extends AppCompatActivity
         final List<NavigationModel> navigationModels = new ArrayList<>();
         for (final BaseAccount baseAccount : accountsDao.getAll()) {
             jiraConnector.setCurrentConfig(baseAccount);
-            jiraConnector.getUserData(new Callback<JiraUser>() {
-                @Override
-                public void success(final JiraUser jiraUser, Response response) {
-                    jiraConnector.getUserProjects(new Callback<List<JiraProject>>() {
-                        @Override
-                        public void success(List<JiraProject> jiraProjects, Response response) {
-                            navigationModels.add(new NavigationModel(baseAccount, jiraUser, jiraProjects));
-                            initNavigation(navigationModels);
-                            hideProgress();
-                        }
-
-                        @Override
-                        public void failure(RetrofitError error) {
-                            showErrorDialog();
-                            navigationModels.clear();
-                            hideProgress();
-                        }
-                    });
+            final JiraUser jiraUser = jiraConnector.getUserData();
+            if(jiraUser != null) {
+                final List<JiraProject> jiraProjects = jiraConnector.getUserProjects();
+                if(jiraProjects != null) {
+                    navigationModels.add(new NavigationModel(baseAccount, jiraUser, jiraProjects));
+                } else {
+                    // todo show some info
                 }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    // TODO error
-                    navigationModels.clear();
-                    hideProgress();
-                }
-            });
+            } else {
+                showErrorDialog();
+            }
         }
+        hideProgress();
+        initNavigation(navigationModels);
     }
 
     @UiThread
@@ -232,7 +218,8 @@ public class IssueListActivity extends AppCompatActivity
         }
     }
 
-    private void initNavigation(List<NavigationModel> navigationModels) {
+    @UiThread
+    void initNavigation(List<NavigationModel> navigationModels) {
         final RecyclerViewExpandableItemManager manager = new RecyclerViewExpandableItemManager(null);
         adapter = new NavigationMenuAdapter(this, navigationModels, new NavigationMenuAdapter.AdapterCallbacks() {
             @Override

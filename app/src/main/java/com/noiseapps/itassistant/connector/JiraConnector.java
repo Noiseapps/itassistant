@@ -44,18 +44,18 @@ public class JiraConnector {
     private BaseAccount currentConfig;
     private JiraAPI apiService;
 
-    public void getUserData(Callback<JiraUser> callback) {
+    public JiraUser getUserData() {
         if(apiService == null) {
-            return;
+            return null;
         }
-        apiService.getUserData(currentConfig.getUsername(), callback);
+        return apiService.getUserData(currentConfig.getUsername());
     }
 
-    public void getUserProjects(Callback<List<JiraProject>> callback) {
+    public List<JiraProject> getUserProjects() {
         if(apiService == null) {
-            return;
+            return null;
         }
-        apiService.getUserProjects(callback);
+        return apiService.getUserProjects();
     }
 
     public void getProjectIssues(@NonNull String projectKey, Callback<JiraIssue> callback) {
