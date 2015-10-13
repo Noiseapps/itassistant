@@ -1,14 +1,17 @@
 package com.noiseapps.itassistant.fragment;
 
+import android.app.DatePickerDialog;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.util.List;
 import java.util.ListIterator;
@@ -27,7 +30,6 @@ import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueMode
 import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueModel.Fields.IdField;
 import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueModel.Fields.NameField;
 import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueResponse;
-import com.noiseapps.itassistant.model.jira.projects.createissue.FieldsBuilder;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.AllowedValue;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.CreateMetaModel;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.Fields;
@@ -42,6 +44,7 @@ import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
+import org.joda.time.MutableDateTime;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -59,9 +62,11 @@ public class NewIssueFragment extends Fragment {
     @ViewById
     NestedScrollView newIssueForm;
     @ViewById
+    TextView estimatedDueDate;
+    @ViewById
     LinearLayout noProjectData, fetchingDataProgress, versionContainer, fixVersionContainer;
     @ViewById
-    EditText issueDescription, issueSummary;
+    EditText issueDescription, issueSummary, issueEstimatedWorkLog, issueRemainingWorkLog, issueEnvironment;
     @ViewById
     Spinner issueTypeSpinner, issuePrioritySpinner, assigneeSpinner, fixedInVersionSpinner, versionSpinner;
     @ViewById
@@ -74,6 +79,7 @@ public class NewIssueFragment extends Fragment {
     private NewIssueCallbacks callbacks;
     private CreateMetaModel createMetaModel;
     private IssueType selectedIssueType;
+    private MutableDateTime dateTime;
 
     @AfterViews
     void init() {
@@ -114,27 +120,69 @@ public class NewIssueFragment extends Fragment {
     }
 
     private boolean validate() {
+        boolean valid = true;
         final Assignee selectedAssignee = (Assignee) assigneeSpinner.getSelectedItem();
         if(selectedIssueType.getFields().getAssignee().isRequired() && selectedAssignee.getName().isEmpty()) {
-            return false;
+            valid = false;
+        }
+        if(selectedIssueType.getFields().getSummary().isRequired() && issueSummary.getText().toString().isEmpty()) {
+            issueSummary.setError(getString(R.string.fieldRequired));
+            valid = false;
+        }
+        if(selectedIssueType.getFields().getDescription().isRequired() && issueDescription.getText().toString().isEmpty()) {
+            issueDescription.setError(getString(R.string.fieldRequired));
+            valid = false;
+        }
+        final AllowedValue selectedVersion = (AllowedValue) versionSpinner.getSelectedItem();
+        if(selectedIssueType.getFields().getVersions().isRequired() && selectedVersion.getId().isEmpty()) {
+            valid = false;
+        }
+        final AllowedValue selectedFixVersion = (AllowedValue) fixedInVersionSpinner.getSelectedItem();
+        if(selectedIssueType.getFields().getVersions().isRequired() && selectedFixVersion.getId().isEmpty()) {
+            valid = false;
+        }
+        if(selectedIssueType.getFields().getEnvironment().isRequired() && issueEnvironment.getText().toString().isEmpty()) {
+            issueEnvironment.setError(getString(R.string.fieldRequired));
+            valid = false;
         }
 
-        return false;
+        final String estimatedWorkLog = issueEstimatedWorkLog.getText().toString();
+        if(selectedIssueType.getFields().getTimetracking().isRequired() && estimatedWorkLog.isEmpty()) {
+            issueEstimatedWorkLog.setError(getString(R.string.fieldRequired));
+            valid = false;
+        }
+        if(!validateWorkLog(estimatedWorkLog)) {
+            issueRemainingWorkLog.setError(getString(R.string.invalidFormat));
+            valid = false;
+        }
+
+        final String remainingWorkLog = issueRemainingWorkLog.getText().toString();
+        if(selectedIssueType.getFields().getTimetracking().isRequired() && remainingWorkLog.isEmpty()) {
+            issueRemainingWorkLog.setError(getString(R.string.fieldRequired));
+            valid = false;
+        }
+        if(!validateWorkLog(remainingWorkLog)) {
+            issueRemainingWorkLog.setError(getString(R.string.invalidFormat));
+            valid = false;
+        }
+        return valid;
     }
 
     private CreateIssueModel.Fields getFields() {
-        final FieldsBuilder builder = new FieldsBuilder();
-        builder.setProject(new IdField(project.getId()));
+        final CreateIssueModel.Fields fields = new CreateIssueModel.Fields();
+        fields.setProject(new IdField(project.getId()));
         final AllowedValue selectedValue = (AllowedValue) issuePrioritySpinner.getSelectedItem();
-        builder.setPriority(new IdField(selectedValue.getId()));
+        fields.setPriority(new IdField(selectedValue.getId()));
         final IssueType selectedType = (IssueType) issueTypeSpinner.getSelectedItem();
-        builder.setIssuetype(new IdField(selectedType.getId()));
-        builder.setSummary(issueSummary.getText().toString());
-        builder.setDescription(issueDescription.getText().toString());
-        builder.setReporter(new NameField(currentConfig.getUsername()));
+        fields.setIssuetype(new IdField(selectedType.getId()));
+        fields.setSummary(issueSummary.getText().toString());
+        fields.setDescription(issueDescription.getText().toString());
+        fields.setDuedate(estimatedDueDate.getText().toString());
+        fields.setReporter(new NameField(currentConfig.getUsername()));
         final Assignee selectedAssignee = (Assignee) assigneeSpinner.getSelectedItem();
-        builder.setAssignee(new NameField(selectedAssignee.getName()));
-        return builder.createFields();
+        fields.setAssignee(new NameField(selectedAssignee.getName()));
+        fields.setTimetracking(new CreateIssueModel.Timetracking(issueEstimatedWorkLog.getText().toString(), issueRemainingWorkLog.getText().toString()));
+        return fields;
     }
 
 
@@ -152,6 +200,24 @@ public class NewIssueFragment extends Fragment {
         if (issue != null) {
             initValues();
         }
+    }
+
+    @Click(R.id.editWorkLogDate)
+    void onSelectEndDate(){
+        final DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                dateTime = new MutableDateTime();
+                dateTime.setYear(year);
+                dateTime.setMonthOfYear(monthOfYear + 1);
+                dateTime.setDayOfMonth(dayOfMonth);
+                dateTime.setMillisOfDay(0);
+                estimatedDueDate.setText(dateTime.toString(Consts.DATE_FORMAT));
+            }
+        };
+        final DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), onDateSetListener, dateTime.getYear(), dateTime.getMonthOfYear()-1, dateTime.getDayOfMonth());
+        datePickerDialog.getDatePicker().setMaxDate(dateTime.getMillis());
+        datePickerDialog.show();
     }
 
     private void initValues() {

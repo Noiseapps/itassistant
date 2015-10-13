@@ -1,5 +1,7 @@
 package com.noiseapps.itassistant.model.jira.projects.createissue;
 
+
+@SuppressWarnings("unused, FieldCanBeLocal")
 public class CreateIssueModel {
 
     private final Fields fields;
@@ -18,16 +20,45 @@ public class CreateIssueModel {
         private String description;
         private String environment;
         private String duedate;
+        private Timetracking timetracking;
 
-        Fields(IdField project, IdField issuetype, IdField priority, NameField assignee, NameField reporter, String summary, String description, String environment, String duedate) {
+        public void setTimetracking(Timetracking timetracking) {
+            this.timetracking = timetracking;
+        }
+
+        public void setProject(IdField project) {
             this.project = project;
+        }
+
+        public void setIssuetype(IdField issuetype) {
             this.issuetype = issuetype;
+        }
+
+        public void setPriority(IdField priority) {
             this.priority = priority;
+        }
+
+        public void setAssignee(NameField assignee) {
             this.assignee = assignee;
+        }
+
+        public void setReporter(NameField reporter) {
             this.reporter = reporter;
+        }
+
+        public void setSummary(String summary) {
             this.summary = summary;
+        }
+
+        public void setDescription(String description) {
             this.description = description;
+        }
+
+        public void setEnvironment(String environment) {
             this.environment = environment;
+        }
+
+        public void setDuedate(String duedate) {
             this.duedate = duedate;
         }
 
@@ -45,6 +76,16 @@ public class CreateIssueModel {
             public NameField(String name) {
                 this.name = name;
             }
+        }
+    }
+
+    public static class Timetracking {
+        private final String originalEstimate;
+        private final String remainingEstimate;
+
+        public Timetracking(String originalEstimate, String remainingEstimate) {
+            this.originalEstimate = originalEstimate;
+            this.remainingEstimate = remainingEstimate;
         }
     }
 }

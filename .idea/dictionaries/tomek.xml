@@ -2,9 +2,11 @@
   <dictionary name="tomek">
     <words>
       <w>atlassian</w>
+      <w>issuetype</w>
       <w>itassistant</w>
       <w>jira</w>
       <w>noiseapps</w>
+      <w>timetracking</w>
     </words>
   </dictionary>
 </component>

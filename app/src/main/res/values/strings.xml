@@ -105,4 +105,5 @@
     <string name="estimatedWorkTime">Estimated work time</string>
     <string name="issueAttachment">Attachment</string>
     <string name="none">Brak</string>
+    <string name="fieldRequired">This field is required</string>
 </resources>
