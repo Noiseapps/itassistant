@@ -57,7 +57,7 @@ import retrofit.client.Response;
 
 @EActivity(R.layout.activity_issue_app_bar)
 public class IssueListActivity extends AppCompatActivity
-        implements IssueListFragment.Callbacks, NewIssueFragment.NewIssueCallbacks {
+        implements IssueListFragment.Callbacks, NewIssueFragment.NewIssueCallbacks, IssueDetailFragment.IssueDetailCallbacks {
 
     public static final int ACCOUNTS_REQUEST = 633;
     public static final int NEW_ISSUE_REQUEST = 5135;
@@ -80,6 +80,19 @@ public class IssueListActivity extends AppCompatActivity
     JiraConnector jiraConnector;
     private ProgressDialog progressDialog;
     private NavigationMenuAdapter adapter;
+
+    @Override
+    public void onEditIssue(Issue issue) {
+        final String key = issue.getFields().getProject().getKey();
+        if (mTwoPane) {
+            final NewIssueFragment fragment = NewIssueFragment_.builder().projectKey(key).issue(issue).build();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.issue_detail_container, fragment)
+                    .commit();
+        } else {
+            NewIssueActivity_.intent(this).projectKey(key).issue(issue).startForResult(NEW_ISSUE_REQUEST);
+        }
+    }
 
     @AfterViews
     void init() {
@@ -246,7 +259,7 @@ public class IssueListActivity extends AppCompatActivity
     }
 
     @Override
-    public void onItemSelected(Issue issue) {
+    public void onItemSelected(Issue issue, JiraProject jiraProject) {
         if (mTwoPane) {
             final IssueDetailFragment fragment = IssueDetailFragment_.builder().issue(issue).build();
             getSupportFragmentManager().beginTransaction()
@@ -259,13 +272,14 @@ public class IssueListActivity extends AppCompatActivity
 
     @Override
     public void onAddNewIssue(JiraProject jiraProject) {
+        final String key = jiraProject.getKey();
         if (mTwoPane) {
-            final NewIssueFragment fragment = NewIssueFragment_.builder().project(jiraProject).build();
+            final NewIssueFragment fragment = NewIssueFragment_.builder().projectKey(key).build();
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.issue_detail_container, fragment)
                     .commit();
         } else {
-            NewIssueActivity_.intent(this).project(jiraProject).startForResult(NEW_ISSUE_REQUEST);
+            NewIssueActivity_.intent(this).projectKey(key).startForResult(NEW_ISSUE_REQUEST);
         }
     }
 

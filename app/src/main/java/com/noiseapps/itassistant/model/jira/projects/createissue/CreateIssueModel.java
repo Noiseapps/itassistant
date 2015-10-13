@@ -11,7 +11,7 @@ public class CreateIssueModel {
     }
 
     public static class Fields {
-        private IdField project;
+        private KeyField project;
         private IdField issuetype;
         private IdField priority;
         private NameField assignee;
@@ -26,7 +26,7 @@ public class CreateIssueModel {
             this.timetracking = timetracking;
         }
 
-        public void setProject(IdField project) {
+        public void setProject(KeyField project) {
             this.project = project;
         }
 
@@ -67,6 +67,13 @@ public class CreateIssueModel {
 
             public IdField(String id) {
                 this.id = id;
+            }
+        }
+        public static class KeyField {
+            private final String key;
+
+            public KeyField(String key) {
+                this.key = key;
             }
         }
 

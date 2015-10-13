@@ -26,6 +26,7 @@ import retrofit.Callback;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.POST;
+import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
 
@@ -72,4 +73,7 @@ public interface JiraAPI {
 
     @POST("/rest/api/2/issue")
     void postNewIssue(@Body CreateIssueModel createIssueModel, @NonNull Callback<CreateIssueResponse> callback);
+
+    @PUT("/rest/api/2/issue/{issueId}")
+    void updateIssue(@Path("issueId") String issueId, @Body CreateIssueModel createIssueModel, @NonNull Callback<CreateIssueResponse> callback);
 }

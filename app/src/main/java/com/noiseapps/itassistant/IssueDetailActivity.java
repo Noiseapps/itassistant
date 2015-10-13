@@ -16,9 +16,15 @@ import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.ViewById;
 
 @EActivity(R.layout.activity_issue_detail)
-public class IssueDetailActivity extends AppCompatActivity {
+public class IssueDetailActivity extends AppCompatActivity implements IssueDetailFragment.IssueDetailCallbacks{
     @Extra
     Issue issue;
+
+    @Override
+    public void onEditIssue(Issue issue) {
+        final String key = issue.getFields().getProject().getKey();
+        NewIssueActivity_.intent(this).projectKey(key).issue(issue).startForResult(1000);
+    }
 
     @AfterViews
     void init() {

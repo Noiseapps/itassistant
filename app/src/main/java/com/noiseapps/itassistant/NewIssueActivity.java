@@ -8,7 +8,6 @@ import android.support.v7.widget.Toolbar;
 import com.noiseapps.itassistant.fragment.NewIssueFragment;
 import com.noiseapps.itassistant.fragment.NewIssueFragment_;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
-import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
@@ -24,13 +23,13 @@ public class NewIssueActivity extends AppCompatActivity implements NewIssueFragm
     @Extra
     Issue issue;
     @Extra
-    JiraProject project;
+    String projectKey;
 
     @AfterViews
     void init() {
         setResult(RESULT_CANCELED);
         initToolbar();
-        final NewIssueFragment fragment = NewIssueFragment_.builder().project(project).issue(issue).build();
+        final NewIssueFragment fragment = NewIssueFragment_.builder().projectKey(projectKey).issue(issue).build();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragmentContainer, fragment)
                 .commit();
@@ -44,7 +43,7 @@ public class NewIssueActivity extends AppCompatActivity implements NewIssueFragm
             supportActionBar.setDisplayHomeAsUpEnabled(true);
             supportActionBar.setHomeButtonEnabled(true);
             if (issue == null) {
-                supportActionBar.setTitle(getString(R.string.newIssueForProject, project.getName()));
+                supportActionBar.setTitle(getString(R.string.newIssueForProject, projectKey));
             } else {
                 supportActionBar.setTitle(getString(R.string.editingIssue, issue.getKey()));
             }

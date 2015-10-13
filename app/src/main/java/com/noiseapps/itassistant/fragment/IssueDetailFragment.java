@@ -1,6 +1,5 @@
 package com.noiseapps.itassistant.fragment;
 
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -33,9 +32,15 @@ public class IssueDetailFragment extends Fragment {
     ViewPager viewPager;
     @ViewById(R.id.detailTabLayout)
     TabLayout tabLayout;
+    private IssueDetailCallbacks callbacks;
+
+    public interface IssueDetailCallbacks {
+        void onEditIssue(Issue issue);
+    }
 
     @AfterViews
     void init() {
+        callbacks = (IssueDetailCallbacks) getActivity();
         setHasOptionsMenu(true);
         viewPager.setOffscreenPageLimit(3);
         viewPager.setAdapter(new PagerAdapter());
@@ -44,7 +49,7 @@ public class IssueDetailFragment extends Fragment {
 
     @OptionsItem(R.id.action_edit)
     void onEditIssue() {
-        Snackbar.make(viewPager, R.string.optionUnavailable, Snackbar.LENGTH_LONG).show();
+        callbacks.onEditIssue(issue);
     }
 
     @OptionsItem(android.R.id.home)

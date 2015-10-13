@@ -128,12 +128,18 @@ public class JiraConnector {
         apiService.getCreateMeta(projectKey, callback);
     }
 
-
     public void postNewIssue(@NonNull CreateIssueModel issueModel, Callback<CreateIssueResponse> callback) {
         if(apiService == null) {
             return;
         }
         apiService.postNewIssue(issueModel, callback);
+    }
+
+    public void updateIssue(@NonNull String issueId, @NonNull CreateIssueModel issueModel, Callback<CreateIssueResponse> callback) {
+        if(apiService == null) {
+            return;
+        }
+        apiService.updateIssue(issueId, issueModel, callback);
     }
 
     @AfterInject

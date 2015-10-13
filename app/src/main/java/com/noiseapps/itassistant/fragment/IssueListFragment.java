@@ -47,7 +47,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
 
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
-        public void onItemSelected(Issue id) {
+        public void onItemSelected(Issue id, JiraProject jiraProject) {
         }
 
         @Override
@@ -74,7 +74,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
 
     @Override
     public void onItemSelected(Issue selectedIssue) {
-        mCallbacks.onItemSelected(selectedIssue);
+        mCallbacks.onItemSelected(selectedIssue, jiraProject);
     }
 
     @AfterViews
@@ -163,7 +163,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     }
 
     public interface Callbacks {
-        void onItemSelected(Issue id);
+        void onItemSelected(Issue id, JiraProject jiraProject);
 
         void onAddNewIssue(JiraProject jiraProject);
     }

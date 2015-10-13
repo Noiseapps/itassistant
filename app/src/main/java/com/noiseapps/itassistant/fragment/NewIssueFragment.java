@@ -25,9 +25,9 @@ import com.noiseapps.itassistant.connector.JiraConnector;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
-import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueModel;
 import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueModel.Fields.IdField;
+import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueModel.Fields.KeyField;
 import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueModel.Fields.NameField;
 import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueResponse;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.AllowedValue;
@@ -58,7 +58,7 @@ public class NewIssueFragment extends Fragment {
     @FragmentArg
     Issue parent;
     @FragmentArg
-    JiraProject project;
+    String projectKey;
     @ViewById
     NestedScrollView newIssueForm;
     @ViewById
@@ -77,7 +77,6 @@ public class NewIssueFragment extends Fragment {
     JiraConnector jiraConnector;
     private BaseAccount currentConfig;
     private NewIssueCallbacks callbacks;
-    private CreateMetaModel createMetaModel;
     private IssueType selectedIssueType;
     private MutableDateTime dateTime;
 
@@ -91,7 +90,7 @@ public class NewIssueFragment extends Fragment {
 
     void getProjectDetails() {
         fetchingDataProgress.setVisibility(View.VISIBLE);
-        jiraConnector.getCreateMeta(project.getKey(), new GetCreateMetaCallback());
+        jiraConnector.getCreateMeta(projectKey, new GetCreateMetaCallback());
     }
 
     @Click(R.id.saveIssueFab)
@@ -102,6 +101,32 @@ public class NewIssueFragment extends Fragment {
         }
         fabProgressCircle.show();
         final CreateIssueModel.Fields fields = getFields();
+        if(issue == null) {
+            addNewIssue(fields);
+        } else {
+            updateIssue(fields);
+        }
+    }
+
+    private void updateIssue(CreateIssueModel.Fields fields) {
+        jiraConnector.updateIssue(issue.getId(), new CreateIssueModel(fields), new Callback<CreateIssueResponse>() {
+            @Override
+            public void success(CreateIssueResponse createIssueResponse, Response response) {
+                fabProgressCircle.beginFinalAnimation();
+                Snackbar.make(fabProgressCircle, R.string.issueAdded, Snackbar.LENGTH_LONG).show();
+//                callbacks.onIssueCreated();
+                //TODO show issue details if in two pane
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fabProgressCircle.hide();
+                Snackbar.make(fabProgressCircle, R.string.failedToPostIssue, Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void addNewIssue(CreateIssueModel.Fields fields) {
         jiraConnector.postNewIssue(new CreateIssueModel(fields), new Callback<CreateIssueResponse>() {
             @Override
             public void success(CreateIssueResponse createIssueResponse, Response response) {
@@ -170,7 +195,7 @@ public class NewIssueFragment extends Fragment {
 
     private CreateIssueModel.Fields getFields() {
         final CreateIssueModel.Fields fields = new CreateIssueModel.Fields();
-        fields.setProject(new IdField(project.getId()));
+        fields.setProject(new KeyField(projectKey));
         final AllowedValue selectedValue = (AllowedValue) issuePrioritySpinner.getSelectedItem();
         fields.setPriority(new IdField(selectedValue.getId()));
         final IssueType selectedType = (IssueType) issueTypeSpinner.getSelectedItem();
@@ -191,7 +216,6 @@ public class NewIssueFragment extends Fragment {
     }
 
     private void showForm(CreateMetaModel createMetaModel, List<Assignee> assignees) {
-        this.createMetaModel = createMetaModel;
         hideProgress();
         noProjectData.setVisibility(View.GONE);
         newIssueForm.setVisibility(View.VISIBLE);
@@ -221,7 +245,8 @@ public class NewIssueFragment extends Fragment {
     }
 
     private void initValues() {
-
+        issueSummary.setText(issue.getFields().getSummary());
+        issueDescription.setText(issue.getFields().getDescription());
     }
 
     private void fillForm(CreateMetaModel createMetaModel, List<Assignee> assignees) {
@@ -324,7 +349,7 @@ public class NewIssueFragment extends Fragment {
         @Override
         public void success(final CreateMetaModel createMetaModel, Response response) {
             final GetProjectMembersCallback callback = new GetProjectMembersCallback(createMetaModel);
-            jiraConnector.getProjectMembers(project.getKey(), callback);
+            jiraConnector.getProjectMembers(projectKey, callback);
         }
 
         @Override

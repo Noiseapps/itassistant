@@ -32,7 +32,6 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 import org.joda.time.MutableDateTime;
-import org.joda.time.format.DateTimeFormat;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -133,7 +132,7 @@ public class WorkLogFragment extends Fragment {
                     final WorkLogItem logItem = new WorkLogItem();
                     logItem.setComment(commentText.getText().toString());
                     logItem.setTimeSpent(timeSpent);
-                    logItem.setStarted(dateTime.toString(DateTimeFormat.forPattern("YYYY-MM-dd'T'HH:mm:ss.SZ")));
+                    logItem.setStarted(dateTime.toString(Consts.TIMESTAMP_FORMAT));
                     onPositiveButtonClicked(logItem, newEstimate, alertDialog, dialogRoot);
                 }
             }
