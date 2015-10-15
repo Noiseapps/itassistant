@@ -35,6 +35,7 @@ import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
@@ -70,7 +71,10 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     @ViewById
     TabLayout tabLayout;
     private JiraProject jiraProject;
+    private BaseAccount baseAccount;
     private boolean isEmpty;
+    @InstanceState
+    JiraIssue jiraIssue;
 
     @Override
     public void onItemSelected(Issue selectedIssue) {
@@ -88,8 +92,13 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
 
     public void setProject(JiraProject jiraProject, BaseAccount baseAccount) {
         this.jiraProject = jiraProject;
+        this.baseAccount = baseAccount;
         showProgress();
-        getIssues(baseAccount);
+        if(jiraIssue == null) {
+            getIssues(baseAccount);
+        } else {
+            onProjectsDownloaded(jiraIssue);
+        }
     }
 
     private void showProgress() {
@@ -104,11 +113,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         jiraConnector.getProjectIssues(jiraProject.getKey(), new Callback<JiraIssue>() {
             @Override
             public void success(JiraIssue jiraIssue, Response response) {
-                isEmpty = jiraIssue.getIssues().isEmpty();
-                final PagerAdapter adapter = makeAdapter(jiraIssue);
-                viewPager.setAdapter(adapter);
-                tabLayout.setupWithViewPager(viewPager);
-                hideProgress();
+                onProjectsDownloaded(jiraIssue);
             }
 
             @Override
@@ -117,6 +122,15 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
                 hideProgress();
             }
         });
+    }
+
+    private void onProjectsDownloaded(JiraIssue jiraIssue) {
+        this.jiraIssue = jiraIssue;
+        isEmpty = jiraIssue.getIssues().isEmpty();
+        final PagerAdapter adapter = makeAdapter(jiraIssue);
+        viewPager.setAdapter(adapter);
+        tabLayout.setupWithViewPager(viewPager);
+        hideProgress();
     }
 
     @NonNull
@@ -160,6 +174,10 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     @Click(R.id.addIssueFab)
     void onAddNewIssue() {
         mCallbacks.onAddNewIssue(jiraProject);
+    }
+
+    public void reload() {
+        setProject(jiraProject, baseAccount);
     }
 
     public interface Callbacks {

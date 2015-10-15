@@ -46,6 +46,7 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.FragmentById;
+import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
@@ -80,6 +81,8 @@ public class IssueListActivity extends AppCompatActivity
     JiraConnector jiraConnector;
     private ProgressDialog progressDialog;
     private NavigationMenuAdapter adapter;
+    @InstanceState
+    ArrayList<NavigationModel> navigationModels;
 
     @Override
     public void onEditIssue(Issue issue) {
@@ -101,18 +104,22 @@ public class IssueListActivity extends AppCompatActivity
         if(accountsDao.getAll().isEmpty()) {
             showNoAccountsDialog();
         } else {
-            downloadData();
+            if(navigationModels == null) {
+                downloadData();
+            } else {
+                initNavigation(navigationModels);
+            }
         }
         initToolbar();
         isTwoPane();
     }
 
     private void setTablet() {
-        if (getResources().getBoolean(R.bool.tabletSize)) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-        } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
-        }
+//        if (getResources().getBoolean(R.bool.tabletSize)) {
+//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+//        } else {
+//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+//        }
     }
 
     private void showNoAccountsDialog() {
@@ -156,19 +163,23 @@ public class IssueListActivity extends AppCompatActivity
     @Background
     void downloadData() {
         showProgress();
-        final List<NavigationModel> navigationModels = new ArrayList<>();
+        navigationModels = new ArrayList<>();
         for (final BaseAccount baseAccount : accountsDao.getAll()) {
-            jiraConnector.setCurrentConfig(baseAccount);
-            final JiraUser jiraUser = jiraConnector.getUserData();
-            if(jiraUser != null) {
-                final List<JiraProject> jiraProjects = jiraConnector.getUserProjects();
-                if(jiraProjects != null) {
-                    navigationModels.add(new NavigationModel(baseAccount, jiraUser, jiraProjects));
+            try {
+                jiraConnector.setCurrentConfig(baseAccount);
+                final JiraUser jiraUser = jiraConnector.getUserData();
+                if(jiraUser != null) {
+                    final List<JiraProject> jiraProjects = jiraConnector.getUserProjects();
+                    if(jiraProjects != null) {
+                        navigationModels.add(new NavigationModel(baseAccount, jiraUser, jiraProjects));
+                    } else {
+                        // todo show some info
+                    }
                 } else {
-                    // todo show some info
+                    showErrorDialog();
                 }
-            } else {
-                showErrorDialog();
+            } catch (Exception e) {
+                Logger.e(e, e.getMessage());
             }
         }
         hideProgress();
@@ -311,12 +322,12 @@ public class IssueListActivity extends AppCompatActivity
     void onIssueAdded(int resultCode) {
         Logger.w("" + resultCode);
         if(resultCode == RESULT_OK) {
-            // todo reload issue list
+            listFragment.reload();
         }
     }
 
     @Override
     public void onIssueCreated() {
-
+        listFragment.reload();
     }
 }

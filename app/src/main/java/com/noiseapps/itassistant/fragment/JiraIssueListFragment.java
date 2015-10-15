@@ -9,11 +9,15 @@ import java.util.List;
 
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.IssuesAdapter;
+import com.noiseapps.itassistant.connector.JiraConnector;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
+import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 import com.noiseapps.itassistant.utils.DividerItemDecoration;
+import com.squareup.picasso.Picasso;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
@@ -22,15 +26,14 @@ import org.androidannotations.annotations.ViewById;
 public class JiraIssueListFragment extends Fragment {
     @FragmentArg
     String workflowName;
-    @FragmentArg
-    BaseAccount apiConfig;
+    @Bean
+    JiraConnector jiraConnector;
     Activity context;
 
     @ViewById
     RecyclerView issuesRecycler;
     private List<Issue> issues;
     private IssueListCallback callback;
-    private IssuesAdapter adapter;
 
     public interface IssueListCallback {
         void onItemSelected(Issue selectedIssue);
@@ -50,7 +53,8 @@ public class JiraIssueListFragment extends Fragment {
 
     private void setAdapter() {
         issuesRecycler.setLayoutManager(new LinearLayoutManager(context));
-        adapter = new IssuesAdapter(context, issues, new IssuesAdapter.IssueAdapterCallback() {
+        final Picasso authPicasso = AuthenticatedPicasso.getAuthPicasso(context, jiraConnector.getCurrentConfig());
+        final IssuesAdapter adapter = new IssuesAdapter(context, issues, authPicasso, new IssuesAdapter.IssueAdapterCallback() {
             @Override
             public void onItemClicked(Issue selectedIssue) {
                 callback.onItemSelected(selectedIssue);

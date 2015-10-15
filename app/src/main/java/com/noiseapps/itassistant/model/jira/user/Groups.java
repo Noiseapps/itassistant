@@ -1,8 +1,11 @@
 package com.noiseapps.itassistant.model.jira.user;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Arrays;
 
-public class Groups {
+public class Groups implements Parcelable {
 
     private final Items[] items;
     private final String size;
@@ -47,4 +50,30 @@ public class Groups {
                 ", size='" + size + '\'' +
                 '}';
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelableArray(this.items, 0);
+        dest.writeString(this.size);
+    }
+
+    protected Groups(Parcel in) {
+        this.items = (Items[]) in.readParcelableArray(Items.class.getClassLoader());
+        this.size = in.readString();
+    }
+
+    public static final Parcelable.Creator<Groups> CREATOR = new Parcelable.Creator<Groups>() {
+        public Groups createFromParcel(Parcel source) {
+            return new Groups(source);
+        }
+
+        public Groups[] newArray(int size) {
+            return new Groups[size];
+        }
+    };
 }

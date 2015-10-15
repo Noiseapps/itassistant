@@ -74,6 +74,7 @@ public class CommentsAdapter extends BaseAdapter {
     public void addItem(Comment comment) {
         comments.add(comment);
         sort();
+        notifyDataSetChanged();
     }
 
     public void addItems(List<Comment> commentList) {

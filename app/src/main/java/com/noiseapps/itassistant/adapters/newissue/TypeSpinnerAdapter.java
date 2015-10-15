@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.noiseapps.itassistant.R;
@@ -62,10 +63,10 @@ public class TypeSpinnerAdapter extends BaseAdapter {
     private class ViewHolder {
         private final TextView title;
         private final TextView subtitle;
-        private final CircleImageView avatar;
+        private final ImageView avatar;
 
         public ViewHolder(View convertView) {
-            avatar = (CircleImageView) convertView.findViewById(R.id.avatar);
+            avatar = (ImageView) convertView.findViewById(R.id.avatar);
             title = (TextView) convertView.findViewById(R.id.title);
             subtitle = (TextView) convertView.findViewById(R.id.subTitle);
         }

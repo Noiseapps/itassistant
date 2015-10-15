@@ -6,7 +6,6 @@
     android:gravity="center"
     android:id="@+id/fetchingDataProgress"
     android:layout_width="match_parent"
-    android:visibility="gone"
     android:layout_height="match_parent"
     android:layout_gravity="center"
     tools:showIn="@layout/fragment_new_issue">

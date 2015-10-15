@@ -15,7 +15,6 @@ public class CreateIssueModel {
         private IdField issuetype;
         private IdField priority;
         private NameField assignee;
-        private NameField reporter;
         private String summary;
         private String description;
         private String environment;
@@ -40,10 +39,6 @@ public class CreateIssueModel {
 
         public void setAssignee(NameField assignee) {
             this.assignee = assignee;
-        }
-
-        public void setReporter(NameField reporter) {
-            this.reporter = reporter;
         }
 
         public void setSummary(String summary) {

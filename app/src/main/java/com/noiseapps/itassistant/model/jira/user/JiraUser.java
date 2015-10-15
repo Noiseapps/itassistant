@@ -1,6 +1,9 @@
 package com.noiseapps.itassistant.model.jira.user;
 
-public class JiraUser {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class JiraUser implements Parcelable {
     private final String name;
     private final String expand;
     private final String active;
@@ -112,4 +115,44 @@ public class JiraUser {
                 ", groups=" + groups +
                 '}';
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.name);
+        dest.writeString(this.expand);
+        dest.writeString(this.active);
+        dest.writeString(this.emailAddress);
+        dest.writeString(this.timeZone);
+        dest.writeString(this.self);
+        dest.writeString(this.displayName);
+        dest.writeParcelable(this.avatarUrls, 0);
+        dest.writeParcelable(this.groups, 0);
+    }
+
+    protected JiraUser(Parcel in) {
+        this.name = in.readString();
+        this.expand = in.readString();
+        this.active = in.readString();
+        this.emailAddress = in.readString();
+        this.timeZone = in.readString();
+        this.self = in.readString();
+        this.displayName = in.readString();
+        this.avatarUrls = in.readParcelable(AvatarUrls.class.getClassLoader());
+        this.groups = in.readParcelable(Groups.class.getClassLoader());
+    }
+
+    public static final Parcelable.Creator<JiraUser> CREATOR = new Parcelable.Creator<JiraUser>() {
+        public JiraUser createFromParcel(Parcel source) {
+            return new JiraUser(source);
+        }
+
+        public JiraUser[] newArray(int size) {
+            return new JiraUser[size];
+        }
+    };
 }

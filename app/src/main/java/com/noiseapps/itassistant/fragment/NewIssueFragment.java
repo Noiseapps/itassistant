@@ -33,6 +33,7 @@ import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueMode
 import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueResponse;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.AllowedValue;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.CreateMetaModel;
+import com.noiseapps.itassistant.model.jira.projects.createmeta.Duedate;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.Environment;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.Fields;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.FixVersions;
@@ -83,7 +84,7 @@ public class NewIssueFragment extends Fragment {
     private BaseAccount currentConfig;
     private NewIssueCallbacks callbacks;
     private IssueType selectedIssueType;
-    private MutableDateTime dateTime;
+    private MutableDateTime dateTime = new MutableDateTime();
 
     @AfterViews
     void init() {
@@ -101,12 +102,12 @@ public class NewIssueFragment extends Fragment {
     @Click(R.id.saveIssueFab)
     void onSaveIssue() {
         final boolean valid = validate();
-        if(!valid) {
+        if (!valid) {
             return;
         }
         fabProgressCircle.show();
         final CreateIssueModel.Fields fields = getFields();
-        if(issue == null) {
+        if (issue == null) {
             addNewIssue(fields);
         } else {
             updateIssue(fields);
@@ -138,7 +139,6 @@ public class NewIssueFragment extends Fragment {
                 fabProgressCircle.beginFinalAnimation();
                 Snackbar.make(fabProgressCircle, R.string.issueAdded, Snackbar.LENGTH_LONG).show();
                 callbacks.onIssueCreated();
-                //TODO show issue details if in two pane
             }
 
             @Override
@@ -152,50 +152,50 @@ public class NewIssueFragment extends Fragment {
     private boolean validate() {
         boolean valid = true;
         final Assignee selectedAssignee = (Assignee) assigneeSpinner.getSelectedItem();
-        if(selectedIssueType.getFields().getAssignee().isRequired() && selectedAssignee.getName().isEmpty()) {
+        if (selectedIssueType.getFields().getAssignee().isRequired() && selectedAssignee.getName().isEmpty()) {
             valid = false;
         }
-        if(selectedIssueType.getFields().getSummary().isRequired() && issueSummary.getText().toString().isEmpty()) {
+        if (selectedIssueType.getFields().getSummary().isRequired() && issueSummary.getText().toString().isEmpty()) {
             issueSummary.setError(getString(R.string.fieldRequired));
             valid = false;
         }
-        if(selectedIssueType.getFields().getDescription().isRequired() && issueDescription.getText().toString().isEmpty()) {
+        if (selectedIssueType.getFields().getDescription().isRequired() && issueDescription.getText().toString().isEmpty()) {
             issueDescription.setError(getString(R.string.fieldRequired));
             valid = false;
         }
         final AllowedValue selectedVersion = (AllowedValue) versionSpinner.getSelectedItem();
         final Versions versions = selectedIssueType.getFields().getVersions();
-        if(versions != null && versions.isRequired() && selectedVersion.getId().isEmpty()) {
+        if (versions != null && versions.isRequired() && selectedVersion.getId().isEmpty()) {
             valid = false;
         }
         final AllowedValue selectedFixVersion = (AllowedValue) fixedInVersionSpinner.getSelectedItem();
         final FixVersions fixVersions = selectedIssueType.getFields().getFixVersions();
-        if(fixVersions != null && fixVersions.isRequired() && selectedFixVersion.getId().isEmpty()) {
+        if (fixVersions != null && fixVersions.isRequired() && selectedFixVersion.getId().isEmpty()) {
             valid = false;
         }
         final Environment environment = selectedIssueType.getFields().getEnvironment();
-        if(environment != null && environment.isRequired() && issueEnvironment.getText().toString().isEmpty()) {
+        if (environment != null && environment.isRequired() && issueEnvironment.getText().toString().isEmpty()) {
             issueEnvironment.setError(getString(R.string.fieldRequired));
             valid = false;
         }
 
         final String estimatedWorkLog = issueEstimatedWorkLog.getText().toString();
         final Timetracking timetracking = selectedIssueType.getFields().getTimetracking();
-        if(timetracking != null && timetracking.isRequired() && estimatedWorkLog.isEmpty()) {
+        if (timetracking != null && timetracking.isRequired() && estimatedWorkLog.isEmpty()) {
             issueEstimatedWorkLog.setError(getString(R.string.fieldRequired));
             valid = false;
         }
-        if(!validateWorkLog(estimatedWorkLog)) {
+        if (!validateWorkLog(estimatedWorkLog)) {
             issueRemainingWorkLog.setError(getString(R.string.invalidFormat));
             valid = false;
         }
 
         final String remainingWorkLog = issueRemainingWorkLog.getText().toString();
-        if(timetracking != null && timetracking.isRequired() && remainingWorkLog.isEmpty()) {
+        if (timetracking != null && timetracking.isRequired() && remainingWorkLog.isEmpty()) {
             issueRemainingWorkLog.setError(getString(R.string.fieldRequired));
             valid = false;
         }
-        if(!validateWorkLog(remainingWorkLog)) {
+        if (!validateWorkLog(remainingWorkLog)) {
             issueRemainingWorkLog.setError(getString(R.string.invalidFormat));
             valid = false;
         }
@@ -204,6 +204,9 @@ public class NewIssueFragment extends Fragment {
 
     private CreateIssueModel.Fields getFields() {
         final CreateIssueModel.Fields fields = new CreateIssueModel.Fields();
+
+        final Assignee selectedAssignee = (Assignee) assigneeSpinner.getSelectedItem();
+        fields.setAssignee(new NameField(selectedAssignee.getName()));
         fields.setProject(new KeyField(projectKey));
         final AllowedValue selectedValue = (AllowedValue) issuePrioritySpinner.getSelectedItem();
         fields.setPriority(new IdField(selectedValue.getId()));
@@ -211,11 +214,17 @@ public class NewIssueFragment extends Fragment {
         fields.setIssuetype(new IdField(selectedType.getId()));
         fields.setSummary(issueSummary.getText().toString());
         fields.setDescription(issueDescription.getText().toString());
-        fields.setDuedate(estimatedDueDate.getText().toString());
-        fields.setReporter(new NameField(currentConfig.getUsername()));
-        final Assignee selectedAssignee = (Assignee) assigneeSpinner.getSelectedItem();
-        fields.setAssignee(new NameField(selectedAssignee.getName()));
-        fields.setTimetracking(new CreateIssueModel.Timetracking(issueEstimatedWorkLog.getText().toString(), issueRemainingWorkLog.getText().toString()));
+
+        final Duedate duedate = selectedIssueType.getFields().getDuedate();
+        final String dueDateString = estimatedDueDate.getText().toString();
+        if (duedate != null && !dueDateString.isEmpty() ) {
+            fields.setDuedate(dueDateString);
+        }
+
+        final Timetracking timetracking = selectedIssueType.getFields().getTimetracking();
+        if (timetracking != null) {
+            fields.setTimetracking(new CreateIssueModel.Timetracking(issueEstimatedWorkLog.getText().toString(), issueRemainingWorkLog.getText().toString()));
+        }
         return fields;
     }
 
@@ -228,6 +237,7 @@ public class NewIssueFragment extends Fragment {
         hideProgress();
         noProjectData.setVisibility(View.GONE);
         newIssueForm.setVisibility(View.VISIBLE);
+        fabProgressCircle.setVisibility(View.VISIBLE);
         fillForm(createMetaModel, assignees);
 
         if (issue != null) {
@@ -235,12 +245,11 @@ public class NewIssueFragment extends Fragment {
         }
     }
 
-    @Click(R.id.editWorkLogDate)
-    void onSelectEndDate(){
+    @Click(R.id.estimatedDueDate)
+    void onSelectEndDate() {
         final DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                dateTime = new MutableDateTime();
                 dateTime.setYear(year);
                 dateTime.setMonthOfYear(monthOfYear + 1);
                 dateTime.setDayOfMonth(dayOfMonth);
@@ -248,14 +257,17 @@ public class NewIssueFragment extends Fragment {
                 estimatedDueDate.setText(dateTime.toString(Consts.DATE_FORMAT));
             }
         };
-        final DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), onDateSetListener, dateTime.getYear(), dateTime.getMonthOfYear()-1, dateTime.getDayOfMonth());
-        datePickerDialog.getDatePicker().setMaxDate(dateTime.getMillis());
+        final DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), onDateSetListener, dateTime.getYear(), dateTime.getMonthOfYear() - 1, dateTime.getDayOfMonth());
         datePickerDialog.show();
     }
 
     private void initValues() {
         issueSummary.setText(issue.getFields().getSummary());
         issueDescription.setText(issue.getFields().getDescription());
+        estimatedDueDate.setText(issue.getFields().getDuedate());
+        issueEnvironment.setText(issue.getFields().getEnvironment());
+        // TODO
+//        issueTypeSpinner.setSelection(issueTypeSpinner.getAdapter()..getPosition(issue.getFields().getIssueType()));
     }
 
     private void fillForm(CreateMetaModel createMetaModel, List<Assignee> assignees) {
@@ -269,7 +281,7 @@ public class NewIssueFragment extends Fragment {
     }
 
     private void addNoItem(List<AllowedValue> allowedVersions) {
-        if(!allowedVersions.isEmpty() && allowedVersions.get(0).getId().isEmpty()) {
+        if (!allowedVersions.isEmpty() && allowedVersions.get(0).getId().isEmpty()) {
             return;
         }
         final AllowedValue allowedValue = new AllowedValue();
@@ -299,10 +311,10 @@ public class NewIssueFragment extends Fragment {
         fixedInVersionSpinner.setAdapter(fixedInVersionAdapter);
         assigneeSpinner.setAdapter(assigneeSpinnerAdapter);
         issueTypeSpinner.setAdapter(typeSpinnerAdapter);
-        if(allowedVersions.isEmpty()) {
+        if (allowedVersions.size() == 1) {
             versionContainer.setVisibility(View.GONE);
         }
-        if (allowedFixVersions.isEmpty()) {
+        if (allowedFixVersions.size() == 1) {
             versionContainer.setVisibility(View.GONE);
         }
     }
@@ -310,7 +322,7 @@ public class NewIssueFragment extends Fragment {
     private List<AllowedValue> getVersions(Fields fields) {
         final Versions versions = fields.getVersions();
         final List<AllowedValue> allowedVersions;
-        if(versions != null) {
+        if (versions != null) {
             allowedVersions = versions.getAllowedValues();
         } else {
             allowedVersions = new ArrayList<>();
@@ -322,7 +334,7 @@ public class NewIssueFragment extends Fragment {
     private List<AllowedValue> getFixVersions(Fields fields) {
         final FixVersions fixVersions = fields.getFixVersions();
         final List<AllowedValue> allowedFixVersions;
-        if(fixVersions  != null) {
+        if (fixVersions != null) {
             allowedFixVersions = fixVersions.getAllowedValues();
         } else {
             allowedFixVersions = new ArrayList<>();

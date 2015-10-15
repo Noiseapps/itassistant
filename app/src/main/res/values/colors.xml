@@ -3,12 +3,11 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="loadingMask">#cc000000</color>
     <color name="textLabel">#666666</color>
     <color name="groupHeaderBackground">#E0F7FA</color>
     <color name="listItemHighlight">#E0E0E0</color>
     <color name="listItemBackground">#ffffff</color>
-    <color name="listItemBackgroundHighlight">#F5F5F5</color>
+    <color name="listItemBackgroundHighlight">#cccccc</color>
     <color name="white">#ffffff</color>
     <color name="textSecondary">#99000000</color>
 </resources>

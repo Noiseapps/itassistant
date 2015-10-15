@@ -26,6 +26,7 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.ItemLongClick;
 import org.androidannotations.annotations.ViewById;
 
 import retrofit.Callback;
@@ -87,6 +88,13 @@ public class CommentsFragment extends Fragment {
         noCommentsView.setVisibility(View.VISIBLE);
     }
 
+    @ItemLongClick(R.id.commentsList)
+    void onItemLongClick(int position) {
+        final Comment item = adapter.getItem(position);
+        //todo remove item, undo snackbar
+
+    }
+
     @Click(R.id.addCommentFab)
     void onAddCommentClick() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -137,6 +145,8 @@ public class CommentsFragment extends Fragment {
                 adapter.addItem(comment);
                 noCommentsView.setVisibility(View.GONE);
                 commentsList.setVisibility(View.VISIBLE);
+                commentsList.requestLayout();
+                commentsList.invalidate();
             }
 
             @Override

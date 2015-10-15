@@ -28,6 +28,7 @@
         android:layout_gravity="bottom|right|end"
         app:arcColor="@color/colorPrimary"
         app:arcWidth="4dp"
+        android:visibility="gone"
         app:finalIcon="@drawable/ic_done"
         app:layout_behavior="com.noiseapps.itassistant.utils.FabBehavior"
         app:reusable="true">
