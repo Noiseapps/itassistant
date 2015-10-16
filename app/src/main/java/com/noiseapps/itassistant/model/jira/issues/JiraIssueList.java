@@ -15,7 +15,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 
-public class JiraIssue implements Parcelable {
+public class JiraIssueList implements Parcelable {
 
 
     @SerializedName("expand")
@@ -34,10 +34,10 @@ public class JiraIssue implements Parcelable {
     @Expose
     private List<Issue> issues = new ArrayList<Issue>();
 
-    public JiraIssue() {
+    public JiraIssueList() {
     }
 
-    public JiraIssue(String expand, long startAt, long maxResults, long total, List<Issue> issues) {
+    public JiraIssueList(String expand, long startAt, long maxResults, long total, List<Issue> issues) {
         this.expand = expand;
         this.startAt = startAt;
         this.maxResults = maxResults;
@@ -150,10 +150,10 @@ public class JiraIssue implements Parcelable {
         if (other == this) {
             return true;
         }
-        if ((other instanceof JiraIssue) == false) {
+        if ((other instanceof JiraIssueList) == false) {
             return false;
         }
-        JiraIssue rhs = ((JiraIssue) other);
+        JiraIssueList rhs = ((JiraIssueList) other);
         return new EqualsBuilder().append(expand, rhs.expand).append(startAt, rhs.startAt).append(maxResults, rhs.maxResults).append(total, rhs.total).append(issues, rhs.issues).isEquals();
     }
 
@@ -171,7 +171,7 @@ public class JiraIssue implements Parcelable {
         dest.writeTypedList(issues);
     }
 
-    protected JiraIssue(Parcel in) {
+    protected JiraIssueList(Parcel in) {
         this.expand = in.readString();
         this.startAt = in.readLong();
         this.maxResults = in.readLong();
@@ -179,13 +179,13 @@ public class JiraIssue implements Parcelable {
         this.issues = in.createTypedArrayList(Issue.CREATOR);
     }
 
-    public static final Parcelable.Creator<JiraIssue> CREATOR = new Parcelable.Creator<JiraIssue>() {
-        public JiraIssue createFromParcel(Parcel source) {
-            return new JiraIssue(source);
+    public static final Parcelable.Creator<JiraIssueList> CREATOR = new Parcelable.Creator<JiraIssueList>() {
+        public JiraIssueList createFromParcel(Parcel source) {
+            return new JiraIssueList(source);
         }
 
-        public JiraIssue[] newArray(int size) {
-            return new JiraIssue[size];
+        public JiraIssueList[] newArray(int size) {
+            return new JiraIssueList[size];
         }
     };
 }

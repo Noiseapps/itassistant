@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
+import com.noiseapps.itassistant.BuildConfig;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.connector.JiraConnector;
 import com.noiseapps.itassistant.database.dao.AccountsDao;
@@ -35,17 +36,15 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.EditorAction;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.OptionsItem;
+import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
-
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 @EFragment(R.layout.fragment_account_atlassian)
 public class JiraAccountCreateFragment extends Fragment implements Validator.ValidationListener, DialogInterface.OnCancelListener {
@@ -76,6 +75,10 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
     @ViewById
     EditText password;
 
+    @NotEmpty
+    @ViewById
+    EditText accountName;
+
     @ViewById
     RelativeLayout rootView;
     @ViewById
@@ -100,9 +103,12 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
     }
 
     private void initData() {
-        host.setText("jira.exaco.pl");
-        username.setText("tomasz.scibiorek");
-        password.setText("kotek77@");
+        if(BuildConfig.DEBUG) {
+            accountName.setText("Exaco");
+            host.setText("jira.exaco.pl");
+            username.setText("tomasz.scibiorek");
+            password.setText("kotek77@");
+        }
     }
 
     void saveAccount() {
@@ -142,13 +148,10 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
     }
 
     private void startTimeout() {
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                requestCanceled = true;
-                hideProgress();
-                Snackbar.make(saveFab, R.string.requestTimedOut, Snackbar.LENGTH_LONG).show();
-            }
+        handler.postDelayed(() -> {
+            requestCanceled = true;
+            hideProgress();
+            Snackbar.make(saveFab, R.string.requestTimedOut, Snackbar.LENGTH_LONG).show();
         }, TimeUnit.SECONDS.toMillis(TIMEOUT_DURATION));
     }
 
@@ -175,16 +178,34 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
         if(!StringUtils.validUrl(host)) {
             host = "http://" + host;
         }
+        final String accountName = this.accountName.getText().toString();
         final String username = this.username.getText().toString();
         final String password = this.password.getText().toString();
         progressDialog.setTitle(getString(R.string.loggingIn));
-        currentConfig = new BaseAccount(accountsDao.getNextId(), username, password, host, "", AccountTypes.ACC_JIRA);
+        currentConfig = new BaseAccount(accountsDao.getNextId(), username, accountName, password, host, "", AccountTypes.ACC_JIRA);
         if(existsInDb()) {
             Snackbar.make(saveFab, R.string.configExists, Snackbar.LENGTH_LONG).show();
             return;
         }
         connector.setCurrentConfig(currentConfig);
-        connector.getUserData(new UserDataCallback());
+        getUserData();
+    }
+
+    @Background
+    void getUserData() {
+        final JiraUser userData = connector.getUserData();
+        onDataLoaded(userData);
+    }
+
+    @UiThread
+    void onDataLoaded(JiraUser userData) {
+        if(userData != null & !requestCanceled) {
+            final Picasso authPicasso = AuthenticatedPicasso.getAuthPicasso(getContext(), currentConfig);
+            authPicasso.load(userData.getAvatarUrls().getAvatar48()).placeholder(R.drawable.ic_action_account_circle).into(new LoadTarget());
+        } else {
+            hideProgress();
+            Snackbar.make(saveFab, R.string.couldNotFetchUserData, Snackbar.LENGTH_LONG).show();
+        }
     }
 
     private boolean existsInDb() {
@@ -214,22 +235,6 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
         validator.cancelAsync();
         requestCanceled = true;
         Snackbar.make(saveFab, R.string.userCanceledRequest, Snackbar.LENGTH_LONG).show();
-    }
-
-    private class UserDataCallback implements Callback<JiraUser> {
-        @Override
-        public void success(JiraUser jiraUser, Response response) {
-            if(!requestCanceled) {
-                final Picasso authPicasso = AuthenticatedPicasso.getAuthPicasso(getContext(), currentConfig);
-                authPicasso.load(jiraUser.getAvatarUrls().getAvatar48()).placeholder(R.drawable.ic_action_account_circle).into(new LoadTarget());
-            }
-        }
-
-        @Override
-        public void failure(RetrofitError error) {
-            hideProgress();
-            Snackbar.make(saveFab, R.string.couldNotFetchUserData, Snackbar.LENGTH_LONG).show();
-        }
     }
 
     class LoadTarget implements Target {

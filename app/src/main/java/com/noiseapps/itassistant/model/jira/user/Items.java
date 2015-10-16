@@ -1,6 +1,9 @@
 package com.noiseapps.itassistant.model.jira.user;
 
-public class Items {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Items implements Parcelable {
     private final String name;
 
     private final String self;
@@ -44,4 +47,30 @@ public class Items {
                 ", self='" + self + '\'' +
                 '}';
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.name);
+        dest.writeString(this.self);
+    }
+
+    protected Items(Parcel in) {
+        this.name = in.readString();
+        this.self = in.readString();
+    }
+
+    public static final Parcelable.Creator<Items> CREATOR = new Parcelable.Creator<Items>() {
+        public Items createFromParcel(Parcel source) {
+            return new Items(source);
+        }
+
+        public Items[] newArray(int size) {
+            return new Items[size];
+        }
+    };
 }

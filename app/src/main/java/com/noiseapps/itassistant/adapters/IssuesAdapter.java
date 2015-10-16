@@ -16,10 +16,13 @@ import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.squareup.picasso.Picasso;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 
 public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewHolder>{
 
     private final Context context;
+    private final Picasso authPicasso;
     private final List<Issue> issueList;
     private final IssueAdapterCallback callback;
 
@@ -27,8 +30,9 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
         void onItemClicked(Issue selectedIssue);
     }
 
-    public IssuesAdapter(Context context, List<Issue> issueList, IssueAdapterCallback callback) {
+    public IssuesAdapter(Context context, List<Issue> issueList, Picasso authPicasso, IssueAdapterCallback callback) {
         this.context = context;
+        this.authPicasso = authPicasso;
         this.issueList = issueList == null ? new ArrayList<Issue>() : issueList;
         this.callback = callback;
     }
@@ -55,6 +59,7 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
         private final TextView assignee;
         private final ImageView issuePriority;
         private final ImageView issueType;
+        private final CircleImageView avatar;
         private Issue issue;
         private final TextView issueKey;
 
@@ -62,9 +67,10 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.issueTitle);
             issueKey = (TextView) itemView.findViewById(R.id.issueKey);
-            assignee = (TextView) itemView.findViewById(R.id.assignee);
+            assignee = (TextView) itemView.findViewById(R.id.issueAssignee);
             issuePriority = (ImageView) itemView.findViewById(R.id.issuePriority);
             issueType = (ImageView) itemView.findViewById(R.id.issueType);
+            avatar = (CircleImageView) itemView.findViewById(R.id.avatar);
             itemView.setOnClickListener(this);
         }
 
@@ -74,14 +80,19 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
             loadIssuePriority();
             title.setText(issue.getFields().getSummary());
             issueKey.setText(issue.getKey());
-            issue.getFields().getAggregateprogress().getPercent();
+            issue.getFields().getAggregateProgress().getPercent();
             final Assignee issueAssignee = issue.getFields().getAssignee();
             if(issueAssignee != null) {
                 assignee.setText(context.getString(R.string.assignee, issueAssignee.getDisplayName()));
+                final String avatarUrl = issueAssignee.getAvatarUrls().get48x48();
+                authPicasso.load(avatarUrl).
+                        placeholder(R.drawable.ic_account_circle).
+                        error(R.drawable.ic_account_circle).
+                        into(avatar);
             } else {
-                assignee.setVisibility(View.GONE);
+                assignee.setVisibility(View.INVISIBLE);
+                avatar.setVisibility(View.INVISIBLE);
             }
-//            itemView.setActivated(position == selectedPosition);
         }
 
         @Override
@@ -96,7 +107,7 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
         }
 
         private void loadIssueType() {
-            final String iconUrl = issue.getFields().getIssuetype().getIconUrl();
+            final String iconUrl = issue.getFields().getIssueType().getIconUrl();
             Picasso.with(context).load(iconUrl).noFade().into(issueType);
         }
     }

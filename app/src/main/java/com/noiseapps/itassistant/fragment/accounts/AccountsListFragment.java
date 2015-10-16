@@ -2,13 +2,13 @@ package com.noiseapps.itassistant.fragment.accounts;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -32,7 +32,7 @@ public class AccountsListFragment extends Fragment {
     @ViewById
     Toolbar toolbar;
     @ViewById
-    NestedScrollView emptyContainer;
+    LinearLayout emptyView;
     @Bean
     AccountsDao accountsDao;
     @ViewById
@@ -94,10 +94,10 @@ public class AccountsListFragment extends Fragment {
     private void setListVisibility() {
         if(accounts.isEmpty()) {
             list.setVisibility(View.GONE);
-            emptyContainer.setVisibility(View.VISIBLE);
+            emptyView.setVisibility(View.VISIBLE);
         } else {
             list.setVisibility(View.VISIBLE);
-            emptyContainer.setVisibility(View.GONE);
+            emptyView.setVisibility(View.GONE);
         }
     }
 

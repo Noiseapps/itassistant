@@ -5,9 +5,16 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
-import com.noiseapps.itassistant.model.jira.issues.JiraIssue;
+import com.noiseapps.itassistant.model.jira.issues.Assignee;
+import com.noiseapps.itassistant.model.jira.issues.JiraIssueList;
+import com.noiseapps.itassistant.model.jira.issues.Priority;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comments;
+import com.noiseapps.itassistant.model.jira.issues.common.IssueStatus;
+import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueModel;
+import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueResponse;
+import com.noiseapps.itassistant.model.jira.projects.createmeta.CreateMetaModel;
+import com.noiseapps.itassistant.model.jira.projects.details.JiraProjectDetails;
 import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogItem;
 import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogs;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
@@ -19,6 +26,7 @@ import retrofit.Callback;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.POST;
+import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
 
@@ -28,13 +36,16 @@ public interface JiraAPI {
     void newSession(@Body SessionRequest user, @NonNull Callback<SessionResponse> callback);
 
     @GET("/rest/api/2/user?expand=groups")
-    void getUserData(@Query("username") String username, @NonNull Callback<JiraUser> callback);
+    JiraUser getUserData(@Query("username") String username);
 
     @GET("/rest/api/2/project")
-    void getUserProjects(@NonNull Callback<List<JiraProject>> callback);
+    List<JiraProject> getUserProjects();
+
+    @GET("/rest/api/2/project/{projectIdOrKey}")
+    void getProjectDetails(@Path("projectIdOrKey") String projectId, @NonNull Callback<JiraProjectDetails> callback);
 
     @GET("/rest/api/2/search?maxResults=150&expand=transitions")
-    void getProjectIssues(@Query("jql") String projectId, @NonNull Callback<JiraIssue> callback);
+    void getProjectIssues(@Query("jql") String projectId, @NonNull Callback<JiraIssueList> callback);
 
     @GET("/rest/api/2/issue/{issueIdOrKey}/comment")
     void getIssueComments(@Path("issueIdOrKey") String issueId, @NonNull Callback<Comments> callback);
@@ -47,4 +58,22 @@ public interface JiraAPI {
 
     @POST("/rest/api/2/issue/{issueIdOrKey}/worklog?adjustEstimate=new")
     void postIssueWorkLog(@Path("issueIdOrKey") String issueId, @Query("newEstimate") String newEstimate, @Body WorkLogItem comment, @NonNull Callback<WorkLogItem> callback);
+
+    @GET("/rest/api/2/project/{projectIdOrKey}/statuses")
+    void getProjectStatuses(@Path("projectIdOrKey") String projectId, @NonNull Callback<List<IssueStatus>> callback);
+
+    @GET("/rest/api/2/user/assignable/search")
+    void getProjectMembers(@Query("project") String projectKey, @NonNull Callback<List<Assignee>> callback);
+
+    @GET("/rest/api/2/priority")
+    void getIssuePriorities(@NonNull Callback<List<Priority>> callback);
+
+    @GET("/rest/api/2/issue/createmeta?&expand=projects.issuetypes.fields")
+    void getCreateMeta(@Query("projectKeys") String projectKey, @NonNull Callback<CreateMetaModel> callback);
+
+    @POST("/rest/api/2/issue")
+    void postNewIssue(@Body CreateIssueModel createIssueModel, @NonNull Callback<CreateIssueResponse> callback);
+
+    @PUT("/rest/api/2/issue/{issueId}")
+    void updateIssue(@Path("issueId") String issueId, @Body CreateIssueModel createIssueModel, @NonNull Callback<CreateIssueResponse> callback);
 }

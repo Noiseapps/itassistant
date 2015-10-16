@@ -17,6 +17,9 @@ public class Priority implements Parcelable {
     @SerializedName("self")
     @Expose
     private String self;
+    @SerializedName("statusColor")
+    @Expose
+    private String statusColor;
     @SerializedName("iconUrl")
     @Expose
     private String iconUrl;
@@ -27,119 +30,83 @@ public class Priority implements Parcelable {
     @Expose
     private String id;
 
-    /**
-     * No args constructor for use in serialization
-     * 
-     */
-    public Priority() {
-    }
 
-    /**
-     * 
-     * @param id
-     * @param name
-     * @param iconUrl
-     * @param self
-     */
-    public Priority(String self, String iconUrl, String name, String id) {
-        this.self = self;
-        this.iconUrl = iconUrl;
-        this.name = name;
-        this.id = id;
-    }
-
-    /**
-     * 
-     * @return
-     *     The self
-     */
     public String getSelf() {
         return self;
     }
 
-    /**
-     * 
-     * @param self
-     *     The self
-     */
     public void setSelf(String self) {
         this.self = self;
     }
 
-    /**
-     * 
-     * @return
-     *     The iconUrl
-     */
+    public String getStatusColor() {
+        return statusColor;
+    }
+
+    public void setStatusColor(String statusColor) {
+        this.statusColor = statusColor;
+    }
+
     public String getIconUrl() {
         return iconUrl;
     }
 
-    /**
-     * 
-     * @param iconUrl
-     *     The iconUrl
-     */
     public void setIconUrl(String iconUrl) {
         this.iconUrl = iconUrl;
     }
 
-    /**
-     * 
-     * @return
-     *     The name
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * 
-     * @param name
-     *     The name
-     */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * 
-     * @return
-     *     The id
-     */
     public String getId() {
         return id;
     }
 
-    /**
-     * 
-     * @param id
-     *     The id
-     */
     public void setId(String id) {
         this.id = id;
     }
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return "Priority{" +
+                "self='" + self + '\'' +
+                ", statusColor='" + statusColor + '\'' +
+                ", iconUrl='" + iconUrl + '\'' +
+                ", name='" + name + '\'' +
+                ", id='" + id + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Priority priority = (Priority) o;
+
+        if (self != null ? !self.equals(priority.self) : priority.self != null) return false;
+        if (statusColor != null ? !statusColor.equals(priority.statusColor) : priority.statusColor != null)
+            return false;
+        if (iconUrl != null ? !iconUrl.equals(priority.iconUrl) : priority.iconUrl != null)
+            return false;
+        if (name != null ? !name.equals(priority.name) : priority.name != null) return false;
+        return !(id != null ? !id.equals(priority.id) : priority.id != null);
+
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(self).append(iconUrl).append(name).append(id).toHashCode();
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (other == this) {
-            return true;
-        }
-        if ((other instanceof Priority) == false) {
-            return false;
-        }
-        Priority rhs = ((Priority) other);
-        return new EqualsBuilder().append(self, rhs.self).append(iconUrl, rhs.iconUrl).append(name, rhs.name).append(id, rhs.id).isEquals();
+        int result = self != null ? self.hashCode() : 0;
+        result = 31 * result + (statusColor != null ? statusColor.hashCode() : 0);
+        result = 31 * result + (iconUrl != null ? iconUrl.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (id != null ? id.hashCode() : 0);
+        return result;
     }
 
     @Override
@@ -150,19 +117,24 @@ public class Priority implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.self);
+        dest.writeString(this.statusColor);
         dest.writeString(this.iconUrl);
         dest.writeString(this.name);
         dest.writeString(this.id);
     }
 
+    public Priority() {
+    }
+
     protected Priority(Parcel in) {
         this.self = in.readString();
+        this.statusColor = in.readString();
         this.iconUrl = in.readString();
         this.name = in.readString();
         this.id = in.readString();
     }
 
-    public static final Parcelable.Creator<Priority> CREATOR = new Parcelable.Creator<Priority>() {
+    public static final Creator<Priority> CREATOR = new Creator<Priority>() {
         public Priority createFromParcel(Parcel source) {
             return new Priority(source);
         }

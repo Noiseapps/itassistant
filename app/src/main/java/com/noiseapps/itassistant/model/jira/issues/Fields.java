@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.noiseapps.itassistant.model.jira.issues.common.IssueType;
 
 
 @SuppressWarnings("ALL")
@@ -21,7 +22,7 @@ public class Fields implements Parcelable {
     private Progress progress;
     @SerializedName("issuetype")
     @Expose
-    private Issuetype issuetype;
+    private IssueType issueType;
     @SerializedName("timespent")
     @Expose
     private long timespent;
@@ -64,7 +65,7 @@ public class Fields implements Parcelable {
     private String environment;
     @SerializedName("aggregateprogress")
     @Expose
-    private Aggregateprogress aggregateprogress;
+    private AggregateProgress aggregateProgress;
     @SerializedName("components")
     @Expose
     private List<Component> components = new ArrayList<Component>();
@@ -110,7 +111,7 @@ public class Fields implements Parcelable {
         return "Fields{" +
                 "summary='" + summary + '\'' +
                 ", progress=" + progress +
-                ", issuetype=" + issuetype +
+                ", issuetype=" + issueType +
                 ", timespent=" + timespent +
                 ", reporter=" + reporter +
                 ", updated='" + updated + '\'' +
@@ -124,7 +125,7 @@ public class Fields implements Parcelable {
                 ", workratio=" + workratio +
                 ", project=" + project +
                 ", environment='" + environment + '\'' +
-                ", aggregateprogress=" + aggregateprogress +
+                ", aggregateprogress=" + aggregateProgress +
                 ", components=" + components +
                 ", votes=" + votes +
                 ", resolution=" + resolution +
@@ -155,12 +156,12 @@ public class Fields implements Parcelable {
         this.progress = progress;
     }
 
-    public Issuetype getIssuetype() {
-        return issuetype;
+    public IssueType getIssueType() {
+        return issueType;
     }
 
-    public void setIssuetype(Issuetype issuetype) {
-        this.issuetype = issuetype;
+    public void setIssueType(IssueType issueType) {
+        this.issueType = issueType;
     }
 
     public long getTimespent() {
@@ -267,12 +268,12 @@ public class Fields implements Parcelable {
         this.environment = environment;
     }
 
-    public Aggregateprogress getAggregateprogress() {
-        return aggregateprogress;
+    public AggregateProgress getAggregateProgress() {
+        return aggregateProgress;
     }
 
-    public void setAggregateprogress(Aggregateprogress aggregateprogress) {
-        this.aggregateprogress = aggregateprogress;
+    public void setAggregateProgress(AggregateProgress aggregateProgress) {
+        this.aggregateProgress = aggregateProgress;
     }
 
     public List<Component> getComponents() {
@@ -384,7 +385,7 @@ public class Fields implements Parcelable {
             return false;
         if (progress != null ? !progress.equals(fields.progress) : fields.progress != null)
             return false;
-        if (issuetype != null ? !issuetype.equals(fields.issuetype) : fields.issuetype != null)
+        if (issueType != null ? !issueType.equals(fields.issueType) : fields.issueType != null)
             return false;
         if (reporter != null ? !reporter.equals(fields.reporter) : fields.reporter != null)
             return false;
@@ -405,7 +406,7 @@ public class Fields implements Parcelable {
             return false;
         if (environment != null ? !environment.equals(fields.environment) : fields.environment != null)
             return false;
-        if (aggregateprogress != null ? !aggregateprogress.equals(fields.aggregateprogress) : fields.aggregateprogress != null)
+        if (aggregateProgress != null ? !aggregateProgress.equals(fields.aggregateProgress) : fields.aggregateProgress != null)
             return false;
         if (components != null ? !components.equals(fields.components) : fields.components != null)
             return false;
@@ -428,7 +429,7 @@ public class Fields implements Parcelable {
     public int hashCode() {
         int result = summary != null ? summary.hashCode() : 0;
         result = 31 * result + (progress != null ? progress.hashCode() : 0);
-        result = 31 * result + (issuetype != null ? issuetype.hashCode() : 0);
+        result = 31 * result + (issueType != null ? issueType.hashCode() : 0);
         result = 31 * result + (int) (timespent ^ (timespent >>> 32));
         result = 31 * result + (reporter != null ? reporter.hashCode() : 0);
         result = 31 * result + (updated != null ? updated.hashCode() : 0);
@@ -442,7 +443,7 @@ public class Fields implements Parcelable {
         result = 31 * result + (int) (workratio ^ (workratio >>> 32));
         result = 31 * result + (project != null ? project.hashCode() : 0);
         result = 31 * result + (environment != null ? environment.hashCode() : 0);
-        result = 31 * result + (aggregateprogress != null ? aggregateprogress.hashCode() : 0);
+        result = 31 * result + (aggregateProgress != null ? aggregateProgress.hashCode() : 0);
         result = 31 * result + (components != null ? components.hashCode() : 0);
         result = 31 * result + (votes != null ? votes.hashCode() : 0);
         result = 31 * result + (resolution != null ? resolution.hashCode() : 0);
@@ -466,7 +467,7 @@ public class Fields implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.summary);
         dest.writeParcelable(this.progress, 0);
-        dest.writeParcelable(this.issuetype, 0);
+        dest.writeParcelable(this.issueType, 0);
         dest.writeLong(this.timespent);
         dest.writeParcelable(this.reporter, 0);
         dest.writeString(this.updated);
@@ -480,7 +481,7 @@ public class Fields implements Parcelable {
         dest.writeLong(this.workratio);
         dest.writeParcelable(this.project, 0);
         dest.writeString(this.environment);
-        dest.writeParcelable(this.aggregateprogress, 0);
+        dest.writeParcelable(this.aggregateProgress, 0);
         dest.writeList(this.components);
         dest.writeParcelable(this.votes, 0);
         dest.writeParcelable(this.resolution, 0);
@@ -497,7 +498,7 @@ public class Fields implements Parcelable {
     protected Fields(Parcel in) {
         this.summary = in.readString();
         this.progress = in.readParcelable(Progress.class.getClassLoader());
-        this.issuetype = in.readParcelable(Issuetype.class.getClassLoader());
+        this.issueType = in.readParcelable(IssueType.class.getClassLoader());
         this.timespent = in.readLong();
         this.reporter = in.readParcelable(Reporter.class.getClassLoader());
         this.updated = in.readString();
@@ -511,7 +512,7 @@ public class Fields implements Parcelable {
         this.workratio = in.readLong();
         this.project = in.readParcelable(Project.class.getClassLoader());
         this.environment = in.readString();
-        this.aggregateprogress = in.readParcelable(Aggregateprogress.class.getClassLoader());
+        this.aggregateProgress = in.readParcelable(AggregateProgress.class.getClassLoader());
         this.components = new ArrayList<Component>();
         in.readList(this.components, List.class.getClassLoader());
         this.votes = in.readParcelable(Votes.class.getClassLoader());

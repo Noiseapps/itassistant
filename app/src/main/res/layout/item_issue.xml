@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              xmlns:tools="http://schemas.android.com/tools"
               android:background="@drawable/list_background"
               android:clickable="true"
               android:orientation="horizontal"
@@ -29,40 +30,54 @@
             android:scaleType="fitXY"/>
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_vertical"
-        android:layout_margin="8dp"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
+        android:gravity="center"
+        android:layout_height="match_parent">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
+            android:id="@+id/avatar"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_alignTop="@+id/issueKey"
+            android:layout_alignParentEnd="true" />
 
         <TextView
             android:id="@+id/issueKey"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:text="AI-45"
+            tools:text="AI-45"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/colorPrimary"/>
+            android:textColor="@color/colorPrimary"
+            android:layout_alignParentStart="true"
+            android:layout_alignEnd="@+id/issueTitle" />
 
         <TextView
             android:id="@+id/issueTitle"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:text="ASDF movie"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+            tools:text="Issue title"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_below="@+id/issueKey"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@+id/avatar" />
 
         <TextView
-            android:id="@+id/assignee"
+            android:id="@+id/issueAssignee"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:gravity="right"
-            android:text="Assigned to: John Doe"
-            android:textAppearance="?android:attr/textAppearanceSmall"/>
-    </LinearLayout>
+            android:gravity="end"
+            tools:text="Assigned to: John Doe"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_below="@+id/issueTitle"
+            android:layout_alignParentStart="true" />
+    </RelativeLayout>
 
 </LinearLayout>
 

@@ -1,6 +1,9 @@
 
 package com.noiseapps.itassistant.model.jira.projects;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -8,7 +11,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class ProjectCategory {
+public class ProjectCategory implements Parcelable {
 
     @SerializedName("self")
     @Expose
@@ -138,4 +141,33 @@ public class ProjectCategory {
         return new EqualsBuilder().append(self, rhs.self).append(id, rhs.id).append(name, rhs.name).append(description, rhs.description).isEquals();
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.self);
+        dest.writeString(this.id);
+        dest.writeString(this.name);
+        dest.writeString(this.description);
+    }
+
+    protected ProjectCategory(Parcel in) {
+        this.self = in.readString();
+        this.id = in.readString();
+        this.name = in.readString();
+        this.description = in.readString();
+    }
+
+    public static final Parcelable.Creator<ProjectCategory> CREATOR = new Parcelable.Creator<ProjectCategory>() {
+        public ProjectCategory createFromParcel(Parcel source) {
+            return new ProjectCategory(source);
+        }
+
+        public ProjectCategory[] newArray(int size) {
+            return new ProjectCategory[size];
+        }
+    };
 }

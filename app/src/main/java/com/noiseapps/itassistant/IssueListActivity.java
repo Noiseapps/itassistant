@@ -1,7 +1,6 @@
 package com.noiseapps.itassistant;
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.provider.Settings;
@@ -18,9 +17,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
 import com.noiseapps.itassistant.adapters.NavigationMenuAdapter;
 import com.noiseapps.itassistant.connector.JiraConnector;
@@ -28,11 +24,14 @@ import com.noiseapps.itassistant.database.dao.AccountsDao;
 import com.noiseapps.itassistant.fragment.IssueDetailFragment;
 import com.noiseapps.itassistant.fragment.IssueDetailFragment_;
 import com.noiseapps.itassistant.fragment.IssueListFragment;
+import com.noiseapps.itassistant.fragment.NewIssueFragment;
+import com.noiseapps.itassistant.fragment.NewIssueFragment_;
 import com.noiseapps.itassistant.model.NavigationModel;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 import com.noiseapps.itassistant.model.jira.user.JiraUser;
+import com.noiseapps.itassistant.utils.Consts;
 import com.noiseapps.itassistant.utils.DividerItemDecoration;
 import com.noiseapps.itassistant.utils.events.EventBusAction;
 import com.noiseapps.itassistant.utils.events.OpenDrawerEvent;
@@ -48,44 +47,61 @@ import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.greenrobot.event.EventBus;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import jonathanfinerty.once.Once;
 
 @EActivity(R.layout.activity_issue_app_bar)
 public class IssueListActivity extends AppCompatActivity
-        implements IssueListFragment.Callbacks {
+        implements IssueListFragment.Callbacks, NewIssueFragment.NewIssueCallbacks, IssueDetailFragment.IssueDetailCallbacks {
 
     public static final int ACCOUNTS_REQUEST = 633;
-    private boolean mTwoPane;
-
+    public static final int NEW_ISSUE_REQUEST = 5135;
     @ViewById
     Toolbar toolbar;
     @ViewById
     RecyclerView recyclerView;
     @ViewById
-    View mainLayout, emptyList;
+    View mainLayout;
     @ViewById
     DrawerLayout drawerLayout;
     @FragmentById(R.id.issue_list)
     IssueListFragment listFragment;
-
     @Bean
     AccountsDao accountsDao;
     @Bean
     JiraConnector jiraConnector;
+    ArrayList<NavigationModel> navigationModels;
+    private boolean mTwoPane;
     private ProgressDialog progressDialog;
     private NavigationMenuAdapter adapter;
+
+    @Override
+    public void onEditIssue(Issue issue) {
+        final String key = issue.getFields().getProject().getKey();
+        if (mTwoPane) {
+            final NewIssueFragment fragment = NewIssueFragment_.builder().projectKey(key).issue(issue).build();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.issue_detail_container, fragment)
+                    .commit();
+        } else {
+            NewIssueActivity_.intent(this).projectKey(key).issue(issue).startForResult(NEW_ISSUE_REQUEST);
+        }
+    }
 
     @AfterViews
     void init() {
         setTablet();
-        mainLayout.setVisibility(View.GONE);
-        if(accountsDao.getAll().isEmpty()) {
+        if (accountsDao.getAll().isEmpty()) {
             showNoAccountsDialog();
         } else {
-            downloadData();
+            if (navigationModels == null) {
+                downloadData();
+            } else {
+                initNavigation(navigationModels);
+            }
         }
         initToolbar();
         isTwoPane();
@@ -103,17 +119,11 @@ public class IssueListActivity extends AppCompatActivity
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.noAccounts);
         builder.setMessage(R.string.noAccountsMsg);
-        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                startAccountsActivity();
-            }
+        builder.setPositiveButton(R.string.yes, (dialog, which) -> {
+            startAccountsActivity();
         });
-        builder.setNegativeButton(R.string.quit, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                finish();
-            }
+        builder.setNegativeButton(R.string.quit, (dialog, which) -> {
+            finish();
         });
         builder.show();
     }
@@ -140,61 +150,41 @@ public class IssueListActivity extends AppCompatActivity
     @Background
     void downloadData() {
         showProgress();
-        final List<NavigationModel> navigationModels = new ArrayList<>();
+        navigationModels = new ArrayList<>();
         for (final BaseAccount baseAccount : accountsDao.getAll()) {
-            jiraConnector.setCurrentConfig(baseAccount);
-            jiraConnector.getUserData(new Callback<JiraUser>() {
-                @Override
-                public void success(final JiraUser jiraUser, Response response) {
-                    jiraConnector.getUserProjects(new Callback<List<JiraProject>>() {
-                        @Override
-                        public void success(List<JiraProject> jiraProjects, Response response) {
-                            navigationModels.add(new NavigationModel(baseAccount, jiraUser, jiraProjects));
-                            initNavigation(navigationModels);
-                            hideProgress();
-                        }
-
-                        @Override
-                        public void failure(RetrofitError error) {
-                            showErrorDialog();
-                            navigationModels.clear();
-                            hideProgress();
-                        }
-                    });
+            try {
+                jiraConnector.setCurrentConfig(baseAccount);
+                final JiraUser jiraUser = jiraConnector.getUserData();
+                if (jiraUser != null) {
+                    final List<JiraProject> jiraProjects = jiraConnector.getUserProjects();
+                    if (jiraProjects != null) {
+                        navigationModels.add(new NavigationModel(baseAccount, jiraUser, jiraProjects));
+                    } else {
+                    }
+                } else {
+                    showErrorDialog();
                 }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    // TODO error
-                    navigationModels.clear();
-                    hideProgress();
-                }
-            });
+            } catch (Exception e) {
+                Logger.e(e, e.getMessage());
+            }
         }
+        hideProgress();
+        initNavigation(navigationModels);
     }
 
     @UiThread
     void showErrorDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.errorDownloading).setMessage(R.string.errorDownloadingMsg).
-                setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        downloadData();
-                    }
+                setPositiveButton(R.string.ok, (dialog, which) -> {
+                    downloadData();
                 }).
-                setNegativeButton(R.string.quit, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
+                setNegativeButton(R.string.quit, (dialog, which) -> {
+                    finish();
                 }).
-                setNeutralButton(R.string.settings, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        final Intent settings = new Intent(Settings.ACTION_WIFI_SETTINGS);
-                        startActivity(settings);
-                    }
+                setNeutralButton(R.string.settings, (dialog, which) -> {
+                    final Intent settings = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                    startActivity(settings);
                 }).show();
     }
 
@@ -210,22 +200,20 @@ public class IssueListActivity extends AppCompatActivity
 
     @UiThread
     void hideProgress() {
-        if(progressDialog != null) {
+        if (progressDialog != null) {
             progressDialog.dismiss();
             progressDialog = null;
         }
     }
 
-    private void initNavigation(List<NavigationModel> navigationModels) {
+    @UiThread
+    void initNavigation(List<NavigationModel> navigationModels) {
         final RecyclerViewExpandableItemManager manager = new RecyclerViewExpandableItemManager(null);
-        adapter = new NavigationMenuAdapter(this, navigationModels, new NavigationMenuAdapter.AdapterCallbacks() {
-            @Override
-            public void onItemClicked(JiraProject jiraProject, BaseAccount baseAccount) {
-                mainLayout.setVisibility(View.VISIBLE);
-                emptyList.setVisibility(View.GONE);
-                drawerLayout.closeDrawer(GravityCompat.START);
-                listFragment.setProject(jiraProject, baseAccount);
-            }
+        adapter = new NavigationMenuAdapter(this, navigationModels, (jiraProject, baseAccount) -> {
+            mainLayout.setVisibility(View.VISIBLE);
+//                emptyList.setVisibility(View.GONE);
+            drawerLayout.closeDrawer(GravityCompat.START);
+            listFragment.setProject(jiraProject, baseAccount);
         });
         final RecyclerView.Adapter wrappedAdapter = manager.createWrappedAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -233,7 +221,10 @@ public class IssueListActivity extends AppCompatActivity
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(wrappedAdapter);
         manager.attachRecyclerView(recyclerView);
-        drawerLayout.openDrawer(GravityCompat.START);
+        if (!Once.beenDone(Once.THIS_APP_INSTALL, Consts.SHOW_DRAWER)) {
+            drawerLayout.openDrawer(GravityCompat.START);
+            Once.markDone(Consts.SHOW_DRAWER);
+        }
     }
 
     private void isTwoPane() {
@@ -243,7 +234,7 @@ public class IssueListActivity extends AppCompatActivity
     }
 
     @Override
-    public void onItemSelected(Issue issue) {
+    public void onItemSelected(Issue issue, JiraProject jiraProject) {
         if (mTwoPane) {
             final IssueDetailFragment fragment = IssueDetailFragment_.builder().issue(issue).build();
             getSupportFragmentManager().beginTransaction()
@@ -251,6 +242,19 @@ public class IssueListActivity extends AppCompatActivity
                     .commit();
         } else {
             IssueDetailActivity_.intent(this).issue(issue).start();
+        }
+    }
+
+    @Override
+    public void onAddNewIssue(JiraProject jiraProject) {
+        final String key = jiraProject.getKey();
+        if (mTwoPane) {
+            final NewIssueFragment fragment = NewIssueFragment_.builder().projectKey(key).build();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.issue_detail_container, fragment)
+                    .commit();
+        } else {
+            NewIssueActivity_.intent(this).projectKey(key).startForResult(NEW_ISSUE_REQUEST);
         }
     }
 
@@ -266,10 +270,10 @@ public class IssueListActivity extends AppCompatActivity
         super.onResume();
     }
 
-    @Click(R.id.openDrawer)
-    void openDrawer() {
-        onEvent(null);
-    }
+//    @Click(R.id.openDrawer)
+//    void openDrawer() {
+//        onEvent(null);
+//    }
 
     @EventBusAction
     public void onEvent(@Nullable OpenDrawerEvent event) {
@@ -281,19 +285,26 @@ public class IssueListActivity extends AppCompatActivity
         startAccountsActivity();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Logger.w("" + requestCode);
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
     @OnActivityResult(ACCOUNTS_REQUEST)
     void onAccountAdded(int resultCode) {
         Logger.w("" + resultCode);
-        if(resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK) {
             downloadData();
         } else if (accountsDao.getAll().isEmpty()) {
             showNoAccountsDialog();
         }
+    }
+
+    @OnActivityResult(NEW_ISSUE_REQUEST)
+    void onIssueAdded(int resultCode) {
+        Logger.w("" + resultCode);
+        if (resultCode == RESULT_OK) {
+            listFragment.reload();
+        }
+    }
+
+    @Override
+    public void onIssueCreated() {
+        listFragment.reload();
     }
 }

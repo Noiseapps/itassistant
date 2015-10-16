@@ -1,9 +1,11 @@
 package com.noiseapps.itassistant.model.jira.user;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
-public class AvatarUrls
-{
+public class AvatarUrls implements Parcelable {
 
     @SerializedName("16x16")
     private final String avatar16;
@@ -75,4 +77,34 @@ public class AvatarUrls
         result = 31 * result + (avatar48 != null ? avatar48.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.avatar16);
+        dest.writeString(this.avatar24);
+        dest.writeString(this.avatar32);
+        dest.writeString(this.avatar48);
+    }
+
+    protected AvatarUrls(Parcel in) {
+        this.avatar16 = in.readString();
+        this.avatar24 = in.readString();
+        this.avatar32 = in.readString();
+        this.avatar48 = in.readString();
+    }
+
+    public static final Parcelable.Creator<AvatarUrls> CREATOR = new Parcelable.Creator<AvatarUrls>() {
+        public AvatarUrls createFromParcel(Parcel source) {
+            return new AvatarUrls(source);
+        }
+
+        public AvatarUrls[] newArray(int size) {
+            return new AvatarUrls[size];
+        }
+    };
 }

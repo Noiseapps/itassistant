@@ -32,10 +32,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/actionAccounts"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:background="@drawable/list_background"
         android:clickable="true"
-        android:drawableLeft="@drawable/ic_action_settings"
         android:drawableStart="@drawable/ic_action_settings"
         android:text="@string/settings" />
 
@@ -45,10 +44,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/actionAbout"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:background="@drawable/list_background"
         android:clickable="true"
-        android:drawableLeft="@drawable/ic_action_people"
         android:drawableStart="@drawable/ic_action_people"
         android:text="@string/accounts" />
 
@@ -58,10 +56,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/actionFeedback"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:background="@drawable/list_background"
         android:clickable="true"
-        android:drawableLeft="@drawable/ic_action_info"
         android:drawableStart="@drawable/ic_action_info"
         android:text="@string/aboutApp" />
 
@@ -71,10 +68,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:background="@drawable/list_background"
         android:clickable="true"
-        android:drawableLeft="@drawable/ic_action_feedback"
         android:drawableStart="@drawable/ic_action_feedback"
         android:text="@string/feedback" />
 

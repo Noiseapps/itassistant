@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:id="@+id/noProjectData"
+    android:visibility="gone"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    tools:showIn="@layout/fragment_new_issue">
+
+    <TextView
+        android:drawableTop="@drawable/ic_error"
+        android:layout_width="wrap_content"
+        android:alpha=".5"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/failedToFetchDetails"
+        android:layout_gravity="center_horizontal"/>
+</LinearLayout>

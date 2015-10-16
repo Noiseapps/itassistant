@@ -11,7 +11,7 @@
         android:id="@+id/avatarView"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
         android:src="@drawable/jira"
         app:border_width="1dp"
         app:border_color="@color/colorPrimary"/>
@@ -21,9 +21,8 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Large Text"
-        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
         android:id="@+id/accountType"
         android:layout_alignBottom="@+id/avatarView"
-        android:layout_toRightOf="@+id/avatarView"
         android:layout_toEndOf="@+id/avatarView"/>
 </RelativeLayout>

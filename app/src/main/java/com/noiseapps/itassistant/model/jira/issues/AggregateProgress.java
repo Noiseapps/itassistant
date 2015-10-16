@@ -12,7 +12,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 
-public class Aggregateprogress implements Parcelable {
+public class AggregateProgress implements Parcelable {
 
     @SerializedName("progress")
     @Expose
@@ -28,7 +28,7 @@ public class Aggregateprogress implements Parcelable {
      * No args constructor for use in serialization
      * 
      */
-    public Aggregateprogress() {
+    public AggregateProgress() {
     }
 
     /**
@@ -37,7 +37,7 @@ public class Aggregateprogress implements Parcelable {
      * @param progress
      * @param percent
      */
-    public Aggregateprogress(long progress, long total, long percent) {
+    public AggregateProgress(long progress, long total, long percent) {
         this.progress = progress;
         this.total = total;
         this.percent = percent;
@@ -112,10 +112,10 @@ public class Aggregateprogress implements Parcelable {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof Aggregateprogress)) {
+        if (!(other instanceof AggregateProgress)) {
             return false;
         }
-        Aggregateprogress rhs = ((Aggregateprogress) other);
+        AggregateProgress rhs = ((AggregateProgress) other);
         return new EqualsBuilder().append(progress, rhs.progress).append(total, rhs.total).append(percent, rhs.percent).isEquals();
     }
 
@@ -132,19 +132,19 @@ public class Aggregateprogress implements Parcelable {
         dest.writeLong(this.percent);
     }
 
-    protected Aggregateprogress(Parcel in) {
+    protected AggregateProgress(Parcel in) {
         this.progress = in.readLong();
         this.total = in.readLong();
         this.percent = in.readLong();
     }
 
-    public static final Parcelable.Creator<Aggregateprogress> CREATOR = new Parcelable.Creator<Aggregateprogress>() {
-        public Aggregateprogress createFromParcel(Parcel source) {
-            return new Aggregateprogress(source);
+    public static final Parcelable.Creator<AggregateProgress> CREATOR = new Parcelable.Creator<AggregateProgress>() {
+        public AggregateProgress createFromParcel(Parcel source) {
+            return new AggregateProgress(source);
         }
 
-        public Aggregateprogress[] newArray(int size) {
-            return new Aggregateprogress[size];
+        public AggregateProgress[] newArray(int size) {
+            return new AggregateProgress[size];
         }
     };
 }

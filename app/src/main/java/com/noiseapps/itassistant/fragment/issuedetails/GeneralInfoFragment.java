@@ -29,7 +29,6 @@ public class GeneralInfoFragment extends Fragment {
 
     @AfterViews
     void init() {
-
         final Fields issueFields = issue.getFields();
         setIssueDetailsData(issueFields);
         setProgressData(issueFields);
@@ -37,9 +36,8 @@ public class GeneralInfoFragment extends Fragment {
         setPeopleData(issueFields);
     }
 
-
     private void setIssueDetailsData(Fields issueFields) {
-        type.setText(issueFields.getIssuetype().getName());
+        type.setText(issueFields.getIssueType().getName());
         priority.setText(issueFields.getPriority().getName());
         status.setText(issueFields.getStatus().getName());
         labels.setText(StringUtils.join(issueFields.getLabels(), ", "));

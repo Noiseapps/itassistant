@@ -23,6 +23,9 @@
 
     <style name="AppTheme.LabelTheme">
         <item name="android:textColor">@color/textLabel</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
     </style>
 
     <style name="AppTheme.LabelTheme.Progress">

@@ -9,6 +9,8 @@ import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.HttpSender;
 import org.androidannotations.annotations.EApplication;
 
+import jonathanfinerty.once.Once;
+
 @ReportsCrashes(
         httpMethod = HttpSender.Method.PUT,
         reportType = HttpSender.Type.JSON,
@@ -23,6 +25,7 @@ public class AssistantApplication extends Application {
     public void onCreate() {
         super.onCreate();
         JodaTimeAndroid.init(this);
+        Once.initialise(this);
         ACRA.init(this);
     }
 }

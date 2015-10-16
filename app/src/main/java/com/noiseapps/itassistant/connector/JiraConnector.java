@@ -8,9 +8,16 @@ import java.util.List;
 import com.noiseapps.itassistant.api.JiraAPI;
 import com.noiseapps.itassistant.database.PreferencesDAO;
 import com.noiseapps.itassistant.model.account.BaseAccount;
-import com.noiseapps.itassistant.model.jira.issues.JiraIssue;
+import com.noiseapps.itassistant.model.jira.issues.Assignee;
+import com.noiseapps.itassistant.model.jira.issues.JiraIssueList;
+import com.noiseapps.itassistant.model.jira.issues.Priority;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comments;
+import com.noiseapps.itassistant.model.jira.issues.common.IssueStatus;
+import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueModel;
+import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueResponse;
+import com.noiseapps.itassistant.model.jira.projects.createmeta.CreateMetaModel;
+import com.noiseapps.itassistant.model.jira.projects.details.JiraProjectDetails;
 import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogItem;
 import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogs;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
@@ -37,21 +44,21 @@ public class JiraConnector {
     private BaseAccount currentConfig;
     private JiraAPI apiService;
 
-    public void getUserData(Callback<JiraUser> callback) {
+    public JiraUser getUserData() {
         if(apiService == null) {
-            return;
+            return null;
         }
-        apiService.getUserData(currentConfig.getUsername(), callback);
+        return apiService.getUserData(currentConfig.getUsername());
     }
 
-    public void getUserProjects(Callback<List<JiraProject>> callback) {
+    public List<JiraProject> getUserProjects() {
         if(apiService == null) {
-            return;
+            return null;
         }
-        apiService.getUserProjects(callback);
+        return apiService.getUserProjects();
     }
 
-    public void getProjectIssues(@NonNull String projectKey, Callback<JiraIssue> callback) {
+    public void getProjectIssues(@NonNull String projectKey, Callback<JiraIssueList> callback) {
         if(apiService == null) {
             return;
         }
@@ -79,11 +86,60 @@ public class JiraConnector {
         apiService.getIssueWorkLog(issueId, callback);
     }
 
+    public void getProjectDetails(@NonNull String projectId, Callback<JiraProjectDetails> callback) {
+        if(apiService == null) {
+            return;
+        }
+        apiService.getProjectDetails(projectId, callback);
+    }
+
+    public void getIssuePriorities(@NonNull Callback<List<Priority>> callback) {
+        if(apiService == null) {
+            return;
+        }
+        apiService.getIssuePriorities(callback);
+    }
+
     public void postIssueWorkLog(String issueId, String newEstimate, WorkLogItem workLog, Callback<WorkLogItem> callback){
         if(apiService == null) {
             return;
         }
         apiService.postIssueWorkLog(issueId, newEstimate, workLog, callback);
+    }
+
+    public void getProjectStatuses(@NonNull String issueId, Callback<List<IssueStatus>> callback) {
+        if(apiService == null) {
+            return;
+        }
+        apiService.getProjectStatuses(issueId, callback);
+    }
+
+    public void getProjectMembers(@NonNull String projectKey, Callback<List<Assignee>> callback) {
+        if(apiService == null) {
+            return;
+        }
+        apiService.getProjectMembers(projectKey, callback);
+    }
+
+    public void getCreateMeta(@NonNull String projectKey, Callback<CreateMetaModel> callback) {
+        if(apiService == null) {
+            return;
+        }
+        apiService.getCreateMeta(projectKey, callback);
+    }
+
+    public void postNewIssue(@NonNull CreateIssueModel issueModel, Callback<CreateIssueResponse> callback) {
+        if(apiService == null) {
+            return;
+        }
+        apiService.postNewIssue(issueModel, callback);
+    }
+
+    public void updateIssue(@NonNull String issueId, @NonNull CreateIssueModel issueModel, Callback<CreateIssueResponse> callback) {
+        if(apiService == null) {
+            return;
+        }
+        apiService.updateIssue(issueId, issueModel, callback);
     }
 
     @AfterInject
@@ -101,6 +157,10 @@ public class JiraConnector {
                 setErrorHandler(new JiraErrorHandler()).
                 setEndpoint(currentConfig.getUrl()).build();
         apiService = adapter.create(JiraAPI.class);
+    }
+
+    public BaseAccount getCurrentConfig() {
+        return currentConfig;
     }
 
     public void setCurrentConfig(BaseAccount newConfig) {

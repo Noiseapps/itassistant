@@ -1,14 +1,13 @@
 
 package com.noiseapps.itassistant.model.jira.projects;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
-public class JiraProject {
+public class JiraProject implements Parcelable {
 
     @SerializedName("self")
     @Expose
@@ -139,4 +138,38 @@ public class JiraProject {
         result = 31 * result + (projectCategory != null ? projectCategory.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.self);
+        dest.writeString(this.id);
+        dest.writeString(this.key);
+        dest.writeString(this.name);
+        dest.writeParcelable(this.avatarUrls, 0);
+        dest.writeParcelable(this.projectCategory, 0);
+    }
+
+    protected JiraProject(Parcel in) {
+        this.self = in.readString();
+        this.id = in.readString();
+        this.key = in.readString();
+        this.name = in.readString();
+        this.avatarUrls = in.readParcelable(AvatarUrls.class.getClassLoader());
+        this.projectCategory = in.readParcelable(ProjectCategory.class.getClassLoader());
+    }
+
+    public static final Parcelable.Creator<JiraProject> CREATOR = new Parcelable.Creator<JiraProject>() {
+        public JiraProject createFromParcel(Parcel source) {
+            return new JiraProject(source);
+        }
+
+        public JiraProject[] newArray(int size) {
+            return new JiraProject[size];
+        }
+    };
 }

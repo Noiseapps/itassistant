@@ -97,7 +97,7 @@ public class StashAccountCreateFragment extends Fragment implements Validator.Va
         int id = accountsDao.getNextId();
         final String avatarFilename = AccountTypes.getAccountName(AccountTypes.ACC_STASH) + SEPARATOR + id + SEPARATOR + currentConfig.getUsername() + "_avatar.png";
         final String path = imageUtils.saveAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.stash), avatarFilename);
-        accountsDao.add(new BaseAccount(id, currentConfig.getUsername(), currentConfig.getPassword(), currentConfig.getUrl(), path, AccountTypes.ACC_STASH));
+        accountsDao.add(new BaseAccount(id, currentConfig.getUsername(), "Stash", currentConfig.getPassword(), currentConfig.getUrl(), path, AccountTypes.ACC_STASH));
         handler.removeCallbacksAndMessages(null);
         callbacks.onAccountSaved();
     }
@@ -162,7 +162,7 @@ public class StashAccountCreateFragment extends Fragment implements Validator.Va
         final String username = this.username.getText().toString();
         final String password = this.password.getText().toString();
         progressDialog.setTitle(getString(R.string.loggingIn));
-        currentConfig = new BaseAccount(accountsDao.getNextId(), username, password, host, "", AccountTypes.ACC_STASH);
+        currentConfig = new BaseAccount(accountsDao.getNextId(), username, "Stash", password, host, "", AccountTypes.ACC_STASH);
         if (existsInDb()) {
             Snackbar.make(saveFab, R.string.configExists, Snackbar.LENGTH_LONG).show();
             return;
