@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import java.util.List;
 
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
-import com.noiseapps.itassistant.model.jira.issues.JiraIssue;
+import com.noiseapps.itassistant.model.jira.issues.JiraIssueList;
 import com.noiseapps.itassistant.model.jira.issues.Priority;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comments;
@@ -45,7 +45,7 @@ public interface JiraAPI {
     void getProjectDetails(@Path("projectIdOrKey") String projectId, @NonNull Callback<JiraProjectDetails> callback);
 
     @GET("/rest/api/2/search?maxResults=150&expand=transitions")
-    void getProjectIssues(@Query("jql") String projectId, @NonNull Callback<JiraIssue> callback);
+    void getProjectIssues(@Query("jql") String projectId, @NonNull Callback<JiraIssueList> callback);
 
     @GET("/rest/api/2/issue/{issueIdOrKey}/comment")
     void getIssueComments(@Path("issueIdOrKey") String issueId, @NonNull Callback<Comments> callback);

@@ -2,8 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/actionDetails"
+    <item android:id="@+id/actionRefresh"
           app:showAsAction="always"
-          android:icon="@drawable/ic_info_outline_white"
+          android:icon="@drawable/ic_refresh"
+          android:title="@string/refresh" />
+
+    <item android:id="@+id/actionDetails"
+          app:showAsAction="ifRoom"
+          android:icon="@drawable/ic_info_outline_24"
           android:title="@string/projectDetails" />
 </menu>

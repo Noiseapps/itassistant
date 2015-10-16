@@ -1,5 +1,6 @@
 package com.noiseapps.itassistant;
 
+import android.app.ListFragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -28,6 +29,7 @@ import com.noiseapps.itassistant.database.dao.AccountsDao;
 import com.noiseapps.itassistant.fragment.IssueDetailFragment;
 import com.noiseapps.itassistant.fragment.IssueDetailFragment_;
 import com.noiseapps.itassistant.fragment.IssueListFragment;
+import com.noiseapps.itassistant.fragment.IssueListFragment_;
 import com.noiseapps.itassistant.fragment.NewIssueFragment;
 import com.noiseapps.itassistant.fragment.NewIssueFragment_;
 import com.noiseapps.itassistant.model.NavigationModel;
@@ -35,6 +37,7 @@ import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 import com.noiseapps.itassistant.model.jira.user.JiraUser;
+import com.noiseapps.itassistant.utils.Consts;
 import com.noiseapps.itassistant.utils.DividerItemDecoration;
 import com.noiseapps.itassistant.utils.events.EventBusAction;
 import com.noiseapps.itassistant.utils.events.OpenDrawerEvent;
@@ -52,6 +55,7 @@ import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
 import de.greenrobot.event.EventBus;
+import jonathanfinerty.once.Once;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -69,7 +73,7 @@ public class IssueListActivity extends AppCompatActivity
     @ViewById
     RecyclerView recyclerView;
     @ViewById
-    View mainLayout, emptyList;
+    View mainLayout;
     @ViewById
     DrawerLayout drawerLayout;
     @FragmentById(R.id.issue_list)
@@ -81,7 +85,6 @@ public class IssueListActivity extends AppCompatActivity
     JiraConnector jiraConnector;
     private ProgressDialog progressDialog;
     private NavigationMenuAdapter adapter;
-    @InstanceState
     ArrayList<NavigationModel> navigationModels;
 
     @Override
@@ -100,7 +103,6 @@ public class IssueListActivity extends AppCompatActivity
     @AfterViews
     void init() {
         setTablet();
-        mainLayout.setVisibility(View.GONE);
         if(accountsDao.getAll().isEmpty()) {
             showNoAccountsDialog();
         } else {
@@ -115,28 +117,22 @@ public class IssueListActivity extends AppCompatActivity
     }
 
     private void setTablet() {
-//        if (getResources().getBoolean(R.bool.tabletSize)) {
-//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-//        } else {
-//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
-//        }
+        if (getResources().getBoolean(R.bool.tabletSize)) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+        }
     }
 
     private void showNoAccountsDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.noAccounts);
         builder.setMessage(R.string.noAccountsMsg);
-        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                startAccountsActivity();
-            }
+        builder.setPositiveButton(R.string.yes, (dialog, which) -> {
+            startAccountsActivity();
         });
-        builder.setNegativeButton(R.string.quit, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                finish();
-            }
+        builder.setNegativeButton(R.string.quit, (dialog, which) -> {
+            finish();
         });
         builder.show();
     }
@@ -190,24 +186,15 @@ public class IssueListActivity extends AppCompatActivity
     void showErrorDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.errorDownloading).setMessage(R.string.errorDownloadingMsg).
-                setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        downloadData();
-                    }
+                setPositiveButton(R.string.ok, (dialog, which) -> {
+                    downloadData();
                 }).
-                setNegativeButton(R.string.quit, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
+                setNegativeButton(R.string.quit, (dialog, which) -> {
+                    finish();
                 }).
-                setNeutralButton(R.string.settings, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        final Intent settings = new Intent(Settings.ACTION_WIFI_SETTINGS);
-                        startActivity(settings);
-                    }
+                setNeutralButton(R.string.settings, (dialog, which) -> {
+                    final Intent settings = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                    startActivity(settings);
                 }).show();
     }
 
@@ -232,14 +219,11 @@ public class IssueListActivity extends AppCompatActivity
     @UiThread
     void initNavigation(List<NavigationModel> navigationModels) {
         final RecyclerViewExpandableItemManager manager = new RecyclerViewExpandableItemManager(null);
-        adapter = new NavigationMenuAdapter(this, navigationModels, new NavigationMenuAdapter.AdapterCallbacks() {
-            @Override
-            public void onItemClicked(JiraProject jiraProject, BaseAccount baseAccount) {
-                mainLayout.setVisibility(View.VISIBLE);
-                emptyList.setVisibility(View.GONE);
-                drawerLayout.closeDrawer(GravityCompat.START);
-                listFragment.setProject(jiraProject, baseAccount);
-            }
+        adapter = new NavigationMenuAdapter(this, navigationModels, (jiraProject, baseAccount) -> {
+            mainLayout.setVisibility(View.VISIBLE);
+//                emptyList.setVisibility(View.GONE);
+            drawerLayout.closeDrawer(GravityCompat.START);
+            listFragment.setProject(jiraProject, baseAccount);
         });
         final RecyclerView.Adapter wrappedAdapter = manager.createWrappedAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -247,7 +231,10 @@ public class IssueListActivity extends AppCompatActivity
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(wrappedAdapter);
         manager.attachRecyclerView(recyclerView);
-        drawerLayout.openDrawer(GravityCompat.START);
+        if(!Once.beenDone(Once.THIS_APP_INSTALL, Consts.SHOW_DRAWER)){
+            drawerLayout.openDrawer(GravityCompat.START);
+            Once.markDone(Consts.SHOW_DRAWER);
+        }
     }
 
     private void isTwoPane() {
@@ -293,10 +280,10 @@ public class IssueListActivity extends AppCompatActivity
         super.onResume();
     }
 
-    @Click(R.id.openDrawer)
-    void openDrawer() {
-        onEvent(null);
-    }
+//    @Click(R.id.openDrawer)
+//    void openDrawer() {
+//        onEvent(null);
+//    }
 
     @EventBusAction
     public void onEvent(@Nullable OpenDrawerEvent event) {

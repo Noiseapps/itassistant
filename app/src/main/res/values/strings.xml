@@ -106,4 +106,6 @@
     <string name="issueAttachment">Attachment</string>
     <string name="none">Brak</string>
     <string name="fieldRequired">This field is required</string>
+    <string name="refresh">Refresh</string>
+    <string name="noProject">No project selected</string>
 </resources>

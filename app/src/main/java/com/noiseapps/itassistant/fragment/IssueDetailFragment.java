@@ -16,6 +16,7 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.ViewById;
@@ -24,6 +25,8 @@ import org.androidannotations.annotations.ViewById;
 @OptionsMenu(R.menu.menu_issue_details)
 public class IssueDetailFragment extends Fragment {
 
+    @InstanceState
+    int selectedTab;
     @FragmentArg
     Issue issue;
     @Bean
@@ -44,7 +47,9 @@ public class IssueDetailFragment extends Fragment {
         setHasOptionsMenu(true);
         viewPager.setOffscreenPageLimit(3);
         viewPager.setAdapter(new PagerAdapter());
+        viewPager.addOnPageChangeListener(new PageChangeListener());
         tabLayout.setupWithViewPager(viewPager);
+        viewPager.setCurrentItem(selectedTab, false);
     }
 
     @OptionsItem(R.id.action_edit)
@@ -92,6 +97,23 @@ public class IssueDetailFragment extends Fragment {
         @Override
         public int getCount() {
             return fragments.length;
+        }
+    }
+
+    private class PageChangeListener implements ViewPager.OnPageChangeListener {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            selectedTab = position;
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            selectedTab = position;
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
         }
     }
 }

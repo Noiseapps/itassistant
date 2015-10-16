@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.noiseapps.itassistant.R;
@@ -20,6 +21,7 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.ViewById;
 
 @EFragment(R.layout.fragment_jira_list)
@@ -32,13 +34,13 @@ public class JiraIssueListFragment extends Fragment {
 
     @ViewById
     RecyclerView issuesRecycler;
-    private List<Issue> issues;
+    @InstanceState
+    ArrayList<Issue> issues;
     private IssueListCallback callback;
 
     public interface IssueListCallback {
         void onItemSelected(Issue selectedIssue);
     }
-
 
     @AfterViews
     void init() {
@@ -47,7 +49,7 @@ public class JiraIssueListFragment extends Fragment {
         setAdapter();
     }
 
-    public void setIssues(List<Issue> issues) {
+    public void setIssues(ArrayList<Issue> issues) {
         this.issues = issues;
     }
 

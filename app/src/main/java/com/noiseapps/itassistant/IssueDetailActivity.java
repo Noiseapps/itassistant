@@ -13,12 +13,15 @@ import com.noiseapps.itassistant.model.jira.issues.Issue;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
+import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.ViewById;
 
 @EActivity(R.layout.activity_issue_detail)
-public class IssueDetailActivity extends AppCompatActivity implements IssueDetailFragment.IssueDetailCallbacks{
+public class IssueDetailActivity extends AppCompatActivity implements IssueDetailFragment.IssueDetailCallbacks {
     @Extra
     Issue issue;
+    @ViewById(R.id.detail_toolbar)
+    Toolbar toolbar;
 
     @Override
     public void onEditIssue(Issue issue) {
@@ -35,7 +38,8 @@ public class IssueDetailActivity extends AppCompatActivity implements IssueDetai
                 .replace(R.id.issue_detail_container, fragment)
                 .commit();
     }
-    
+
+
     private void setTablet() {
         if (getResources().getBoolean(R.bool.tabletSize)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
@@ -44,14 +48,11 @@ public class IssueDetailActivity extends AppCompatActivity implements IssueDetai
         }
     }
 
-    @ViewById(R.id.detail_toolbar)
-    Toolbar toolbar;
-
     private void initToolbar() {
         setSupportActionBar(toolbar);
         toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
         final ActionBar supportActionBar = getSupportActionBar();
-        if(supportActionBar != null) {
+        if (supportActionBar != null) {
             supportActionBar.setDisplayHomeAsUpEnabled(true);
             supportActionBar.setHomeButtonEnabled(true);
             supportActionBar.setTitle(String.format("%s (%s)", issue.getFields().getSummary(), issue.getKey()));

@@ -9,7 +9,7 @@ import com.noiseapps.itassistant.api.JiraAPI;
 import com.noiseapps.itassistant.database.PreferencesDAO;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
-import com.noiseapps.itassistant.model.jira.issues.JiraIssue;
+import com.noiseapps.itassistant.model.jira.issues.JiraIssueList;
 import com.noiseapps.itassistant.model.jira.issues.Priority;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comments;
@@ -58,7 +58,7 @@ public class JiraConnector {
         return apiService.getUserProjects();
     }
 
-    public void getProjectIssues(@NonNull String projectKey, Callback<JiraIssue> callback) {
+    public void getProjectIssues(@NonNull String projectKey, Callback<JiraIssueList> callback) {
         if(apiService == null) {
             return;
         }

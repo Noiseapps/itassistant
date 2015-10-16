@@ -10,6 +10,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:text="@string/issueType"
+        android:singleLine="true"
+        android:ellipsize="marquee"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@color/colorPrimary"
         android:textSize="20sp"/>
