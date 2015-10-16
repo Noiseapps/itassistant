@@ -56,7 +56,7 @@ public class WorkLogFragment extends Fragment {
 
     @AfterViews
     void init() {
-        adapter = new WorkLogAdapter(getContext(), new ArrayList<WorkLogItem>());
+        adapter = new WorkLogAdapter(getContext(), new ArrayList<>());
         workLogList.setAdapter(adapter);
         initViewVisibility();
         jiraConnector.getIssueWorkLog(issue.getId(), new WorkLogCallbacks());
@@ -84,12 +84,7 @@ public class WorkLogFragment extends Fragment {
         builder.setPositiveButton(R.string.post, null);
         builder.setNegativeButton(R.string.cancel, null);
         final AlertDialog alertDialog = builder.create();
-        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                onDialogShown(alertDialog);
-            }
-        });
+        alertDialog.setOnShowListener(dialog -> onDialogShown(alertDialog));
         alertDialog.show();
     }
 
@@ -99,50 +94,39 @@ public class WorkLogFragment extends Fragment {
         final TextView editWorkLog = (TextView) alertDialog.findViewById(R.id.editWorkLogDate);
         final MutableDateTime dateTime = MutableDateTime.now();
         editWorkLog.setText(dateTime.toString(Consts.DATE_FORMAT));
-        editWorkLog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        dateTime.setYear(year);
-                        dateTime.setMonthOfYear(monthOfYear + 1);
-                        dateTime.setDayOfMonth(dayOfMonth);
-                        dateTime.setMillisOfDay(0);
-                        editWorkLog.setText(dateTime.toString(Consts.DATE_FORMAT));
-                    }
-                };
-                final DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), onDateSetListener, dateTime.getYear(), dateTime.getMonthOfYear()-1, dateTime.getDayOfMonth());
-                datePickerDialog.getDatePicker().setMaxDate(dateTime.getMillis());
-                datePickerDialog.show();
-            }
+        editWorkLog.setOnClickListener(v -> {
+            final DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                    dateTime.setYear(year);
+                    dateTime.setMonthOfYear(monthOfYear + 1);
+                    dateTime.setDayOfMonth(dayOfMonth);
+                    dateTime.setMillisOfDay(0);
+                    editWorkLog.setText(dateTime.toString(Consts.DATE_FORMAT));
+                }
+            };
+            final DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), onDateSetListener, dateTime.getYear(), dateTime.getMonthOfYear()-1, dateTime.getDayOfMonth());
+            datePickerDialog.getDatePicker().setMaxDate(dateTime.getMillis());
+            datePickerDialog.show();
         });
 
-        positiveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final View dialogRoot = alertDialog.findViewById(R.id.dialogRoot);
-                final EditText workedText = (EditText) alertDialog.findViewById(R.id.workedText);
-                final EditText remainingText = (EditText) alertDialog.findViewById(R.id.remainingText);
-                final EditText commentText = (EditText) alertDialog.findViewById(R.id.commentText);
-                final String newEstimate = remainingText.getText().toString().trim();
-                final String timeSpent = workedText.getText().toString().trim();
-                boolean valid = validateInput(newEstimate, timeSpent, workedText, remainingText);
-                if(valid) {
-                    final WorkLogItem logItem = new WorkLogItem();
-                    logItem.setComment(commentText.getText().toString());
-                    logItem.setTimeSpent(timeSpent);
-                    logItem.setStarted(dateTime.toString(Consts.TIMESTAMP_FORMAT));
-                    onPositiveButtonClicked(logItem, newEstimate, alertDialog, dialogRoot);
-                }
+        positiveButton.setOnClickListener(v -> {
+            final View dialogRoot = alertDialog.findViewById(R.id.dialogRoot);
+            final EditText workedText = (EditText) alertDialog.findViewById(R.id.workedText);
+            final EditText remainingText = (EditText) alertDialog.findViewById(R.id.remainingText);
+            final EditText commentText = (EditText) alertDialog.findViewById(R.id.commentText);
+            final String newEstimate = remainingText.getText().toString().trim();
+            final String timeSpent = workedText.getText().toString().trim();
+            boolean valid = validateInput(newEstimate, timeSpent, workedText, remainingText);
+            if(valid) {
+                final WorkLogItem logItem = new WorkLogItem();
+                logItem.setComment(commentText.getText().toString());
+                logItem.setTimeSpent(timeSpent);
+                logItem.setStarted(dateTime.toString(Consts.TIMESTAMP_FORMAT));
+                onPositiveButtonClicked(logItem, newEstimate, alertDialog, dialogRoot);
             }
         });
-        negativeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                alertDialog.dismiss();
-            }
-        });
+        negativeButton.setOnClickListener(v -> alertDialog.dismiss());
     }
 
     private boolean validateInput(String newEstimate, String timeSpent, EditText workedText, EditText remainingText) {

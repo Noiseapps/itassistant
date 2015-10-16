@@ -104,10 +104,14 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
 
     private void initData() {
         if(BuildConfig.DEBUG) {
-            accountName.setText("Exaco");
-            host.setText("jira.exaco.pl");
-            username.setText("tomasz.scibiorek");
-            password.setText("kotek77@");
+            accountName.setText("Local");
+//            accountName.setText("Exaco");
+            host.setText("10.1.221.123:8080");
+//            host.setText("jira.exaco.pl");
+            username.setText("noiseapps@gmail.com");
+//            username.setText("tomasz.scibiorek");
+            password.setText("test123");
+//            password.setText("kotek77@");
         }
     }
 
@@ -193,8 +197,12 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
 
     @Background
     void getUserData() {
-        final JiraUser userData = connector.getUserData();
-        onDataLoaded(userData);
+        try {
+            final JiraUser userData = connector.getUserData();
+            onDataLoaded(userData);
+        } catch (Exception e) {
+            onDataLoaded(null);
+        }
     }
 
     @UiThread

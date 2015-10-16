@@ -15,7 +15,6 @@ import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,14 +27,13 @@ import com.noiseapps.itassistant.connector.JiraConnector;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.issues.JiraIssueList;
+import com.noiseapps.itassistant.model.jira.issues.Status;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
-import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.OptionsItem;
@@ -86,6 +84,26 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     @Override
     public void onItemSelected(Issue selectedIssue) {
         mCallbacks.onItemSelected(selectedIssue, jiraProject);
+    }
+
+    @Override
+    public void onItemEdit(Issue issue) {
+        // todo edit issue
+    }
+
+    @Override
+    public void showFabProgress() {
+        fabProgressCircle.show();
+    }
+
+    @Override
+    public void hideFabProgress(boolean success) {
+        if(success){
+            fabProgressCircle.beginFinalAnimation();
+            reload();
+        } else {
+            fabProgressCircle.hide();
+        }
     }
 
     @AfterViews
@@ -154,8 +172,9 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         final Set<WorkflowObject> workflows = new HashSet<>();
         final ListMultimap<String, Issue> issuesInWorkflow = ArrayListMultimap.create();
         for (Issue issue : jiraIssueList.getIssues()) {
-            final String id = issue.getFields().getStatus().getId();
-            final String name = issue.getFields().getStatus().getName();
+            final Status status = issue.getFields().getStatus();
+            final String id = status.getId();
+            final String name = status.getName();
             workflows.add(new WorkflowObject(id, name));
             issuesInWorkflow.put(name, issue);
         }
@@ -250,12 +269,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
             super(getChildFragmentManager());
             this.issuesInWorkflow = issuesInWorkflow;
             this.workflows = new ArrayList<>(workflows);
-            Collections.sort(this.workflows, new Comparator<WorkflowObject>() {
-                @Override
-                public int compare(WorkflowObject lhs, WorkflowObject rhs) {
-                    return lhs.order - rhs.order;
-                }
-            });
+            Collections.sort(this.workflows, (lhs, rhs) -> lhs.order - rhs.order);
             fragments = new Fragment[workflows.size()];
         }
 
