@@ -112,11 +112,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     private void displayData() {
         showProgress();
         noProject.setVisibility(View.GONE);
-        if(jiraIssueList == null) {
-            getIssues(baseAccount);
-        } else {
-            onProjectsDownloaded();
-        }
+        getIssues(baseAccount);
     }
 
     private void showProgress() {

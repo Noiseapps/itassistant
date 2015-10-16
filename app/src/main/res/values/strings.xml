@@ -108,4 +108,5 @@
     <string name="fieldRequired">This field is required</string>
     <string name="refresh">Refresh</string>
     <string name="noProject">No project selected</string>
+    <string name="yourAccountName">Your account name</string>
 </resources>

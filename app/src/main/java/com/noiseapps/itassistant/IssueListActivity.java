@@ -1,8 +1,6 @@
 package com.noiseapps.itassistant;
 
-import android.app.ListFragment;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.provider.Settings;
@@ -19,9 +17,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
 import com.noiseapps.itassistant.adapters.NavigationMenuAdapter;
 import com.noiseapps.itassistant.connector.JiraConnector;
@@ -29,7 +24,6 @@ import com.noiseapps.itassistant.database.dao.AccountsDao;
 import com.noiseapps.itassistant.fragment.IssueDetailFragment;
 import com.noiseapps.itassistant.fragment.IssueDetailFragment_;
 import com.noiseapps.itassistant.fragment.IssueListFragment;
-import com.noiseapps.itassistant.fragment.IssueListFragment_;
 import com.noiseapps.itassistant.fragment.NewIssueFragment;
 import com.noiseapps.itassistant.fragment.NewIssueFragment_;
 import com.noiseapps.itassistant.model.NavigationModel;
@@ -49,16 +43,15 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.FragmentById;
-import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.greenrobot.event.EventBus;
 import jonathanfinerty.once.Once;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 @EActivity(R.layout.activity_issue_app_bar)
 public class IssueListActivity extends AppCompatActivity
@@ -66,8 +59,6 @@ public class IssueListActivity extends AppCompatActivity
 
     public static final int ACCOUNTS_REQUEST = 633;
     public static final int NEW_ISSUE_REQUEST = 5135;
-    private boolean mTwoPane;
-
     @ViewById
     Toolbar toolbar;
     @ViewById
@@ -78,14 +69,14 @@ public class IssueListActivity extends AppCompatActivity
     DrawerLayout drawerLayout;
     @FragmentById(R.id.issue_list)
     IssueListFragment listFragment;
-
     @Bean
     AccountsDao accountsDao;
     @Bean
     JiraConnector jiraConnector;
+    ArrayList<NavigationModel> navigationModels;
+    private boolean mTwoPane;
     private ProgressDialog progressDialog;
     private NavigationMenuAdapter adapter;
-    ArrayList<NavigationModel> navigationModels;
 
     @Override
     public void onEditIssue(Issue issue) {
@@ -103,10 +94,10 @@ public class IssueListActivity extends AppCompatActivity
     @AfterViews
     void init() {
         setTablet();
-        if(accountsDao.getAll().isEmpty()) {
+        if (accountsDao.getAll().isEmpty()) {
             showNoAccountsDialog();
         } else {
-            if(navigationModels == null) {
+            if (navigationModels == null) {
                 downloadData();
             } else {
                 initNavigation(navigationModels);
@@ -164,12 +155,11 @@ public class IssueListActivity extends AppCompatActivity
             try {
                 jiraConnector.setCurrentConfig(baseAccount);
                 final JiraUser jiraUser = jiraConnector.getUserData();
-                if(jiraUser != null) {
+                if (jiraUser != null) {
                     final List<JiraProject> jiraProjects = jiraConnector.getUserProjects();
-                    if(jiraProjects != null) {
+                    if (jiraProjects != null) {
                         navigationModels.add(new NavigationModel(baseAccount, jiraUser, jiraProjects));
                     } else {
-                        // todo show some info
                     }
                 } else {
                     showErrorDialog();
@@ -210,7 +200,7 @@ public class IssueListActivity extends AppCompatActivity
 
     @UiThread
     void hideProgress() {
-        if(progressDialog != null) {
+        if (progressDialog != null) {
             progressDialog.dismiss();
             progressDialog = null;
         }
@@ -231,7 +221,7 @@ public class IssueListActivity extends AppCompatActivity
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(wrappedAdapter);
         manager.attachRecyclerView(recyclerView);
-        if(!Once.beenDone(Once.THIS_APP_INSTALL, Consts.SHOW_DRAWER)){
+        if (!Once.beenDone(Once.THIS_APP_INSTALL, Consts.SHOW_DRAWER)) {
             drawerLayout.openDrawer(GravityCompat.START);
             Once.markDone(Consts.SHOW_DRAWER);
         }
@@ -298,7 +288,7 @@ public class IssueListActivity extends AppCompatActivity
     @OnActivityResult(ACCOUNTS_REQUEST)
     void onAccountAdded(int resultCode) {
         Logger.w("" + resultCode);
-        if(resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK) {
             downloadData();
         } else if (accountsDao.getAll().isEmpty()) {
             showNoAccountsDialog();
@@ -308,7 +298,7 @@ public class IssueListActivity extends AppCompatActivity
     @OnActivityResult(NEW_ISSUE_REQUEST)
     void onIssueAdded(int resultCode) {
         Logger.w("" + resultCode);
-        if(resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK) {
             listFragment.reload();
         }
     }

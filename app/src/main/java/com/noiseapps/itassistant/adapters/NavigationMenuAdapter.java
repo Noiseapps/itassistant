@@ -118,18 +118,18 @@ public class NavigationMenuAdapter extends AbstractExpandableItemAdapter<Navigat
 
     class ParentViewHolder extends AbstractViewHolder {
 
-        private final TextView textView;
+        private final TextView accountName;
         private final CircleImageView avatarImage;
         Bitmap avatarBitmap;
 
         public ParentViewHolder(View itemView) {
             super(itemView);
-            textView = (TextView) itemView.findViewById(R.id.accountName);
+            accountName = (TextView) itemView.findViewById(R.id.accountName);
             avatarImage = (CircleImageView) itemView.findViewById(R.id.avatar);
             itemView.callOnClick();
         }
         public void bind(JiraUser user, BaseAccount baseAccount) {
-            textView.setText(user.getName());
+            accountName.setText(baseAccount.getName());
             if(avatarBitmap == null) {
                 if(baseAccount.getAvatarPath().isEmpty()) {
                     AuthenticatedPicasso.getAuthPicasso(context, baseAccount).

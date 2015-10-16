@@ -29,14 +29,12 @@ public class GeneralInfoFragment extends Fragment {
 
     @AfterViews
     void init() {
-
         final Fields issueFields = issue.getFields();
         setIssueDetailsData(issueFields);
         setProgressData(issueFields);
         setDatesData(issueFields);
         setPeopleData(issueFields);
     }
-
 
     private void setIssueDetailsData(Fields issueFields) {
         type.setText(issueFields.getIssueType().getName());
