@@ -126,13 +126,11 @@ public class JiraIssueListFragment extends Fragment {
                 @Override
                 public void success(Response response, Response response2) {
                     callback.hideFabProgress(true);
-                    Snackbar.make(issuesRecycler, R.string.statusChanged, Snackbar.LENGTH_LONG).show();
                 }
 
                 @Override
                 public void failure(RetrofitError error) {
                     callback.hideFabProgress(false);
-                    Snackbar.make(issuesRecycler, R.string.statusNotChanged, Snackbar.LENGTH_LONG).show();
                 }
             });
         });

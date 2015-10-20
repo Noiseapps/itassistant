@@ -44,11 +44,14 @@ public interface JiraAPI {
     @GET("/rest/api/2/project")
     List<JiraProject> getUserProjects();
 
+    @GET("/rest/api/2/search?expand=transitions")
+    JiraIssueList getAssignedToMe(@Query("jql") String query);
+
     @GET("/rest/api/2/project/{projectIdOrKey}")
     void getProjectDetails(@Path("projectIdOrKey") String projectId, @NonNull Callback<JiraProjectDetails> callback);
 
     @GET("/rest/api/2/search?maxResults=150&expand=transitions")
-    void getProjectIssues(@Query("jql") String projectId, @NonNull Callback<JiraIssueList> callback);
+    void getProjectIssues(@Query("jql") String query, @NonNull Callback<JiraIssueList> callback);
 
     @GET("/rest/api/2/issue/{issueIdOrKey}/comment")
     void getIssueComments(@Path("issueIdOrKey") String issueId, @NonNull Callback<Comments> callback);

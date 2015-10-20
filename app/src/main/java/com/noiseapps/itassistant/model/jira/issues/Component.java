@@ -1,6 +1,9 @@
 package com.noiseapps.itassistant.model.jira.issues;
 
-public class Component {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Component implements Parcelable {
 
     private String self;
     private String id;
@@ -59,4 +62,35 @@ public class Component {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.self);
+        dest.writeString(this.id);
+        dest.writeString(this.name);
+    }
+
+    public Component() {
+    }
+
+    protected Component(Parcel in) {
+        this.self = in.readString();
+        this.id = in.readString();
+        this.name = in.readString();
+    }
+
+    public static final Parcelable.Creator<Component> CREATOR = new Parcelable.Creator<Component>() {
+        public Component createFromParcel(Parcel source) {
+            return new Component(source);
+        }
+
+        public Component[] newArray(int size) {
+            return new Component[size];
+        }
+    };
 }

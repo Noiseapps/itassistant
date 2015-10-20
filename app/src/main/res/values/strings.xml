@@ -113,4 +113,7 @@
     <string name="selectTransition">Transition to…</string>
     <string name="statusChanged">Issue status changed</string>
     <string name="statusNotChanged">Failed to change issue status</string>
+    <string name="retry">Retry</string>
+    <string name="failedToReadAccountData">Failed to get data about %d projects</string>
+    <string name="myIssues">Assigned to me</string>
 </resources>

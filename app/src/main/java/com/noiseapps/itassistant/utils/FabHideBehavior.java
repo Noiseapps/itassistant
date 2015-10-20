@@ -3,34 +3,18 @@ package com.noiseapps.itassistant.utils;
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.github.jorgecastilloprz.FABProgressCircle;
-
-public class FabBehavior extends CoordinatorLayout.Behavior<FABProgressCircle> {
-
-    public FabBehavior(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    @Override
-    public boolean layoutDependsOn(CoordinatorLayout parent, FABProgressCircle child, View dependency) {
-        return dependency instanceof Snackbar.SnackbarLayout;
-    }
-
-    @Override
-    public boolean onDependentViewChanged(CoordinatorLayout parent, FABProgressCircle child, View dependency) {
-        float translationY = Math.min(0, dependency.getTranslationY() - dependency.getHeight());
-        child.setTranslationY(translationY);
-        return true;
+public class FabHideBehavior extends FloatingActionButton.Behavior {
+    public FabHideBehavior(Context context, AttributeSet attrs) {
+        super();
     }
 
 
     @Override
-    public boolean onStartNestedScroll(final CoordinatorLayout coordinatorLayout, final FABProgressCircle child,
+    public boolean onStartNestedScroll(final CoordinatorLayout coordinatorLayout, final FloatingActionButton child,
                                        final View directTargetChild, final View target, final int nestedScrollAxes) {
         // Ensure we react to vertical scrolling
         return nestedScrollAxes == ViewCompat.SCROLL_AXIS_VERTICAL
@@ -40,7 +24,7 @@ public class FabBehavior extends CoordinatorLayout.Behavior<FABProgressCircle> {
 
     @Override
     public void onNestedScroll(CoordinatorLayout coordinatorLayout,
-                               FABProgressCircle child,
+                               FloatingActionButton child,
                                View target,
                                int dxConsumed,
                                int dyConsumed,
@@ -53,4 +37,5 @@ public class FabBehavior extends CoordinatorLayout.Behavior<FABProgressCircle> {
             child.show();
         }
     }
+
 }

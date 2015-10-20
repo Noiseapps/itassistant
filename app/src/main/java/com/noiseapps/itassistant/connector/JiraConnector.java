@@ -69,6 +69,18 @@ public class JiraConnector {
         }
     }
 
+    public JiraIssueList getAssignedToMe() {
+        if (apiService == null) {
+            return null;
+        }
+        try {
+            final String query = String.format("assignee=\"%s\"", getCurrentConfig().getUsername());
+            return apiService.getAssignedToMe(query);
+        } catch (RetrofitError error) {
+            return null;
+        }
+    }
+
     public void getProjectIssues(@NonNull String projectKey, Callback<JiraIssueList> callback) {
         if(apiService == null) {
             return;

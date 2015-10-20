@@ -18,7 +18,6 @@ import com.noiseapps.itassistant.database.dao.AccountsDao_;
 import com.noiseapps.itassistant.model.NavigationModel;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
-import com.noiseapps.itassistant.model.jira.user.JiraUser;
 import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -54,7 +53,7 @@ public class NavigationMenuAdapter extends AbstractExpandableItemAdapter<Navigat
 
     @Override
     public long getGroupId(int groupPosition) {
-        return navigationModels.get(groupPosition).getUser().hashCode();
+        return navigationModels.get(groupPosition).getBaseAccount().getId();
     }
 
     @Override
@@ -87,7 +86,7 @@ public class NavigationMenuAdapter extends AbstractExpandableItemAdapter<Navigat
     @Override
     public void onBindGroupViewHolder(ParentViewHolder holder, int groupPosition, int viewType) {
         final NavigationModel navigationModel = navigationModels.get(groupPosition);
-        holder.bind(navigationModel.getUser(), navigationModel.getBaseAccount());
+        holder.bind(navigationModel.getBaseAccount());
     }
 
     @Override
@@ -128,12 +127,12 @@ public class NavigationMenuAdapter extends AbstractExpandableItemAdapter<Navigat
             avatarImage = (CircleImageView) itemView.findViewById(R.id.avatar);
             itemView.callOnClick();
         }
-        public void bind(JiraUser user, BaseAccount baseAccount) {
+        public void bind(BaseAccount baseAccount) {
             accountName.setText(baseAccount.getName());
             if(avatarBitmap == null) {
                 if(baseAccount.getAvatarPath().isEmpty()) {
                     AuthenticatedPicasso.getAuthPicasso(context, baseAccount).
-                            load(user.getAvatarUrls().getAvatar48()).
+                            load(baseAccount.getAvatarPath()).
                             placeholder(R.drawable.ic_action_account_circle).
                             error(R.drawable.ic_action_account_circle).into(new LoadTarget());
                 } else {

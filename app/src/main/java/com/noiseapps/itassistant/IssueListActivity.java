@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -29,8 +30,8 @@ import com.noiseapps.itassistant.fragment.NewIssueFragment_;
 import com.noiseapps.itassistant.model.NavigationModel;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
+import com.noiseapps.itassistant.model.jira.issues.JiraIssueList;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
-import com.noiseapps.itassistant.model.jira.user.JiraUser;
 import com.noiseapps.itassistant.utils.Consts;
 import com.noiseapps.itassistant.utils.DividerItemDecoration;
 import com.noiseapps.itassistant.utils.events.EventBusAction;
@@ -76,7 +77,6 @@ public class IssueListActivity extends AppCompatActivity
     ArrayList<NavigationModel> navigationModels;
     private boolean mTwoPane;
     private ProgressDialog progressDialog;
-    private NavigationMenuAdapter adapter;
 
     @Override
     public void onEditIssue(Issue issue) {
@@ -151,32 +151,47 @@ public class IssueListActivity extends AppCompatActivity
     void downloadData() {
         showProgress();
         navigationModels = new ArrayList<>();
+        final List<Issue> myIssues = new ArrayList<>();
+        int failedAccounts = 0;
         for (final BaseAccount baseAccount : accountsDao.getAll()) {
             try {
                 jiraConnector.setCurrentConfig(baseAccount);
-                final JiraUser jiraUser = jiraConnector.getUserData();
-                if (jiraUser != null) {
-                    final List<JiraProject> jiraProjects = jiraConnector.getUserProjects();
-                    if (jiraProjects != null) {
-                        navigationModels.add(new NavigationModel(baseAccount, jiraUser, jiraProjects));
-                    } else {
-                    }
+                final List<JiraProject> jiraProjects = jiraConnector.getUserProjects();
+                if (jiraProjects != null) {
+                    navigationModels.add(new NavigationModel(baseAccount, jiraProjects));
                 } else {
-                    showErrorDialog();
+                    failedAccounts++;
+                }
+                final JiraIssueList myProjectIssues = jiraConnector.getAssignedToMe();
+                if(myProjectIssues != null) {
+                    myIssues.addAll(myProjectIssues.getIssues());
                 }
             } catch (Exception e) {
                 Logger.e(e, e.getMessage());
             }
         }
         hideProgress();
+        showInfoAboutFailedAccounts(failedAccounts);
+        initMyIssues(myIssues);
         initNavigation(navigationModels);
+    }
+
+    @UiThread
+    void initMyIssues(List<Issue> myIssues) {
+        listFragment.setIssues(myIssues);
+    }
+
+    private void showInfoAboutFailedAccounts(int failedAccounts) {
+        if(failedAccounts > 0) {
+            Snackbar.make(recyclerView, getString(R.string.failedToReadAccountData, failedAccounts), Snackbar.LENGTH_LONG).show();
+        }
     }
 
     @UiThread
     void showErrorDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.errorDownloading).setMessage(R.string.errorDownloadingMsg).
-                setPositiveButton(R.string.ok, (dialog, which) -> {
+                setPositiveButton(R.string.retry, (dialog, which) -> {
                     downloadData();
                 }).
                 setNegativeButton(R.string.quit, (dialog, which) -> {
@@ -209,9 +224,8 @@ public class IssueListActivity extends AppCompatActivity
     @UiThread
     void initNavigation(List<NavigationModel> navigationModels) {
         final RecyclerViewExpandableItemManager manager = new RecyclerViewExpandableItemManager(null);
-        adapter = new NavigationMenuAdapter(this, navigationModels, (jiraProject, baseAccount) -> {
+        final NavigationMenuAdapter adapter = new NavigationMenuAdapter(this, navigationModels, (jiraProject, baseAccount) -> {
             mainLayout.setVisibility(View.VISIBLE);
-//                emptyList.setVisibility(View.GONE);
             drawerLayout.closeDrawer(GravityCompat.START);
             listFragment.setProject(jiraProject, baseAccount);
         });
