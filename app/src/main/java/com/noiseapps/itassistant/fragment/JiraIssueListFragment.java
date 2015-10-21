@@ -1,7 +1,6 @@
 package com.noiseapps.itassistant.fragment;
 
 import android.app.Activity;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -71,6 +70,14 @@ public class JiraIssueListFragment extends Fragment {
         final IssuesAdapter adapter = new IssuesAdapter(context, issues, authPicasso, new AdapterCallback());
         issuesRecycler.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
         issuesRecycler.setAdapter(adapter);
+        issuesRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                final boolean hideFab = dy < 0;
+            }
+        });
     }
 
     private class AdapterCallback implements IssuesAdapter.IssueAdapterCallback {
