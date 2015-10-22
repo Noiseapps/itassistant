@@ -18,6 +18,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
 import com.noiseapps.itassistant.adapters.NavigationMenuAdapter;
 import com.noiseapps.itassistant.connector.JiraConnector;
@@ -32,6 +35,7 @@ import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.issues.JiraIssueList;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
+import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 import com.noiseapps.itassistant.utils.Consts;
 import com.noiseapps.itassistant.utils.DividerItemDecoration;
 import com.noiseapps.itassistant.utils.events.EventBusAction;
@@ -47,9 +51,6 @@ import org.androidannotations.annotations.FragmentById;
 import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import jonathanfinerty.once.Once;
@@ -120,7 +121,7 @@ public class IssueListActivity extends AppCompatActivity
         builder.setTitle(R.string.noAccounts);
         builder.setMessage(R.string.noAccountsMsg);
         builder.setPositiveButton(R.string.yes, (dialog, which) -> {
-            startAccountsActivity();
+            startAccountsActivity(true);
         });
         builder.setNegativeButton(R.string.quit, (dialog, which) -> {
             finish();
@@ -128,8 +129,8 @@ public class IssueListActivity extends AppCompatActivity
         builder.show();
     }
 
-    private void startAccountsActivity() {
-        AccountsActivity_.intent(this).startForResult(ACCOUNTS_REQUEST);
+    private void startAccountsActivity(boolean showForm) {
+        AccountsActivity_.intent(this).showAccountForm(showForm).startForResult(ACCOUNTS_REQUEST);
     }
 
     private void initToolbar() {
@@ -156,6 +157,7 @@ public class IssueListActivity extends AppCompatActivity
         for (final BaseAccount baseAccount : accountsDao.getAll()) {
             try {
                 jiraConnector.setCurrentConfig(baseAccount);
+                AuthenticatedPicasso.setConfig(this, baseAccount);
                 final List<JiraProject> jiraProjects = jiraConnector.getUserProjects();
                 if (jiraProjects != null) {
                     navigationModels.add(new NavigationModel(baseAccount, jiraProjects));
@@ -294,9 +296,26 @@ public class IssueListActivity extends AppCompatActivity
         drawerLayout.openDrawer(GravityCompat.START);
     }
 
+    @Click(R.id.actionSettings)
+    void onSettingsAction() {
+        showNotImplemented();
+    }
+
+    private void showNotImplemented() {
+        Snackbar.make(drawerLayout, R.string.optionUnavailable, Snackbar.LENGTH_LONG).show();
+    }
+
     @Click(R.id.actionAccounts)
     void onAccountAction() {
-        startAccountsActivity();
+        startAccountsActivity(false);
+    }
+    @Click(R.id.actionAbout)
+    void onAboutAction() {
+        showNotImplemented();
+    }
+    @Click(R.id.actionFeedback)
+    void onFeedbackAction() {
+        showNotImplemented();
     }
 
     @OnActivityResult(ACCOUNTS_REQUEST)

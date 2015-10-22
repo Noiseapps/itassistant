@@ -13,6 +13,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -24,6 +30,7 @@ import com.noiseapps.itassistant.model.jira.issues.JiraIssueList;
 import com.noiseapps.itassistant.model.jira.issues.Project;
 import com.noiseapps.itassistant.model.jira.issues.Status;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
+import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -35,12 +42,6 @@ import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -147,6 +148,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     @Background
     void getIssues(BaseAccount baseAccount) {
         jiraConnector.setCurrentConfig(baseAccount);
+        AuthenticatedPicasso.setConfig(getActivity(), baseAccount);
         jiraConnector.getProjectIssues(jiraProject.getKey(), new Callback<JiraIssueList>() {
             @Override
             public void success(JiraIssueList jiraIssueList, Response response) {

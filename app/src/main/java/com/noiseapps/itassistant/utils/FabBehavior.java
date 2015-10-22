@@ -2,7 +2,6 @@ package com.noiseapps.itassistant.utils;
 
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
@@ -48,9 +47,9 @@ public class FabBehavior extends CoordinatorLayout.Behavior<FABProgressCircle> {
                                int dyUnconsumed) {
         super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
         if (dyConsumed > 0 && child.getVisibility() == View.VISIBLE) {
-            child.hide();
+            child.setVisibility(View.INVISIBLE);
         } else if (dyConsumed < 0 && child.getVisibility() != View.VISIBLE) {
-            child.show();
+            child.setVisibility(View.VISIBLE);
         }
     }
 }

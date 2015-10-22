@@ -189,9 +189,11 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
         currentConfig = new BaseAccount(accountsDao.getNextId(), username, accountName, password, host, "", AccountTypes.ACC_JIRA);
         if(existsInDb()) {
             Snackbar.make(saveFab, R.string.configExists, Snackbar.LENGTH_LONG).show();
+            hideProgress();
             return;
         }
         connector.setCurrentConfig(currentConfig);
+        AuthenticatedPicasso.setConfig(getActivity(), currentConfig);
         getUserData();
     }
 

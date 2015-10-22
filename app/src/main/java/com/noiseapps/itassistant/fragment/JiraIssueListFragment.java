@@ -1,6 +1,7 @@
 package com.noiseapps.itassistant.fragment;
 
 import android.app.Activity;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -103,12 +104,12 @@ public class JiraIssueListFragment extends Fragment {
                             break;
                         case 1:
                             showTransitionDialog(issue);
+                            dialog.dismiss();
                             break;
                         case 2:
                             showAssigneeDialog(issue);
                             break;
                     }
-                    dialog.dismiss();
                 });
         builder.setNegativeButton(R.string.cancel, (dialog, which) -> {
             dialog.dismiss();
@@ -145,6 +146,7 @@ public class JiraIssueListFragment extends Fragment {
     }
 
     private void showAssigneeDialog(Issue issue) {
+        Snackbar.make(issuesRecycler, R.string.optionUnavailable, Snackbar.LENGTH_LONG).show();
 //        final List<Transition> transitions = issue.getTransitions();
 //        final String[] items = new String[transitions.size()];
 //        for (int i = 0; i < transitions.size(); i++) {
