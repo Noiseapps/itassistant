@@ -9,8 +9,11 @@ import com.noiseapps.itassistant.api.JiraAPI;
 import com.noiseapps.itassistant.database.PreferencesDAO;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
+import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.issues.JiraIssueList;
 import com.noiseapps.itassistant.model.jira.issues.Priority;
+import com.noiseapps.itassistant.model.jira.issues.Transition;
+import com.noiseapps.itassistant.model.jira.issues.TransitionRequest;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comments;
 import com.noiseapps.itassistant.model.jira.issues.common.IssueStatus;
@@ -48,14 +51,34 @@ public class JiraConnector {
         if(apiService == null) {
             return null;
         }
-        return apiService.getUserData(currentConfig.getUsername());
+        try {
+            return apiService.getUserData(currentConfig.getUsername());
+        } catch (RetrofitError error) {
+            return null;
+        }
     }
 
     public List<JiraProject> getUserProjects() {
-        if(apiService == null) {
+        if (apiService == null) {
             return null;
         }
-        return apiService.getUserProjects();
+        try {
+            return apiService.getUserProjects();
+        } catch (RetrofitError error) {
+            return null;
+        }
+    }
+
+    public JiraIssueList getAssignedToMe() {
+        if (apiService == null) {
+            return null;
+        }
+        try {
+            final String query = String.format("assignee=\"%s\"", getCurrentConfig().getUsername());
+            return apiService.getAssignedToMe(query);
+        } catch (RetrofitError error) {
+            return null;
+        }
     }
 
     public void getProjectIssues(@NonNull String projectKey, Callback<JiraIssueList> callback) {
@@ -140,6 +163,13 @@ public class JiraConnector {
             return;
         }
         apiService.updateIssue(issueId, issueModel, callback);
+    }
+
+    public void transitionTo(Issue issue, Transition transition, @NonNull Callback<Response> callback) {
+        if(apiService == null) {
+            return;
+        }
+        apiService.transitionTo(issue.getId(), new TransitionRequest(transition), callback);
     }
 
     @AfterInject

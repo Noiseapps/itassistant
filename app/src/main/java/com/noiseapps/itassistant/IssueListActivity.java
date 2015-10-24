@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -16,6 +17,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
 import com.noiseapps.itassistant.adapters.NavigationMenuAdapter;
@@ -29,8 +33,9 @@ import com.noiseapps.itassistant.fragment.NewIssueFragment_;
 import com.noiseapps.itassistant.model.NavigationModel;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
+import com.noiseapps.itassistant.model.jira.issues.JiraIssueList;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
-import com.noiseapps.itassistant.model.jira.user.JiraUser;
+import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 import com.noiseapps.itassistant.utils.Consts;
 import com.noiseapps.itassistant.utils.DividerItemDecoration;
 import com.noiseapps.itassistant.utils.events.EventBusAction;
@@ -46,9 +51,6 @@ import org.androidannotations.annotations.FragmentById;
 import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import jonathanfinerty.once.Once;
@@ -76,7 +78,6 @@ public class IssueListActivity extends AppCompatActivity
     ArrayList<NavigationModel> navigationModels;
     private boolean mTwoPane;
     private ProgressDialog progressDialog;
-    private NavigationMenuAdapter adapter;
 
     @Override
     public void onEditIssue(Issue issue) {
@@ -120,7 +121,7 @@ public class IssueListActivity extends AppCompatActivity
         builder.setTitle(R.string.noAccounts);
         builder.setMessage(R.string.noAccountsMsg);
         builder.setPositiveButton(R.string.yes, (dialog, which) -> {
-            startAccountsActivity();
+            startAccountsActivity(true);
         });
         builder.setNegativeButton(R.string.quit, (dialog, which) -> {
             finish();
@@ -128,8 +129,8 @@ public class IssueListActivity extends AppCompatActivity
         builder.show();
     }
 
-    private void startAccountsActivity() {
-        AccountsActivity_.intent(this).startForResult(ACCOUNTS_REQUEST);
+    private void startAccountsActivity(boolean showForm) {
+        AccountsActivity_.intent(this).showAccountForm(showForm).startForResult(ACCOUNTS_REQUEST);
     }
 
     private void initToolbar() {
@@ -151,32 +152,48 @@ public class IssueListActivity extends AppCompatActivity
     void downloadData() {
         showProgress();
         navigationModels = new ArrayList<>();
+        final List<Issue> myIssues = new ArrayList<>();
+        int failedAccounts = 0;
         for (final BaseAccount baseAccount : accountsDao.getAll()) {
             try {
                 jiraConnector.setCurrentConfig(baseAccount);
-                final JiraUser jiraUser = jiraConnector.getUserData();
-                if (jiraUser != null) {
-                    final List<JiraProject> jiraProjects = jiraConnector.getUserProjects();
-                    if (jiraProjects != null) {
-                        navigationModels.add(new NavigationModel(baseAccount, jiraUser, jiraProjects));
-                    } else {
-                    }
+                AuthenticatedPicasso.setConfig(this, baseAccount);
+                final List<JiraProject> jiraProjects = jiraConnector.getUserProjects();
+                if (jiraProjects != null) {
+                    navigationModels.add(new NavigationModel(baseAccount, jiraProjects));
                 } else {
-                    showErrorDialog();
+                    failedAccounts++;
+                }
+                final JiraIssueList myProjectIssues = jiraConnector.getAssignedToMe();
+                if(myProjectIssues != null) {
+                    myIssues.addAll(myProjectIssues.getIssues());
                 }
             } catch (Exception e) {
                 Logger.e(e, e.getMessage());
             }
         }
         hideProgress();
+        showInfoAboutFailedAccounts(failedAccounts);
+        initMyIssues(myIssues);
         initNavigation(navigationModels);
+    }
+
+    @UiThread
+    void initMyIssues(List<Issue> myIssues) {
+        listFragment.setIssues(myIssues);
+    }
+
+    private void showInfoAboutFailedAccounts(int failedAccounts) {
+        if(failedAccounts > 0) {
+            Snackbar.make(recyclerView, getString(R.string.failedToReadAccountData, failedAccounts), Snackbar.LENGTH_LONG).show();
+        }
     }
 
     @UiThread
     void showErrorDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.errorDownloading).setMessage(R.string.errorDownloadingMsg).
-                setPositiveButton(R.string.ok, (dialog, which) -> {
+                setPositiveButton(R.string.retry, (dialog, which) -> {
                     downloadData();
                 }).
                 setNegativeButton(R.string.quit, (dialog, which) -> {
@@ -209,9 +226,8 @@ public class IssueListActivity extends AppCompatActivity
     @UiThread
     void initNavigation(List<NavigationModel> navigationModels) {
         final RecyclerViewExpandableItemManager manager = new RecyclerViewExpandableItemManager(null);
-        adapter = new NavigationMenuAdapter(this, navigationModels, (jiraProject, baseAccount) -> {
+        final NavigationMenuAdapter adapter = new NavigationMenuAdapter(this, navigationModels, (jiraProject, baseAccount) -> {
             mainLayout.setVisibility(View.VISIBLE);
-//                emptyList.setVisibility(View.GONE);
             drawerLayout.closeDrawer(GravityCompat.START);
             listFragment.setProject(jiraProject, baseAccount);
         });
@@ -280,9 +296,26 @@ public class IssueListActivity extends AppCompatActivity
         drawerLayout.openDrawer(GravityCompat.START);
     }
 
+    @Click(R.id.actionSettings)
+    void onSettingsAction() {
+        showNotImplemented();
+    }
+
+    private void showNotImplemented() {
+        Snackbar.make(drawerLayout, R.string.optionUnavailable, Snackbar.LENGTH_LONG).show();
+    }
+
     @Click(R.id.actionAccounts)
     void onAccountAction() {
-        startAccountsActivity();
+        startAccountsActivity(false);
+    }
+    @Click(R.id.actionAbout)
+    void onAboutAction() {
+        showNotImplemented();
+    }
+    @Click(R.id.actionFeedback)
+    void onFeedbackAction() {
+        showNotImplemented();
     }
 
     @OnActivityResult(ACCOUNTS_REQUEST)

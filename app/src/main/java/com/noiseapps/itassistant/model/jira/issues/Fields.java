@@ -482,7 +482,7 @@ public class Fields implements Parcelable {
         dest.writeParcelable(this.project, 0);
         dest.writeString(this.environment);
         dest.writeParcelable(this.aggregateProgress, 0);
-        dest.writeList(this.components);
+        dest.writeTypedList(components);
         dest.writeParcelable(this.votes, 0);
         dest.writeParcelable(this.resolution, 0);
         dest.writeString(this.resolutiondate);
@@ -513,8 +513,7 @@ public class Fields implements Parcelable {
         this.project = in.readParcelable(Project.class.getClassLoader());
         this.environment = in.readString();
         this.aggregateProgress = in.readParcelable(AggregateProgress.class.getClassLoader());
-        this.components = new ArrayList<Component>();
-        in.readList(this.components, List.class.getClassLoader());
+        this.components = in.createTypedArrayList(Component.CREATOR);
         this.votes = in.readParcelable(Votes.class.getClassLoader());
         this.resolution = in.readParcelable(Resolution.class.getClassLoader());
         this.resolutiondate = in.readString();

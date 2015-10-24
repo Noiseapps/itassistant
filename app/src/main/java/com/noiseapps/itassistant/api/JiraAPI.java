@@ -8,6 +8,8 @@ import java.util.List;
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.JiraIssueList;
 import com.noiseapps.itassistant.model.jira.issues.Priority;
+import com.noiseapps.itassistant.model.jira.issues.Transition;
+import com.noiseapps.itassistant.model.jira.issues.TransitionRequest;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comments;
 import com.noiseapps.itassistant.model.jira.issues.common.IssueStatus;
@@ -23,6 +25,7 @@ import com.noiseapps.itassistant.model.jira.session.SessionResponse;
 import com.noiseapps.itassistant.model.jira.user.JiraUser;
 
 import retrofit.Callback;
+import retrofit.client.Response;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.POST;
@@ -41,11 +44,14 @@ public interface JiraAPI {
     @GET("/rest/api/2/project")
     List<JiraProject> getUserProjects();
 
+    @GET("/rest/api/2/search?expand=transitions")
+    JiraIssueList getAssignedToMe(@Query("jql") String query);
+
     @GET("/rest/api/2/project/{projectIdOrKey}")
     void getProjectDetails(@Path("projectIdOrKey") String projectId, @NonNull Callback<JiraProjectDetails> callback);
 
     @GET("/rest/api/2/search?maxResults=150&expand=transitions")
-    void getProjectIssues(@Query("jql") String projectId, @NonNull Callback<JiraIssueList> callback);
+    void getProjectIssues(@Query("jql") String query, @NonNull Callback<JiraIssueList> callback);
 
     @GET("/rest/api/2/issue/{issueIdOrKey}/comment")
     void getIssueComments(@Path("issueIdOrKey") String issueId, @NonNull Callback<Comments> callback);
@@ -76,4 +82,7 @@ public interface JiraAPI {
 
     @PUT("/rest/api/2/issue/{issueId}")
     void updateIssue(@Path("issueId") String issueId, @Body CreateIssueModel createIssueModel, @NonNull Callback<CreateIssueResponse> callback);
+
+    @POST("/rest/api/2/issue/{issueIdOrKey}/transitions")
+    void transitionTo(@Path("issueIdOrKey") String id, @Body TransitionRequest transition, Callback<Response> callback);
 }

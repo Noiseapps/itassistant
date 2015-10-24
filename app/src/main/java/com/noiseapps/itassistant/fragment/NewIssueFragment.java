@@ -415,7 +415,9 @@ public class NewIssueFragment extends Fragment {
 
         @Override
         public void success(List<Assignee> assignees, Response response) {
-            showForm(createMetaModel, assignees);
+            if(isAdded()) {
+                showForm(createMetaModel, assignees);
+            }
         }
 
         @Override

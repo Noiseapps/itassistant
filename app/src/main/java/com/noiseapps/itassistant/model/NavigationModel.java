@@ -11,17 +11,11 @@ import com.noiseapps.itassistant.model.jira.user.JiraUser;
 
 public class NavigationModel implements Parcelable {
     private final BaseAccount baseAccount;
-    private final JiraUser user;
     private final List<JiraProject> jiraProjects;
 
-    public NavigationModel(BaseAccount baseAccount, JiraUser user, List<JiraProject> jiraProjects) {
+    public NavigationModel(BaseAccount baseAccount, List<JiraProject> jiraProjects) {
         this.baseAccount = baseAccount;
-        this.user = user;
         this.jiraProjects = jiraProjects;
-    }
-
-    public JiraUser getUser() {
-        return user;
     }
 
     public List<JiraProject> getJiraProjects() {
@@ -40,13 +34,11 @@ public class NavigationModel implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(this.baseAccount, 0);
-        dest.writeParcelable(this.user, 0);
         dest.writeTypedList(jiraProjects);
     }
 
     protected NavigationModel(Parcel in) {
         this.baseAccount = in.readParcelable(BaseAccount.class.getClassLoader());
-        this.user = in.readParcelable(JiraUser.class.getClassLoader());
         this.jiraProjects = in.createTypedArrayList(JiraProject.CREATOR);
     }
 

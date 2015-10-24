@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.FrameLayout;
 
-import com.noiseapps.itassistant.fragment.accounts.AccountTypeSelectFragment_;
 import com.noiseapps.itassistant.fragment.accounts.AccountsActivityCallbacks;
 import com.noiseapps.itassistant.fragment.accounts.AccountsListFragment_;
 import com.noiseapps.itassistant.fragment.accounts.JiraAccountCreateFragment_;
@@ -15,6 +14,7 @@ import com.noiseapps.itassistant.model.account.AccountTypes;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.ViewById;
 
 @EActivity(R.layout.activity_accounts)
@@ -23,9 +23,13 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
     @ViewById
     FrameLayout container;
 
+    @Extra
+    boolean showAccountForm;
+
     @Override
     public void onAddAccount() {
-        getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.container, AccountTypeSelectFragment_.builder().build()).commit();
+        onAccountTypeSelected(AccountTypes.ACC_JIRA);
+//        getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.container, AccountTypeSelectFragment_.builder().build()).commit();
     }
 
     @Override
@@ -58,6 +62,11 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
         setTablet();
         setResult(RESULT_CANCELED);
         getSupportFragmentManager().beginTransaction().replace(R.id.container, AccountsListFragment_.builder().build()).commit();
+
+        if(showAccountForm) {
+            onAddAccount();
+            showAccountForm = false;
+        }
     }
 
     private void setTablet() {

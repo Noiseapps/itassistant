@@ -14,6 +14,7 @@ import java.util.List;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
+import com.orhanobut.logger.Logger;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -28,6 +29,8 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
 
     public interface IssueAdapterCallback {
         void onItemClicked(Issue selectedIssue);
+
+        void onItemLongPressed(Issue issue);
     }
 
     public IssuesAdapter(Context context, List<Issue> issueList, Picasso authPicasso, IssueAdapterCallback callback) {
@@ -72,6 +75,10 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
             issueType = (ImageView) itemView.findViewById(R.id.issueType);
             avatar = (CircleImageView) itemView.findViewById(R.id.avatar);
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(v -> {
+                callback.onItemLongPressed(issue);
+                return true;
+            });
         }
 
         public void build(Issue issue) {

@@ -2,7 +2,7 @@ package com.noiseapps.itassistant.fragment;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -15,7 +15,6 @@ import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,14 +27,15 @@ import com.noiseapps.itassistant.connector.JiraConnector;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.issues.JiraIssueList;
+import com.noiseapps.itassistant.model.jira.issues.Project;
+import com.noiseapps.itassistant.model.jira.issues.Status;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
-import com.orhanobut.logger.Logger;
+import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.OptionsItem;
@@ -58,11 +58,12 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
 
         @Override
         public void onAddNewIssue(JiraProject jiraProject) {
+        }
 
+        @Override
+        public void onEditIssue(Issue issue) {
         }
     };
-    @NonNull
-    private Callbacks mCallbacks = sDummyCallbacks;
     @Bean
     JiraConnector jiraConnector;
     @ViewById
@@ -70,22 +71,44 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     @ViewById
     ViewPager viewPager;
     @ViewById
-    FloatingActionButton addIssueFab;
-    @ViewById
     FABProgressCircle fabProgressCircle;
     @ViewById
     TabLayout tabLayout;
-    private boolean isEmpty;
     @InstanceState
     JiraIssueList jiraIssueList;
     @InstanceState
     BaseAccount baseAccount;
     @InstanceState
     JiraProject jiraProject;
+    @NonNull
+    private Callbacks mCallbacks = sDummyCallbacks;
+    private boolean isEmpty;
 
     @Override
     public void onItemSelected(Issue selectedIssue) {
         mCallbacks.onItemSelected(selectedIssue, jiraProject);
+    }
+
+    @Override
+    public void onItemEdit(Issue issue) {
+        mCallbacks.onEditIssue(issue);
+    }
+
+    @Override
+    public void showFabProgress() {
+        fabProgressCircle.show();
+    }
+
+    @Override
+    public void hideFabProgress(boolean success) {
+        if (success) {
+            fabProgressCircle.beginFinalAnimation();
+            Snackbar.make(fabProgressCircle, R.string.statusChanged, Snackbar.LENGTH_LONG).show();
+            reload();
+        } else {
+            Snackbar.make(fabProgressCircle, R.string.statusNotChanged, Snackbar.LENGTH_LONG).show();
+            fabProgressCircle.hide();
+        }
     }
 
     @AfterViews
@@ -97,12 +120,13 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         if (supportActionBar != null) {
             supportActionBar.setTitle(jiraProject.getName());
         }
-        if(jiraIssueList != null) {
+        if (jiraIssueList != null) {
             displayData();
         }
     }
 
     public void setProject(JiraProject jiraProject, BaseAccount baseAccount) {
+        setToolbarTitle(jiraProject.getName());
         this.jiraProject = jiraProject;
         this.baseAccount = baseAccount;
         displayData();
@@ -111,11 +135,11 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
 
     private void displayData() {
         showProgress();
-        noProject.setVisibility(View.GONE);
         getIssues(baseAccount);
     }
 
     private void showProgress() {
+        noProject.setVisibility(View.GONE);
         emptyList.setVisibility(View.GONE);
         tabView.setVisibility(View.GONE);
         loadingView.setVisibility(View.VISIBLE);
@@ -124,6 +148,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     @Background
     void getIssues(BaseAccount baseAccount) {
         jiraConnector.setCurrentConfig(baseAccount);
+        AuthenticatedPicasso.setConfig(getActivity(), baseAccount);
         jiraConnector.getProjectIssues(jiraProject.getKey(), new Callback<JiraIssueList>() {
             @Override
             public void success(JiraIssueList jiraIssueList, Response response) {
@@ -136,7 +161,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
             public void failure(RetrofitError error) {
                 isEmpty = true;
                 noProject.setVisibility(View.GONE);
-                hideProgress();
+                hideProgress(false);
             }
         });
     }
@@ -146,7 +171,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         final PagerAdapter adapter = makeAdapter(jiraIssueList);
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
-        hideProgress();
+        hideProgress(false);
     }
 
     @NonNull
@@ -154,8 +179,9 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         final Set<WorkflowObject> workflows = new HashSet<>();
         final ListMultimap<String, Issue> issuesInWorkflow = ArrayListMultimap.create();
         for (Issue issue : jiraIssueList.getIssues()) {
-            final String id = issue.getFields().getStatus().getId();
-            final String name = issue.getFields().getStatus().getName();
+            final Status status = issue.getFields().getStatus();
+            final String id = status.getId();
+            final String name = status.getName();
             workflows.add(new WorkflowObject(id, name));
             issuesInWorkflow.put(name, issue);
         }
@@ -163,10 +189,10 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     }
 
     @UiThread
-    void hideProgress() {
+    void hideProgress(boolean hideActionButton) {
         loadingView.setVisibility(View.GONE);
-        fabProgressCircle.setVisibility(View.VISIBLE);
-        if(isEmpty) {
+        fabProgressCircle.setVisibility(hideActionButton ? View.GONE : View.VISIBLE);
+        if (isEmpty) {
             emptyList.setVisibility(View.VISIBLE);
             tabView.setVisibility(View.GONE);
         } else {
@@ -198,10 +224,42 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         setProject(jiraProject, baseAccount);
     }
 
+    public void setIssues(List<Issue> myIssues) {
+        showProgress();
+        isEmpty = myIssues.isEmpty();
+        setToolbarTitle(getString(R.string.myIssues));
+        final PagerAdapter pagerAdapter = makeMyIssuesAdapter(myIssues);
+        viewPager.setAdapter(pagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
+        hideProgress(true);
+    }
+
+    private void setToolbarTitle(String title) {
+        final ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if(supportActionBar != null) {
+            supportActionBar.setTitle(title);
+        }
+    }
+
+    private PagerAdapter makeMyIssuesAdapter(List<Issue> myIssues) {
+        final Set<WorkflowObject> workflows = new HashSet<>();
+        final ListMultimap<String, Issue> issuesInWorkflow = ArrayListMultimap.create();
+        for (Issue issue : myIssues) {
+            final Project project = issue.getFields().getProject();
+            final String id = project.getId();
+            final String name = project.getKey();
+            workflows.add(new WorkflowObject(id, name));
+            issuesInWorkflow.put(name, issue);
+        }
+        return new WorkflowAdapter(workflows, issuesInWorkflow);
+    }
+
     public interface Callbacks {
         void onItemSelected(Issue id, JiraProject jiraProject);
 
         void onAddNewIssue(JiraProject jiraProject);
+
+        void onEditIssue(Issue issue);
     }
 
     private class WorkflowObject {
@@ -213,6 +271,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
             this.name = name;
         }
 
+        @SuppressWarnings("SimplifiableIfStatement")
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -241,21 +300,16 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         }
     }
 
-    private class WorkflowAdapter extends FragmentStatePagerAdapter {
-        private List<WorkflowObject> workflows;
+    private class MyIssuesAdapter extends FragmentStatePagerAdapter {
         private final Fragment[] fragments;
         private final ListMultimap<String, Issue> issuesInWorkflow;
+        private List<WorkflowObject> workflows;
 
-        public WorkflowAdapter(Set<WorkflowObject> workflows, ListMultimap<String, Issue> issuesInWorkflow) {
+        public MyIssuesAdapter(Set<WorkflowObject> workflows, ListMultimap<String, Issue> issuesInWorkflow) {
             super(getChildFragmentManager());
             this.issuesInWorkflow = issuesInWorkflow;
             this.workflows = new ArrayList<>(workflows);
-            Collections.sort(this.workflows, new Comparator<WorkflowObject>() {
-                @Override
-                public int compare(WorkflowObject lhs, WorkflowObject rhs) {
-                    return lhs.order - rhs.order;
-                }
-            });
+            Collections.sort(this.workflows, (lhs, rhs) -> lhs.order - rhs.order);
             fragments = new Fragment[workflows.size()];
         }
 
@@ -270,7 +324,48 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         }
 
         @Override
-         public int getItemPosition(Object object) {
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            final String pageTitle = String.valueOf(getPageTitle(position));
+            if (fragments[position] == null) {
+                fragments[position] = JiraIssueListFragment_.builder().
+                        workflowName(pageTitle).build();
+            }
+            final ArrayList<Issue> issues = new ArrayList<>(issuesInWorkflow.get(pageTitle));
+            ((JiraIssueListFragment) fragments[position]).setIssues(issues);
+            return fragments[position];
+        }
+    }
+
+    private class WorkflowAdapter extends FragmentStatePagerAdapter {
+        private final Fragment[] fragments;
+        private final ListMultimap<String, Issue> issuesInWorkflow;
+        private List<WorkflowObject> workflows;
+
+        public WorkflowAdapter(Set<WorkflowObject> workflows, ListMultimap<String, Issue> issuesInWorkflow) {
+            super(getChildFragmentManager());
+            this.issuesInWorkflow = issuesInWorkflow;
+            this.workflows = new ArrayList<>(workflows);
+            Collections.sort(this.workflows, (lhs, rhs) -> lhs.order - rhs.order);
+            fragments = new Fragment[workflows.size()];
+        }
+
+        @Override
+        public int getCount() {
+            return workflows.size();
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return workflows.get(position).name;
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
             return POSITION_NONE;
         }
 
