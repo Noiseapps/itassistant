@@ -2,7 +2,6 @@ package com.noiseapps.itassistant.fragment;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -10,17 +9,8 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ActionMode;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.google.common.collect.ArrayListMultimap;
@@ -28,14 +18,13 @@ import com.google.common.collect.ListMultimap;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.connector.JiraConnector;
 import com.noiseapps.itassistant.model.account.BaseAccount;
+import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.issues.JiraIssueList;
 import com.noiseapps.itassistant.model.jira.issues.Project;
 import com.noiseapps.itassistant.model.jira.issues.Status;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
-import com.noiseapps.itassistant.utils.ToggleList;
-import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -48,9 +37,15 @@ import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 @EFragment(R.layout.fragment_issue_list)
 @OptionsMenu(R.menu.menu_issue_list)
@@ -85,6 +80,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     BaseAccount baseAccount;
     @InstanceState
     JiraProject jiraProject;
+    private ArrayList<Assignee> assignees;
     @NonNull
     private Callbacks mCallbacks = sDummyCallbacks;
     private boolean isEmpty;
@@ -147,24 +143,24 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     void getIssues(BaseAccount baseAccount) {
         jiraConnector.setCurrentConfig(baseAccount);
         AuthenticatedPicasso.setConfig(getActivity(), baseAccount);
-        jiraConnector.getProjectIssues(jiraProject.getKey(), new Callback<JiraIssueList>() {
-            @Override
-            public void success(JiraIssueList jiraIssueList, Response response) {
-                IssueListFragment.this.jiraIssueList = jiraIssueList;
-                noProject.setVisibility(View.GONE);
-                onProjectsDownloaded();
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                isEmpty = true;
-                noProject.setVisibility(View.GONE);
-                hideProgress(false);
-            }
-        });
+        final String projectKey = jiraProject.getKey();
+        Observable.zip(jiraConnector.getProjectIssues(projectKey),
+                jiraConnector.getProjectMembers(projectKey),
+                (jiraIssueList, assignees) -> {
+                    IssueListFragment.this.jiraIssueList = jiraIssueList;
+                    IssueListFragment.this.assignees = new ArrayList<>(assignees);
+                    return null;
+                }).subscribeOn(Schedulers.io()).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribe(o -> onProjectsDownloaded(), throwable -> {
+                    isEmpty = true;
+                    noProject.setVisibility(View.GONE);
+                    hideProgress(false);
+                });
     }
 
     private void onProjectsDownloaded() {
+        noProject.setVisibility(View.GONE);
         isEmpty = jiraIssueList.getIssues().isEmpty();
         final PagerAdapter adapter = makeAdapter(jiraIssueList);
         viewPager.setAdapter(adapter);
@@ -234,7 +230,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
 
     private void setToolbarTitle(String title) {
         final ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if(supportActionBar != null) {
+        if (supportActionBar != null) {
             supportActionBar.setTitle(title);
         }
     }
@@ -289,6 +285,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
             return result;
         }
 
+
         @Override
         public String toString() {
             return "WorkflowObject{" +
@@ -332,7 +329,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         public Fragment getItem(int position) {
             final String pageTitle = String.valueOf(getPageTitle(position));
             if (fragments[position] == null) {
-                fragments[position] = JiraIssueListFragment_.builder().assignedToMe(assignedToMeScreen).
+                fragments[position] = JiraIssueListFragment_.builder().assignees(assignees).assignedToMe(assignedToMeScreen).
                         workflowName(pageTitle).build();
             }
             final ArrayList<Issue> issues = new ArrayList<>(issuesInWorkflow.get(pageTitle));

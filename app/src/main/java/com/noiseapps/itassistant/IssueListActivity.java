@@ -78,6 +78,7 @@ public class IssueListActivity extends AppCompatActivity
     ArrayList<NavigationModel> navigationModels;
     private boolean mTwoPane;
     private ProgressDialog progressDialog;
+    private ArrayList<Issue> myIssues;
 
     @Override
     public void onEditIssue(Issue issue) {
@@ -152,7 +153,7 @@ public class IssueListActivity extends AppCompatActivity
     void downloadData() {
         showProgress();
         navigationModels = new ArrayList<>();
-        final List<Issue> myIssues = new ArrayList<>();
+        myIssues = new ArrayList<>();
         int failedAccounts = 0;
         for (final BaseAccount baseAccount : accountsDao.getAll()) {
             try {
@@ -296,9 +297,15 @@ public class IssueListActivity extends AppCompatActivity
         drawerLayout.openDrawer(GravityCompat.START);
     }
 
+
     @Click(R.id.actionSettings)
     void onSettingsAction() {
         showNotImplemented();
+    }
+
+    @Click(R.id.actionAssignedToMe)
+    void onAssignedToMeAction() {
+        initMyIssues(myIssues);
     }
 
     private void showNotImplemented() {

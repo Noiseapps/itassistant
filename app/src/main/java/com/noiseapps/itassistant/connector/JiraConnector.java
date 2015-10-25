@@ -2,7 +2,10 @@ package com.noiseapps.itassistant.connector;
 
 import android.support.annotation.NonNull;
 import android.util.Base64;
+import android.util.Pair;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import com.noiseapps.itassistant.api.JiraAPI;
@@ -77,11 +80,18 @@ public class JiraConnector {
         }
     }
 
-    public void getProjectIssues(@NonNull String projectKey, Callback<JiraIssueList> callback) {
+//    public void getProjectIssues(@NonNull String projectKey, Callback<JiraIssueList> callback) {
+//        if(apiService == null) {
+//            return;
+//        }
+//        apiService.getProjectIssues(String.format("project=\"%s\"", projectKey), callback);
+//    }
+
+    public Observable<JiraIssueList> getProjectIssues(@NonNull String projectKey) {
         if(apiService == null) {
-            return;
+            return null;
         }
-        apiService.getProjectIssues(String.format("project=\"%s\"", projectKey), callback);
+        return apiService.getProjectIssues(String.format("project=\"%s\"", projectKey));
     }
 
     public void getIssueComments(@NonNull String issueId, Callback<Comments> callback) {
@@ -154,6 +164,18 @@ public class JiraConnector {
         apiService.updateIssue(issueId, issueModel, callback);
     }
 
+    public Response changeAssignee(@NonNull String projectKey, String username) {
+        if(apiService == null) {
+            return null;
+        }
+        try {
+            return apiService.changeIssueAssignee(projectKey, Collections.singletonMap("name", username));
+        } catch (RetrofitError err) {
+            Logger.e(err, err.getMessage());
+            return null;
+        }
+    }
+
     public Response transitionTo(Issue issue, Transition transition) {
         if(apiService == null) {
             return null;
@@ -161,6 +183,7 @@ public class JiraConnector {
         try {
             return apiService.transitionTo(issue.getId(), new TransitionRequest(transition));
         } catch (RetrofitError err) {
+            Logger.e(err, err.getMessage());
             return null;
         }
     }

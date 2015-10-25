@@ -19,6 +19,7 @@ import java.util.List;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.IssuesAdapter;
 import com.noiseapps.itassistant.connector.JiraConnector;
+import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.issues.Transition;
 import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
@@ -39,6 +40,7 @@ import org.androidannotations.annotations.ViewById;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import rx.Observable;
 
 @EFragment(R.layout.fragment_jira_list)
 public class JiraIssueListFragment extends Fragment {
@@ -46,6 +48,8 @@ public class JiraIssueListFragment extends Fragment {
     String workflowName;
     @FragmentArg
     boolean assignedToMe;
+    @FragmentArg
+    ArrayList<Assignee> assignees;
     @Bean
     JiraConnector jiraConnector;
     Activity context;
@@ -130,6 +134,7 @@ public class JiraIssueListFragment extends Fragment {
                             showTransitionDialog(issueToggleList);
                             break;
                         case R.id.actionChangeAssignment:
+                            showAssigneeDialog(issueToggleList);
                             break;
                     }
                     return true;
@@ -202,35 +207,45 @@ public class JiraIssueListFragment extends Fragment {
         progressDialog.setCanceledOnTouchOutside(false);
     }
 
-    private void showAssigneeDialog(Issue issue) {
-        Snackbar.make(issuesRecycler, R.string.optionUnavailable, Snackbar.LENGTH_LONG).show();
-//        final List<Transition> transitions = issue.getTransitions();
-//        final String[] items = new String[transitions.size()];
-//        for (int i = 0; i < transitions.size(); i++) {
-//            final Transition transition = transitions.get(i);
-//            items[i] = transition.getName();
-//        }
-//
-//        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//        builder.setTitle(R.string.selectTransition);
-//        builder.setItems(items, (dialog, which) -> {
-//            callback.showFabProgress();
-//            final Transition transition = transitions.get(which);
-//            jiraConnector.transitionTo(issue, transition, new Callback<Response>() {
-//                @Override
-//                public void success(Response response, Response response2) {
-//                    callback.hideFabProgress(true);
-//                    Snackbar.make(issuesRecycler, R.string.statusChanged, Snackbar.LENGTH_LONG).show();
-//                }
-//
-//                @Override
-//                public void failure(RetrofitError error) {
-//                    callback.hideFabProgress(false);
-//                    Snackbar.make(issuesRecycler, R.string.statusNotChanged, Snackbar.LENGTH_LONG).show();
-//                }
-//            });
-//        });
-//        builder.show();
+    private void showAssigneeDialog(ToggleList<Issue> toggleList) {
+        final String[] items = new String[assignees.size()+1];
+        items[0] = getString(R.string.notAssigned);
+        for (int i = 0; i < assignees.size(); i++) {
+            final Assignee assignee = assignees.get(i);
+            items[i+1] = assignee.getDisplayName();
+        }
+        final int[] successful = {0};
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.selectAssignee);
+        builder.setItems(items, (dialog, which) -> {
+            showProgress(R.string.changingAssignee);
+            progressDialog.setIndeterminate(false);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            progressDialog.setMax(toggleList.size());
+            progressDialog.show();
+
+            final Assignee assignee;
+            if(which == 0) {
+                assignee = new Assignee();
+                assignee.setName(null);
+            } else {
+                assignee = assignees.get(which - 1);
+            }
+            assignIssues(toggleList, assignee, successful);
+
+        });
+        builder.show();
     }
 
+    @Background
+    void assignIssues(ToggleList<Issue> toggleList, Assignee assignee, int[] unsuccessful) {
+        for (Issue issue : toggleList) {
+            final Response response = jiraConnector.changeAssignee(issue.getKey(), assignee.getName());
+            incrementProgress();
+            if (response == null) {
+                unsuccessful[0]++;
+            }
+        }
+        onFinished(unsuccessful[0]);
+    }
 }

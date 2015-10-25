@@ -119,4 +119,5 @@
     <string name="selectAssignee">Assign…</string>
     <string name="failedToPostTransition">Failed to transition %d issues</string>
     <string name="changingTransitions">Changing workflow status…</string>
+    <string name="changingAssignee">Assigning issues…</string>
 </resources>

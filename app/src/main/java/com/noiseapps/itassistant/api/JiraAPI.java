@@ -2,27 +2,27 @@ package com.noiseapps.itassistant.api;
 
 
 import android.support.annotation.NonNull;
-
-import java.util.List;
+import android.util.Pair;
 
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.JiraIssueList;
-import com.noiseapps.itassistant.model.jira.issues.Priority;
-import com.noiseapps.itassistant.model.jira.issues.Transition;
 import com.noiseapps.itassistant.model.jira.issues.TransitionRequest;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comments;
 import com.noiseapps.itassistant.model.jira.issues.common.IssueStatus;
+import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogItem;
+import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogs;
+import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueModel;
 import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueResponse;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.CreateMetaModel;
 import com.noiseapps.itassistant.model.jira.projects.details.JiraProjectDetails;
-import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogItem;
-import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogs;
-import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 import com.noiseapps.itassistant.model.jira.session.SessionRequest;
 import com.noiseapps.itassistant.model.jira.session.SessionResponse;
 import com.noiseapps.itassistant.model.jira.user.JiraUser;
+
+import java.util.List;
+import java.util.Map;
 
 import retrofit.Callback;
 import retrofit.client.Response;
@@ -52,7 +52,7 @@ public interface JiraAPI {
     Observable<JiraProjectDetails> getProjectDetails(@Path("projectIdOrKey") String projectId);
 
     @GET("/rest/api/2/search?maxResults=150&expand=transitions")
-    void getProjectIssues(@Query("jql") String query, @NonNull Callback<JiraIssueList> callback);
+    Observable<JiraIssueList> getProjectIssues(@Query("jql") String query);
 
     @GET("/rest/api/2/issue/{issueIdOrKey}/comment")
     void getIssueComments(@Path("issueIdOrKey") String issueId, @NonNull Callback<Comments> callback);
@@ -83,4 +83,8 @@ public interface JiraAPI {
 
     @POST("/rest/api/2/issue/{issueIdOrKey}/transitions")
     Response transitionTo(@Path("issueIdOrKey") String id, @Body TransitionRequest transition);
+
+    @PUT("/rest/api/2/issue/{issueId}/assignee")
+    Response changeIssueAssignee(@Path("issueId") String issueId, @Body Map<String, String> assignee);
+
 }

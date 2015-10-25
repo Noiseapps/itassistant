@@ -3,6 +3,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        style="@style/AppTheme.MenuItem"
+        android:id="@+id/actionAssignedToMe"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/list_background"
+        android:clickable="true"
+        android:drawableStart="@drawable/ic_home_24dp"
+        android:text="@string/myIssues"
+        android:layout_below="@+id/view6"
+        android:layout_alignParentStart="true" />
+
     <View
         android:id="@+id/view6"
         android:layout_width="match_parent"
@@ -14,8 +26,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/view"
-        android:layout_below="@+id/view6"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/actionAssignedToMe" />
 
     <View
         android:id="@+id/view"
