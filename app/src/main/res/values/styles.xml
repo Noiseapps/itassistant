@@ -3,6 +3,8 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeStyle">@style/AppTheme.ActionMode</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -54,7 +56,13 @@
         <item name="android:background">@color/colorPrimary</item>
         <item name="android:textColor">@color/white</item>
         <item name="tabTextColor">@color/white</item>
+        <item name="android:textAllCaps">true</item>
         <item name="tabSelectedTextColor">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.ActionMode" parent="@style/Widget.AppCompat.ActionMode">
+        <item name="android:background">@color/colorPrimaryLight</item>
+        <item name="titleTextStyle">?android:attr/textAppearanceLarge</item>
     </style>
 
 </resources>

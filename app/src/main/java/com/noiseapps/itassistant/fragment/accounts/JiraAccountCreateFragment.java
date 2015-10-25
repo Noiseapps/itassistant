@@ -16,9 +16,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
@@ -36,15 +33,20 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.EditorAction;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.OptionsItem;
-import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 @EFragment(R.layout.fragment_account_atlassian)
 public class JiraAccountCreateFragment extends Fragment implements Validator.ValidationListener, DialogInterface.OnCancelListener {
@@ -103,7 +105,7 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
     }
 
     private void initData() {
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
 //            accountName.setText("Local");
             accountName.setText("Exaco");
 //            host.setText("10.1.221.123:8080");
@@ -171,7 +173,7 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
 
     @EditorAction(R.id.password)
     void onEditorActionsOnSomeTextViews(int actionId) {
-        if(actionId == EditorInfo.IME_ACTION_GO) {
+        if (actionId == EditorInfo.IME_ACTION_GO) {
             onVerify();
         }
     }
@@ -179,7 +181,7 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
     @Override
     public void onValidationSucceeded() {
         String host = this.host.getText().toString();
-        if(!StringUtils.validUrl(host)) {
+        if (!StringUtils.validUrl(host)) {
             host = "http://" + host;
         }
         final String accountName = this.accountName.getText().toString();
@@ -187,7 +189,7 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
         final String password = this.password.getText().toString();
         progressDialog.setTitle(getString(R.string.loggingIn));
         currentConfig = new BaseAccount(accountsDao.getNextId(), username, accountName, password, host, "", AccountTypes.ACC_JIRA);
-        if(existsInDb()) {
+        if (existsInDb()) {
             Snackbar.make(saveFab, R.string.configExists, Snackbar.LENGTH_LONG).show();
             hideProgress();
             return;
@@ -197,19 +199,14 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
         getUserData();
     }
 
-    @Background
     void getUserData() {
-        try {
-            final JiraUser userData = connector.getUserData();
-            onDataLoaded(userData);
-        } catch (Exception e) {
-            onDataLoaded(null);
-        }
+        connector.getUserData().subscribeOn(Schedulers.io()).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribe(this::onDataLoaded, throwable -> onDataLoaded(null));
     }
 
-    @UiThread
     void onDataLoaded(JiraUser userData) {
-        if(userData != null & !requestCanceled) {
+        if (userData != null & !requestCanceled) {
             final Picasso authPicasso = AuthenticatedPicasso.getAuthPicasso(getContext(), currentConfig);
             authPicasso.load(userData.getAvatarUrls().getAvatar48()).placeholder(R.drawable.ic_action_account_circle).into(new LoadTarget());
         } else {
@@ -220,7 +217,7 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
 
     private boolean existsInDb() {
         for (BaseAccount account : accountsDao.getAll()) {
-            if(account.getUsername().equals(currentConfig.getUsername())
+            if (account.getUsername().equals(currentConfig.getUsername())
                     && account.getUrl().equals(currentConfig.getUrl())) {
                 return true;
             }

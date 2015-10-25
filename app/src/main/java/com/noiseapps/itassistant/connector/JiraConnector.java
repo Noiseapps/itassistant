@@ -11,7 +11,6 @@ import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.issues.JiraIssueList;
-import com.noiseapps.itassistant.model.jira.issues.Priority;
 import com.noiseapps.itassistant.model.jira.issues.Transition;
 import com.noiseapps.itassistant.model.jira.issues.TransitionRequest;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
@@ -37,6 +36,7 @@ import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import rx.Observable;
 
 @EBean(scope = EBean.Scope.Singleton)
 public class JiraConnector {
@@ -47,15 +47,11 @@ public class JiraConnector {
     private BaseAccount currentConfig;
     private JiraAPI apiService;
 
-    public JiraUser getUserData() {
+    public Observable<JiraUser> getUserData() {
         if(apiService == null) {
             return null;
         }
-        try {
-            return apiService.getUserData(currentConfig.getUsername());
-        } catch (RetrofitError error) {
-            return null;
-        }
+        return apiService.getUserData(currentConfig.getUsername());
     }
 
     public List<JiraProject> getUserProjects() {
@@ -109,18 +105,11 @@ public class JiraConnector {
         apiService.getIssueWorkLog(issueId, callback);
     }
 
-    public void getProjectDetails(@NonNull String projectId, Callback<JiraProjectDetails> callback) {
+    public Observable<JiraProjectDetails> getProjectDetails(@NonNull String projectId) {
         if(apiService == null) {
-            return;
+            return null;
         }
-        apiService.getProjectDetails(projectId, callback);
-    }
-
-    public void getIssuePriorities(@NonNull Callback<List<Priority>> callback) {
-        if(apiService == null) {
-            return;
-        }
-        apiService.getIssuePriorities(callback);
+        return apiService.getProjectDetails(projectId);
     }
 
     public void postIssueWorkLog(String issueId, String newEstimate, WorkLogItem workLog, Callback<WorkLogItem> callback){
@@ -137,18 +126,18 @@ public class JiraConnector {
         apiService.getProjectStatuses(issueId, callback);
     }
 
-    public void getProjectMembers(@NonNull String projectKey, Callback<List<Assignee>> callback) {
+    public Observable<List<Assignee>> getProjectMembers(@NonNull String projectKey) {
         if(apiService == null) {
-            return;
+            return null;
         }
-        apiService.getProjectMembers(projectKey, callback);
+        return apiService.getProjectMembers(projectKey);
     }
 
-    public void getCreateMeta(@NonNull String projectKey, Callback<CreateMetaModel> callback) {
+    public Observable<CreateMetaModel> getCreateMeta(@NonNull String projectKey) {
         if(apiService == null) {
-            return;
+            return null;
         }
-        apiService.getCreateMeta(projectKey, callback);
+        return apiService.getCreateMeta(projectKey);
     }
 
     public void postNewIssue(@NonNull CreateIssueModel issueModel, Callback<CreateIssueResponse> callback) {
@@ -165,11 +154,15 @@ public class JiraConnector {
         apiService.updateIssue(issueId, issueModel, callback);
     }
 
-    public void transitionTo(Issue issue, Transition transition, @NonNull Callback<Response> callback) {
+    public Response transitionTo(Issue issue, Transition transition) {
         if(apiService == null) {
-            return;
+            return null;
         }
-        apiService.transitionTo(issue.getId(), new TransitionRequest(transition), callback);
+        try {
+            return apiService.transitionTo(issue.getId(), new TransitionRequest(transition));
+        } catch (RetrofitError err) {
+            return null;
+        }
     }
 
     @AfterInject

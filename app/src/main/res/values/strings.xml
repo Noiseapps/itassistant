@@ -116,4 +116,7 @@
     <string name="retry">Retry</string>
     <string name="failedToReadAccountData">Failed to get data about %d projects</string>
     <string name="myIssues">Assigned to me</string>
+    <string name="selectAssignee">Assign…</string>
+    <string name="failedToPostTransition">Failed to transition %d issues</string>
+    <string name="changingTransitions">Changing workflow status…</string>
 </resources>

@@ -10,6 +10,9 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -31,6 +34,8 @@ import com.noiseapps.itassistant.model.jira.issues.Project;
 import com.noiseapps.itassistant.model.jira.issues.Status;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
+import com.noiseapps.itassistant.utils.ToggleList;
+import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -101,14 +106,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
 
     @Override
     public void hideFabProgress(boolean success) {
-        if (success) {
-            fabProgressCircle.beginFinalAnimation();
-            Snackbar.make(fabProgressCircle, R.string.statusChanged, Snackbar.LENGTH_LONG).show();
-            reload();
-        } else {
-            Snackbar.make(fabProgressCircle, R.string.statusNotChanged, Snackbar.LENGTH_LONG).show();
-            fabProgressCircle.hide();
-        }
+        reload();
     }
 
     @AfterViews
@@ -185,7 +183,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
             workflows.add(new WorkflowObject(id, name));
             issuesInWorkflow.put(name, issue);
         }
-        return new WorkflowAdapter(workflows, issuesInWorkflow);
+        return new WorkflowAdapter(workflows, issuesInWorkflow, false);
     }
 
     @UiThread
@@ -251,7 +249,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
             workflows.add(new WorkflowObject(id, name));
             issuesInWorkflow.put(name, issue);
         }
-        return new WorkflowAdapter(workflows, issuesInWorkflow);
+        return new WorkflowAdapter(workflows, issuesInWorkflow, true);
     }
 
     public interface Callbacks {
@@ -300,55 +298,16 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         }
     }
 
-    private class MyIssuesAdapter extends FragmentStatePagerAdapter {
-        private final Fragment[] fragments;
-        private final ListMultimap<String, Issue> issuesInWorkflow;
-        private List<WorkflowObject> workflows;
-
-        public MyIssuesAdapter(Set<WorkflowObject> workflows, ListMultimap<String, Issue> issuesInWorkflow) {
-            super(getChildFragmentManager());
-            this.issuesInWorkflow = issuesInWorkflow;
-            this.workflows = new ArrayList<>(workflows);
-            Collections.sort(this.workflows, (lhs, rhs) -> lhs.order - rhs.order);
-            fragments = new Fragment[workflows.size()];
-        }
-
-        @Override
-        public int getCount() {
-            return workflows.size();
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return workflows.get(position).name;
-        }
-
-        @Override
-        public int getItemPosition(Object object) {
-            return POSITION_NONE;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            final String pageTitle = String.valueOf(getPageTitle(position));
-            if (fragments[position] == null) {
-                fragments[position] = JiraIssueListFragment_.builder().
-                        workflowName(pageTitle).build();
-            }
-            final ArrayList<Issue> issues = new ArrayList<>(issuesInWorkflow.get(pageTitle));
-            ((JiraIssueListFragment) fragments[position]).setIssues(issues);
-            return fragments[position];
-        }
-    }
-
     private class WorkflowAdapter extends FragmentStatePagerAdapter {
         private final Fragment[] fragments;
         private final ListMultimap<String, Issue> issuesInWorkflow;
+        private final boolean assignedToMeScreen;
         private List<WorkflowObject> workflows;
 
-        public WorkflowAdapter(Set<WorkflowObject> workflows, ListMultimap<String, Issue> issuesInWorkflow) {
+        public WorkflowAdapter(Set<WorkflowObject> workflows, ListMultimap<String, Issue> issuesInWorkflow, boolean assignedToMeScreen) {
             super(getChildFragmentManager());
             this.issuesInWorkflow = issuesInWorkflow;
+            this.assignedToMeScreen = assignedToMeScreen;
             this.workflows = new ArrayList<>(workflows);
             Collections.sort(this.workflows, (lhs, rhs) -> lhs.order - rhs.order);
             fragments = new Fragment[workflows.size()];
@@ -373,7 +332,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         public Fragment getItem(int position) {
             final String pageTitle = String.valueOf(getPageTitle(position));
             if (fragments[position] == null) {
-                fragments[position] = JiraIssueListFragment_.builder().
+                fragments[position] = JiraIssueListFragment_.builder().assignedToMe(assignedToMeScreen).
                         workflowName(pageTitle).build();
             }
             final ArrayList<Issue> issues = new ArrayList<>(issuesInWorkflow.get(pageTitle));

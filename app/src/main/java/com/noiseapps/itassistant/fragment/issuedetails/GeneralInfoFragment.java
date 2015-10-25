@@ -42,6 +42,7 @@ public class GeneralInfoFragment extends Fragment {
         status.setText(issueFields.getStatus().getName());
         labels.setText(StringUtils.join(issueFields.getLabels(), ", "));
         issueName.setText(String.format("%s (%s)", issueFields.getSummary(), issue.getKey()));
+//        issueName.setSelected(true);
         description.setText(issueFields.getDescription());
     }
 

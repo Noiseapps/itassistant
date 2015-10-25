@@ -13,10 +13,6 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
-
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.newissue.AllowedValuesAdapter;
@@ -52,9 +48,16 @@ import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 import org.joda.time.MutableDateTime;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 @EFragment(R.layout.fragment_new_issue)
 public class NewIssueFragment extends Fragment {
@@ -96,7 +99,12 @@ public class NewIssueFragment extends Fragment {
 
     void getProjectDetails() {
         fetchingDataProgress.setVisibility(View.VISIBLE);
-        jiraConnector.getCreateMeta(projectKey, new GetCreateMetaCallback());
+        Observable.zip(
+                jiraConnector.getCreateMeta(projectKey),
+                jiraConnector.getProjectMembers(projectKey),
+                ZipModel::new).subscribeOn(Schedulers.io()).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribe(zipModel -> showForm(zipModel.metaModel, zipModel.assignees));
     }
 
     @Click(R.id.saveIssueFab)
@@ -217,7 +225,7 @@ public class NewIssueFragment extends Fragment {
 
         final Duedate duedate = selectedIssueType.getFields().getDuedate();
         final String dueDateString = estimatedDueDate.getText().toString();
-        if (duedate != null && !dueDateString.isEmpty() ) {
+        if (duedate != null && !dueDateString.isEmpty()) {
             fields.setDuedate(dueDateString);
         }
 
@@ -228,12 +236,14 @@ public class NewIssueFragment extends Fragment {
         return fields;
     }
 
-
     public boolean validateWorkLog(String workLog) {
         return workLog.isEmpty() || Consts.PATTERN.matcher(workLog).matches();
     }
 
     private void showForm(CreateMetaModel createMetaModel, List<Assignee> assignees) {
+        if (!isAdded()) {
+            return;
+        }
         hideProgress();
         noProjectData.setVisibility(View.GONE);
         newIssueForm.setVisibility(View.VISIBLE);
@@ -393,36 +403,13 @@ public class NewIssueFragment extends Fragment {
         void onIssueCreated();
     }
 
-    private class GetCreateMetaCallback implements Callback<CreateMetaModel> {
-        @Override
-        public void success(final CreateMetaModel createMetaModel, Response response) {
-            final GetProjectMembersCallback callback = new GetProjectMembersCallback(createMetaModel);
-            jiraConnector.getProjectMembers(projectKey, callback);
-        }
+    private class ZipModel {
+        private final CreateMetaModel metaModel;
+        private final List<Assignee> assignees;
 
-        @Override
-        public void failure(RetrofitError error) {
-            showError();
-        }
-    }
-
-    private class GetProjectMembersCallback implements Callback<List<Assignee>> {
-        private CreateMetaModel createMetaModel;
-
-        public GetProjectMembersCallback(CreateMetaModel createMetaModel) {
-            this.createMetaModel = createMetaModel;
-        }
-
-        @Override
-        public void success(List<Assignee> assignees, Response response) {
-            if(isAdded()) {
-                showForm(createMetaModel, assignees);
-            }
-        }
-
-        @Override
-        public void failure(RetrofitError error) {
-            showError();
+        private ZipModel(CreateMetaModel metaModel, List<Assignee> assignees) {
+            this.metaModel = metaModel;
+            this.assignees = assignees;
         }
     }
 }

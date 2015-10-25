@@ -32,6 +32,7 @@ import retrofit.http.POST;
 import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
+import rx.Observable;
 
 public interface JiraAPI {
 
@@ -39,7 +40,7 @@ public interface JiraAPI {
     void newSession(@Body SessionRequest user, @NonNull Callback<SessionResponse> callback);
 
     @GET("/rest/api/2/user?expand=groups")
-    JiraUser getUserData(@Query("username") String username);
+    Observable<JiraUser> getUserData(@Query("username") String username);
 
     @GET("/rest/api/2/project")
     List<JiraProject> getUserProjects();
@@ -48,7 +49,7 @@ public interface JiraAPI {
     JiraIssueList getAssignedToMe(@Query("jql") String query);
 
     @GET("/rest/api/2/project/{projectIdOrKey}")
-    void getProjectDetails(@Path("projectIdOrKey") String projectId, @NonNull Callback<JiraProjectDetails> callback);
+    Observable<JiraProjectDetails> getProjectDetails(@Path("projectIdOrKey") String projectId);
 
     @GET("/rest/api/2/search?maxResults=150&expand=transitions")
     void getProjectIssues(@Query("jql") String query, @NonNull Callback<JiraIssueList> callback);
@@ -69,13 +70,10 @@ public interface JiraAPI {
     void getProjectStatuses(@Path("projectIdOrKey") String projectId, @NonNull Callback<List<IssueStatus>> callback);
 
     @GET("/rest/api/2/user/assignable/search")
-    void getProjectMembers(@Query("project") String projectKey, @NonNull Callback<List<Assignee>> callback);
-
-    @GET("/rest/api/2/priority")
-    void getIssuePriorities(@NonNull Callback<List<Priority>> callback);
+    Observable<List<Assignee>> getProjectMembers(@Query("project") String projectKey);
 
     @GET("/rest/api/2/issue/createmeta?&expand=projects.issuetypes.fields")
-    void getCreateMeta(@Query("projectKeys") String projectKey, @NonNull Callback<CreateMetaModel> callback);
+    Observable<CreateMetaModel> getCreateMeta(@Query("projectKeys") String projectKey);
 
     @POST("/rest/api/2/issue")
     void postNewIssue(@Body CreateIssueModel createIssueModel, @NonNull Callback<CreateIssueResponse> callback);
@@ -84,5 +82,5 @@ public interface JiraAPI {
     void updateIssue(@Path("issueId") String issueId, @Body CreateIssueModel createIssueModel, @NonNull Callback<CreateIssueResponse> callback);
 
     @POST("/rest/api/2/issue/{issueIdOrKey}/transitions")
-    void transitionTo(@Path("issueIdOrKey") String id, @Body TransitionRequest transition, Callback<Response> callback);
+    Response transitionTo(@Path("issueIdOrKey") String id, @Body TransitionRequest transition);
 }
