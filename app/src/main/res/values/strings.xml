@@ -120,4 +120,6 @@
     <string name="failedToPostTransition">Failed to transition %d issues</string>
     <string name="changingTransitions">Changing workflow status…</string>
     <string name="changingAssignee">Assigning issues…</string>
+    <string name="filter">Filter</string>
+    <string name="selectFilter">Filter issues</string>
 </resources>

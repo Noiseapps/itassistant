@@ -8,6 +8,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="windowActionBar">true</item>
     </style>
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
@@ -61,7 +62,7 @@
     </style>
 
     <style name="AppTheme.ActionMode" parent="@style/Widget.AppCompat.ActionMode">
-        <item name="android:background">@color/colorPrimaryLight</item>
+        <item name="background">@color/colorPrimaryDarkest</item>
         <item name="titleTextStyle">?android:attr/textAppearanceLarge</item>
     </style>
 

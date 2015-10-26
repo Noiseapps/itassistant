@@ -17,4 +17,8 @@
         <item>Change status</item>
         <item>Assign</item>
     </string-array>
+    <string-array name="issuesFilters">
+        <item>Assigned to me</item>
+        <item>Reported by me</item>
+    </string-array>
 </resources>
