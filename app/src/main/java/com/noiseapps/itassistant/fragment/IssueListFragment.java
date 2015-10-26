@@ -1,7 +1,6 @@
 package com.noiseapps.itassistant.fragment;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -18,7 +17,6 @@ import com.github.jorgecastilloprz.FABProgressCircle;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
@@ -134,7 +132,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     }
 
     public void setProject(JiraProject jiraProject, BaseAccount baseAccount) {
-        if(projectDownloadSubscriber != null) {
+        if (projectDownloadSubscriber != null) {
             projectDownloadSubscriber.unsubscribe();
         }
         setToolbarTitle(jiraProject.getName());
@@ -247,7 +245,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     }
 
     private void handleFilterSelected() {
-        if(!checkedItems[0] && !checkedItems[1]) {
+        if (!checkedItems[0] && !checkedItems[1]) {
             onListFiltered(jiraIssueList.getIssues());
             return;
         }
@@ -266,46 +264,8 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         tabLayout.setupWithViewPager(viewPager);
     }
 
-    private class AssignedToMeFilter implements Predicate<Issue> {
-
-        private final boolean active;
-
-        private AssignedToMeFilter(boolean active) {
-            this.active = active;
-        }
-
-        @Override
-        public boolean apply(Issue input) {
-            if(!active) {
-                return false;
-            }
-            final Assignee assignee = input.getFields().getAssignee();
-            final boolean result = assignee != null && baseAccount.getUsername().equalsIgnoreCase(assignee.getName());
-            Logger.d(input.getKey() + ", " + result);
-            return result;
-        }
-    }
-
-    private class ReportedByMeFilter implements Predicate<Issue> {
-
-        private final boolean active;
-
-        private ReportedByMeFilter(boolean active) {
-            this.active = active;
-        }
-
-        @Override
-        public boolean apply(Issue input) {
-            final String username = baseAccount.getUsername();
-            final String reporter = input.getFields().getReporter().getName();
-            final boolean result = active && username.equalsIgnoreCase(reporter);
-            Logger.d(String.valueOf(result));
-            return result;
-        }
-    }
-
     public void setIssues(List<Issue> myIssues) {
-        if(projectDownloadSubscriber != null) {
+        if (projectDownloadSubscriber != null) {
             projectDownloadSubscriber.unsubscribe();
         }
         showProgress();
@@ -315,6 +275,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
         hideProgress(true);
+        setHasOptionsMenu(false);
     }
 
     private void setToolbarTitle(String title) {
@@ -343,6 +304,44 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         void onAddNewIssue(JiraProject jiraProject);
 
         void onEditIssue(Issue issue);
+    }
+
+    private class AssignedToMeFilter implements Predicate<Issue> {
+
+        private final boolean active;
+
+        private AssignedToMeFilter(boolean active) {
+            this.active = active;
+        }
+
+        @Override
+        public boolean apply(Issue input) {
+            if (!active) {
+                return false;
+            }
+            final Assignee assignee = input.getFields().getAssignee();
+            final boolean result = assignee != null && baseAccount.getUsername().equalsIgnoreCase(assignee.getName());
+            Logger.d(input.getKey() + ", " + result);
+            return result;
+        }
+    }
+
+    private class ReportedByMeFilter implements Predicate<Issue> {
+
+        private final boolean active;
+
+        private ReportedByMeFilter(boolean active) {
+            this.active = active;
+        }
+
+        @Override
+        public boolean apply(Issue input) {
+            final String username = baseAccount.getUsername();
+            final String reporter = input.getFields().getReporter().getName();
+            final boolean result = active && username.equalsIgnoreCase(reporter);
+            Logger.d(String.valueOf(result));
+            return result;
+        }
     }
 
     private class WorkflowObject {
