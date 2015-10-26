@@ -37,10 +37,7 @@ import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
-import retrofit.Callback;
-import retrofit.RetrofitError;
 import retrofit.client.Response;
-import rx.Observable;
 
 @EFragment(R.layout.fragment_jira_list)
 public class JiraIssueListFragment extends Fragment {
@@ -183,6 +180,14 @@ public class JiraIssueListFragment extends Fragment {
             }
         }
         onFinished(unsuccessful[0]);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(actionMode != null) {
+            actionMode.finish();
+        }
     }
 
     @UiThread

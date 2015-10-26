@@ -12,6 +12,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -37,13 +43,8 @@ import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -84,6 +85,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     @NonNull
     private Callbacks mCallbacks = sDummyCallbacks;
     private boolean isEmpty;
+    private Subscription projectDownloadSubscriber;
 
     @Override
     public void onItemSelected(Issue selectedIssue) {
@@ -120,6 +122,9 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     }
 
     public void setProject(JiraProject jiraProject, BaseAccount baseAccount) {
+        if(projectDownloadSubscriber != null) {
+            projectDownloadSubscriber.unsubscribe();
+        }
         setToolbarTitle(jiraProject.getName());
         this.jiraProject = jiraProject;
         this.baseAccount = baseAccount;
@@ -144,7 +149,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         jiraConnector.setCurrentConfig(baseAccount);
         AuthenticatedPicasso.setConfig(getActivity(), baseAccount);
         final String projectKey = jiraProject.getKey();
-        Observable.zip(jiraConnector.getProjectIssues(projectKey),
+        projectDownloadSubscriber = Observable.zip(jiraConnector.getProjectIssues(projectKey),
                 jiraConnector.getProjectMembers(projectKey),
                 (jiraIssueList, assignees) -> {
                     IssueListFragment.this.jiraIssueList = jiraIssueList;
@@ -156,7 +161,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
                     isEmpty = true;
                     noProject.setVisibility(View.GONE);
                     hideProgress(false);
-                });
+                }, () -> projectDownloadSubscriber = null);
     }
 
     private void onProjectsDownloaded() {
@@ -219,6 +224,9 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     }
 
     public void setIssues(List<Issue> myIssues) {
+        if(projectDownloadSubscriber != null) {
+            projectDownloadSubscriber.unsubscribe();
+        }
         showProgress();
         isEmpty = myIssues.isEmpty();
         setToolbarTitle(getString(R.string.myIssues));

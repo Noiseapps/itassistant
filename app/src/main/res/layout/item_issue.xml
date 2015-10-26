@@ -53,9 +53,9 @@
             <ImageView
                 android:id="@+id/issuePriority"
                 android:src="@drawable/ic_error"
-                android:layout_gravity="center_vertical"
+                android:layout_gravity="top"
                 android:layout_width="20dp"
-                android:layout_height="match_parent"
+                android:layout_height="20dp"
                 android:layout_margin="4dp"
                 android:contentDescription="@string/issuePriority"
                 android:scaleType="fitCenter" />
@@ -68,7 +68,7 @@
                 android:ellipsize="end"
                 android:maxLines="3"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                tools:text="Issue title\ndfbas\nsdfasdf" />
+                tools:text="Issue title" />
 
         </LinearLayout>
 

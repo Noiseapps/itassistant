@@ -8,14 +8,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.utils.ToggleList;
+import com.orhanobut.logger.Logger;
 import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -95,6 +96,7 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
             final Assignee issueAssignee = issue.getFields().getAssignee();
             if (issueAssignee != null) {
                 final String avatarUrl = issueAssignee.getAvatarUrls().get48x48();
+                Logger.d(avatarUrl);
                 authPicasso.load(avatarUrl).
                         placeholder(R.drawable.ic_account_circle).
                         error(R.drawable.ic_account_circle).
@@ -112,7 +114,7 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
 
         private void onLongPressed(Issue issue) {
             issueToggleList.toggle(issue);
-            notifyItemChanged(issueList.indexOf(issue));
+            itemView.setActivated(issueToggleList.contains(issue));
             callback.onItemLongPressed(issueToggleList);
         }
 
@@ -120,7 +122,6 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
         public void onClick(View v) {
             if(issueToggleList.isEmpty()) {
                 issueToggleList.clear();
-                notifyDataSetChanged();
                 callback.onItemClicked(issue);
             } else {
                 onLongPressed(issue);
