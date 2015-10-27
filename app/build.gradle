@@ -25,8 +25,8 @@ android {
         applicationId appId
         minSdkVersion 17
         targetSdkVersion 23
-        versionCode System.getenv("BUILD_NUMBER") as Integer ?: 0
-        versionName System.getenv("VERSION_NAME") as String ?: "dev"
+        versionCode System.getenv("BUILD_NUMBER") as Integer ?: 1
+        versionName System.getenv("VERSION_NAME") as String ?: "0.0.1"
         project.archivesBaseName = appName + "-" + versionName
         multiDexEnabled true
     }
