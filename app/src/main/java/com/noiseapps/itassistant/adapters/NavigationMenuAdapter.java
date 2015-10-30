@@ -128,6 +128,7 @@ public class NavigationMenuAdapter extends AbstractExpandableItemAdapter<Navigat
             itemView.callOnClick();
         }
         public void bind(BaseAccount baseAccount) {
+            Picasso.with(context).cancelRequest(avatarImage);
             accountName.setText(baseAccount.getName());
             if(avatarBitmap == null) {
                 if(baseAccount.getAvatarPath().isEmpty()) {

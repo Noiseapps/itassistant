@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import com.noiseapps.itassistant.R;
@@ -30,13 +29,12 @@ public class WorkLogAdapter extends BaseAdapter {
     }
 
     public void sort() {
-        Collections.sort(workLogItems, new Comparator<WorkLogItem>() {
-            @Override
-            public int compare(WorkLogItem lhs, WorkLogItem rhs) {
-                return DateTime.parse(lhs.getStarted()).compareTo(DateTime.parse(rhs.getStarted()));
-            }
-        });
+        Collections.sort(workLogItems, this::compare);
         notifyDataSetChanged();
+    }
+
+    private int compare(WorkLogItem lhs, WorkLogItem rhs) {
+        return DateTime.parse(lhs.getStarted()).compareTo(DateTime.parse(rhs.getStarted()));
     }
 
     @Override

@@ -7,13 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.List;
+
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.model.account.AccountTypes;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
-
-import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -56,6 +56,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.
         }
 
         void build(BaseAccount item) {
+            Picasso.with(context).cancelRequest(avatarView);
             username.setText(item.getUsername());
             url.setText(item.getUrl());
             final RequestCreator picassoLoad;

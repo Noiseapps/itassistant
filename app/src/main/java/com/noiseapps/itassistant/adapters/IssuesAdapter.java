@@ -86,6 +86,7 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
         }
 
         public void build(Issue issue) {
+            Picasso.with(context).cancelRequest(avatar);
             this.issue = issue;
             itemView.setActivated(issueToggleList.contains(issue));
             loadIssueType();

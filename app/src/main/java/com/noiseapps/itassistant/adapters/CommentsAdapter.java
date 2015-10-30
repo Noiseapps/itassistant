@@ -8,7 +8,6 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import com.noiseapps.itassistant.R;
@@ -28,13 +27,12 @@ public class CommentsAdapter extends BaseAdapter {
     }
 
     public void sort() {
-        Collections.sort(comments, new Comparator<Comment>() {
-            @Override
-            public int compare(Comment lhs, Comment rhs) {
-                return DateTime.parse(lhs.getCreated()).compareTo(DateTime.parse(rhs.getCreated()));
-            }
-        });
+        Collections.sort(comments, this::compare);
         notifyDataSetChanged();
+    }
+
+    private int compare(Comment lhs, Comment rhs) {
+        return DateTime.parse(lhs.getCreated()).compareTo(DateTime.parse(rhs.getCreated()));
     }
 
     @Override

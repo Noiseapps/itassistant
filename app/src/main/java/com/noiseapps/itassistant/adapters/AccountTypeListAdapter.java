@@ -33,12 +33,7 @@ public class AccountTypeListAdapter extends ArrayAdapter<String> {
         final View root = super.getView(position, convertView, parent);
         final CircleImageView imageView = (CircleImageView) root.findViewById(R.id.avatarView);
         Picasso.with(context).load(AccountTypes.getAccountImageDrawable(accountType)).noFade().into(imageView);
-        root.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                callbacks.onAccountTypeSelected(accountType);
-            }
-        });
+        root.setOnClickListener(v -> callbacks.onAccountTypeSelected(accountType));
         return root;
     }
 }

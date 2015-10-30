@@ -61,6 +61,7 @@
     <ListView
         android:id="@+id/commentsList"
         android:layout_width="wrap_content"
+        android:divider="@null"
         android:layout_height="match_parent"/>
 
     <com.github.jorgecastilloprz.FABProgressCircle
