@@ -1,5 +1,6 @@
 package com.noiseapps.itassistant.fragment.accounts;
 
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -11,7 +12,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import com.noiseapps.itassistant.R;
@@ -71,7 +71,18 @@ public class AccountsListFragment extends Fragment {
     }
 
     private void prepareAdapter() {
-        final AccountListAdapter listAdapter = new AccountListAdapter(getContext(), accounts);
+        final AccountListAdapter listAdapter = new AccountListAdapter(getContext(), accounts, new AccountListAdapter.AccountListCallbacks() {
+            @Override
+            public void onItemSelected(BaseAccount account) {
+                callbacks.onEditAccount(account);
+            }
+
+            @Override
+            public void onItemRemoved(BaseAccount account) {
+                accountsDao.delete(account);
+                Snackbar.make(list, R.string.removed, Snackbar.LENGTH_LONG).show();
+            }
+        });
         list.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         list.setAdapter(listAdapter);
     }
@@ -83,12 +94,11 @@ public class AccountsListFragment extends Fragment {
     }
 
     private void sortAccountList() {
-        Collections.sort(accounts, new Comparator<BaseAccount>() {
-            @Override
-            public int compare(BaseAccount lhs, BaseAccount rhs) {
-                return lhs.getAccountType() - rhs.getAccountType();
-            }
-        });
+        Collections.sort(accounts, this::compare);
+    }
+
+    private int compare(BaseAccount lhs, BaseAccount rhs) {
+        return lhs.getAccountType() - rhs.getAccountType();
     }
 
     private void setListVisibility() {

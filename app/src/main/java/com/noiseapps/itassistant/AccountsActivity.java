@@ -8,9 +8,11 @@ import android.widget.FrameLayout;
 
 import com.noiseapps.itassistant.fragment.accounts.AccountsActivityCallbacks;
 import com.noiseapps.itassistant.fragment.accounts.AccountsListFragment_;
+import com.noiseapps.itassistant.fragment.accounts.JiraAccountCreateFragment;
 import com.noiseapps.itassistant.fragment.accounts.JiraAccountCreateFragment_;
 import com.noiseapps.itassistant.fragment.accounts.StashAccountCreateFragment_;
 import com.noiseapps.itassistant.model.account.AccountTypes;
+import com.noiseapps.itassistant.model.account.BaseAccount;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
@@ -48,6 +50,13 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
         setResult(RESULT_OK);
         Snackbar.make(container, R.string.accountSaved, Snackbar.LENGTH_LONG).show();
     }
+
+    @Override
+    public void onEditAccount(BaseAccount account) {
+        final JiraAccountCreateFragment fragment = JiraAccountCreateFragment_.builder().editAccount(account).build();
+        getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.container, fragment).commit();
+    }
+
 
     private void clearBackstack() {
         final FragmentManager supportFragmentManager = getSupportFragmentManager();

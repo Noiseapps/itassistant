@@ -16,6 +16,9 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
@@ -41,10 +44,6 @@ import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.ViewById;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -54,7 +53,7 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
     public static final String SEPARATOR = "_";
     public static final int TIMEOUT_DURATION = 45;
     @FragmentArg
-    int editId = -1;
+    BaseAccount editAccount;
     @Bean
     JiraConnector connector;
     @Bean
@@ -105,6 +104,13 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
     }
 
     private void initData() {
+        if(editAccount != null) {
+            accountName.setText(editAccount.getName());
+            host.setText(editAccount.getUrl());
+            username.setText(editAccount.getUsername());
+            password.setText(editAccount.getPassword());
+            return;
+        }
         if (BuildConfig.DEBUG) {
 //            accountName.setText("Local");
             accountName.setText("Exaco");
@@ -145,7 +151,7 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
     }
 
     @Click(R.id.saveFab)
-    void onVerify() {
+    void onSaveClicked() {
         requestCanceled = false;
         handler.removeCallbacksAndMessages(null);
         startTimeout();
@@ -174,7 +180,7 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
     @EditorAction(R.id.password)
     void onEditorActionsOnSomeTextViews(int actionId) {
         if (actionId == EditorInfo.IME_ACTION_GO) {
-            onVerify();
+            onSaveClicked();
         }
     }
 
