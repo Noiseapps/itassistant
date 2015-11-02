@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.RecyclerViewSwipeManager;
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.SwipeableItemAdapter;
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.action.SwipeResultAction;
+import com.h6ah4i.android.widget.advrecyclerview.swipeable.action.SwipeResultActionDefault;
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.action.SwipeResultActionRemoveItem;
 import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractSwipeableItemViewHolder;
 import com.noiseapps.itassistant.R;
@@ -39,6 +41,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.
         this.dataSet = dataSet;
         this.context = context;
         this.callbacks = callbacks;
+        setHasStableIds(true);
     }
 
     @Override
@@ -52,13 +55,18 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.
 
     }
 
+    public void setDataSet(List<BaseAccount> accounts) {
+        this.dataSet.clear();
+        this.dataSet.addAll(accounts);
+    }
+
     @Override
     public SwipeResultAction onSwipeItem(ViewHolder holder, int position, int result) {
         if(result != RecyclerViewSwipeManager.RESULT_CANCELED) {
             Logger.d(String.valueOf(position));
             return new SwipeAction(position);
         }
-        return null;
+        return new DoNothingAction();
     }
 
     private class SwipeAction extends SwipeResultActionRemoveItem {
@@ -71,9 +79,15 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.
 
         @Override
         protected void onPerformAction() {
-            super.onPerformAction();
             callbacks.onItemRemoved(dataSet.get(position));
             notifyItemRemoved(position);
+        }
+    }
+
+    private class DoNothingAction extends SwipeResultActionDefault {
+        @Override
+        protected void onPerformAction() {
+            Logger.d("DO NOTHING");
         }
     }
 
@@ -99,14 +113,16 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.
     }
 
     class ViewHolder extends AbstractSwipeableItemViewHolder {
-        final TextView username;
-        final TextView url;
-        final CircleImageView avatarView;
+        private final TextView username;
+        private final TextView url;
+        private final CircleImageView avatarView;
+        private final RelativeLayout rootView;
         private BaseAccount item;
 
         public ViewHolder(View convertView) {
             super(convertView);
             username = (TextView) convertView.findViewById(R.id.listItemTitle);
+            rootView = (RelativeLayout) convertView.findViewById(R.id.listItemRoot);
             url = (TextView) convertView.findViewById(R.id.listItemSubTitle);
             avatarView = (CircleImageView) convertView.findViewById(R.id.avatarView);
             convertView.setOnClickListener(v -> callbacks.onItemSelected(item));
@@ -131,7 +147,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.
 
         @Override
         public View getSwipeableContainerView() {
-            return itemView;
+            return rootView;
         }
     }
 }

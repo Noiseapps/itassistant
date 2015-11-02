@@ -237,6 +237,7 @@ public class IssueListActivity extends AppCompatActivity
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(wrappedAdapter);
+        manager.expandAll();
         manager.attachRecyclerView(recyclerView);
         if (!Once.beenDone(Once.THIS_APP_INSTALL, Consts.SHOW_DRAWER)) {
             drawerLayout.openDrawer(GravityCompat.START);

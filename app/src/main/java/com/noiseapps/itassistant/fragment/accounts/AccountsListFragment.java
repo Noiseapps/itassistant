@@ -1,5 +1,6 @@
 package com.noiseapps.itassistant.fragment.accounts;
 
+import android.app.Activity;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -11,9 +12,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.h6ah4i.android.widget.advrecyclerview.swipeable.RecyclerViewSwipeManager;
+import com.h6ah4i.android.widget.advrecyclerview.touchguard.RecyclerViewTouchActionGuardManager;
+import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.AccountListAdapter;
 import com.noiseapps.itassistant.database.dao.AccountsDao;
@@ -35,10 +40,39 @@ public class AccountsListFragment extends Fragment {
     LinearLayout emptyView;
     @Bean
     AccountsDao accountsDao;
-    @ViewById
-    RecyclerView list;
-    private List<BaseAccount> accounts;
+    @ViewById(R.id.list)
+    RecyclerView recyclerView;
+    private final List<BaseAccount> accounts = new ArrayList<>();
     private AccountsActivityCallbacks callbacks;
+    private RecyclerViewTouchActionGuardManager recyclerViewTouchActionGuardManager;
+    private RecyclerViewSwipeManager recyclerViewSwipeManager;
+    private RecyclerView.Adapter wrappedAdapter;
+    private AccountListAdapter listAdapter;
+
+    @Override
+    public void onDestroyView() {
+        if (recyclerViewSwipeManager != null) {
+            recyclerViewSwipeManager.release();
+            recyclerViewSwipeManager = null;
+        }
+
+        if (recyclerViewTouchActionGuardManager != null) {
+            recyclerViewTouchActionGuardManager.release();
+            recyclerViewTouchActionGuardManager = null;
+        }
+
+        if (recyclerView != null) {
+            recyclerView.setItemAnimator(null);
+            recyclerView.setAdapter(null);
+            recyclerView = null;
+        }
+
+        if (wrappedAdapter != null) {
+            WrapperAdapterUtils.releaseAll(wrappedAdapter);
+            wrappedAdapter = null;
+        }
+        super.onDestroyView();
+    }
 
     @AfterViews
     void init() {
@@ -60,6 +94,45 @@ public class AccountsListFragment extends Fragment {
         }
     }
 
+    private void prepareAdapter() {
+        listAdapter = new AccountListAdapter(getContext(), accounts, new AdapterCallbacks());
+        recyclerViewTouchActionGuardManager = new RecyclerViewTouchActionGuardManager();
+        recyclerViewTouchActionGuardManager.setInterceptVerticalScrollingWhileAnimationRunning(true);
+        recyclerViewTouchActionGuardManager.setEnabled(true);
+        recyclerViewSwipeManager = new RecyclerViewSwipeManager();
+        wrappedAdapter = recyclerViewSwipeManager.createWrappedAdapter(listAdapter);
+
+//        final GeneralItemAnimator animator = new SwipeDismissItemAnimator();
+//        animator.setSupportsChangeAnimations(false);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        recyclerView.setAdapter(wrappedAdapter);
+//        recyclerView.setItemAnimator(animator);
+        recyclerViewTouchActionGuardManager.attachRecyclerView(recyclerView);
+        recyclerViewSwipeManager.attachRecyclerView(recyclerView);
+    }
+
+    private void readAllAccounts() {
+        accounts.clear();
+        accounts.addAll(accountsDao.getAll());
+        setListVisibility();
+        sortAccountList();
+    }
+
+    private void sortAccountList() {
+        Collections.sort(accounts, this::compare);
+    }
+
+    private void setListVisibility() {
+        if (accounts.isEmpty()) {
+            recyclerView.setVisibility(View.GONE);
+            emptyView.setVisibility(View.VISIBLE);
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyView.setVisibility(View.GONE);
+        }
+    }
+
     @OptionsItem(android.R.id.home)
     void onHomePressed() {
         getActivity().onBackPressed();
@@ -70,45 +143,26 @@ public class AccountsListFragment extends Fragment {
         callbacks.onAddAccount();
     }
 
-    private void prepareAdapter() {
-        final AccountListAdapter listAdapter = new AccountListAdapter(getContext(), accounts, new AccountListAdapter.AccountListCallbacks() {
-            @Override
-            public void onItemSelected(BaseAccount account) {
-                callbacks.onEditAccount(account);
-            }
-
-            @Override
-            public void onItemRemoved(BaseAccount account) {
-                accountsDao.delete(account);
-                Snackbar.make(list, R.string.removed, Snackbar.LENGTH_LONG).show();
-            }
-        });
-        list.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        list.setAdapter(listAdapter);
-    }
-
-    private void readAllAccounts() {
-        accounts = accountsDao.getAll();
-        setListVisibility();
-        sortAccountList();
-    }
-
-    private void sortAccountList() {
-        Collections.sort(accounts, this::compare);
-    }
-
     private int compare(BaseAccount lhs, BaseAccount rhs) {
         return lhs.getAccountType() - rhs.getAccountType();
     }
 
-    private void setListVisibility() {
-        if(accounts.isEmpty()) {
-            list.setVisibility(View.GONE);
-            emptyView.setVisibility(View.VISIBLE);
-        } else {
-            list.setVisibility(View.VISIBLE);
-            emptyView.setVisibility(View.GONE);
+    private class AdapterCallbacks implements AccountListAdapter.AccountListCallbacks {
+        @Override
+        public void onItemSelected(BaseAccount account) {
+            callbacks.onEditAccount(account);
+        }
+
+        @Override
+        public void onItemRemoved(final BaseAccount account) {
+            accountsDao.delete(account);
+            readAllAccounts();
+            listAdapter.notifyDataSetChanged();
+            getActivity().setResult(Activity.RESULT_OK);
+            Snackbar.make(recyclerView, R.string.removed, Snackbar.LENGTH_LONG).setAction(R.string.undo, v -> {
+                accountsDao.add(account);
+                readAllAccounts();
+            }).show();
         }
     }
-
 }
