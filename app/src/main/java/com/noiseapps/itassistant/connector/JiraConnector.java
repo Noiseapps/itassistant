@@ -2,10 +2,9 @@ package com.noiseapps.itassistant.connector;
 
 import android.support.annotation.NonNull;
 import android.util.Base64;
-import android.util.Pair;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 import com.noiseapps.itassistant.api.JiraAPI;
@@ -19,13 +18,13 @@ import com.noiseapps.itassistant.model.jira.issues.TransitionRequest;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comments;
 import com.noiseapps.itassistant.model.jira.issues.common.IssueStatus;
+import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogItem;
+import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogs;
+import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueModel;
 import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueResponse;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.CreateMetaModel;
 import com.noiseapps.itassistant.model.jira.projects.details.JiraProjectDetails;
-import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogItem;
-import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogs;
-import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 import com.noiseapps.itassistant.model.jira.user.JiraUser;
 import com.orhanobut.logger.Logger;
 
@@ -68,30 +67,48 @@ public class JiraConnector {
         }
     }
 
-    public JiraIssueList getAssignedToMe() {
+    @NonNull
+    public List<Issue> getAssignedToMe() {
         if (apiService == null) {
-            return null;
+            return new ArrayList<>();
         }
+        final List<Issue> issues = new ArrayList<>();
+        long total;
+        long startAt = 0;
         try {
-            final String query = String.format("assignee=\"%s\"", getCurrentConfig().getUsername());
-            return apiService.getAssignedToMe(query);
+            do {
+                final String query = String.format("assignee=\"%s\"", getCurrentConfig().getUsername());
+                final JiraIssueList assignedToMe = apiService.getAssignedToMe(query, startAt);
+                total = assignedToMe.getTotal();
+                startAt += assignedToMe.getMaxResults();
+                issues.addAll(assignedToMe.getIssues());
+            } while (issues.size() != total);
         } catch (RetrofitError error) {
-            return null;
+            return new ArrayList<>();
         }
+        return issues;
     }
-
-//    public void getProjectIssues(@NonNull String projectKey, Callback<JiraIssueList> callback) {
-//        if(apiService == null) {
-//            return;
-//        }
-//        apiService.getProjectIssues(String.format("project=\"%s\"", projectKey), callback);
-//    }
 
     public Observable<JiraIssueList> getProjectIssues(@NonNull String projectKey) {
         if(apiService == null) {
             return null;
         }
-        return apiService.getProjectIssues(String.format("project=\"%s\"", projectKey));
+        final List<Issue> issues = new ArrayList<>();
+        long total;
+        long startAt = 0;
+        try {
+            do {
+                final JiraIssueList assignedToMe = apiService.getProjectIssues(String.format("project=\"%s\"", projectKey), startAt);
+                total = assignedToMe.getTotal();
+                startAt += assignedToMe.getMaxResults();
+                issues.addAll(assignedToMe.getIssues());
+            } while (issues.size() != total);
+        } catch (RetrofitError error) {
+            return null;
+        }
+        final JiraIssueList retObservable = new JiraIssueList();
+        retObservable.setIssues(issues);
+        return Observable.just(retObservable);
     }
 
     public void getIssueComments(@NonNull String issueId, Callback<Comments> callback) {

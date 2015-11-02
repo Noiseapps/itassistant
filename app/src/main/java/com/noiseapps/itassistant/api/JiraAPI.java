@@ -2,7 +2,9 @@ package com.noiseapps.itassistant.api;
 
 
 import android.support.annotation.NonNull;
-import android.util.Pair;
+
+import java.util.List;
+import java.util.Map;
 
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.JiraIssueList;
@@ -20,9 +22,6 @@ import com.noiseapps.itassistant.model.jira.projects.details.JiraProjectDetails;
 import com.noiseapps.itassistant.model.jira.session.SessionRequest;
 import com.noiseapps.itassistant.model.jira.session.SessionResponse;
 import com.noiseapps.itassistant.model.jira.user.JiraUser;
-
-import java.util.List;
-import java.util.Map;
 
 import retrofit.Callback;
 import retrofit.client.Response;
@@ -46,13 +45,13 @@ public interface JiraAPI {
     List<JiraProject> getUserProjects();
 
     @GET("/rest/api/2/search?expand=transitions")
-    JiraIssueList getAssignedToMe(@Query("jql") String query);
+    JiraIssueList getAssignedToMe(@Query("jql") String query, @Query("startAt") long startAt);
 
     @GET("/rest/api/2/project/{projectIdOrKey}")
     Observable<JiraProjectDetails> getProjectDetails(@Path("projectIdOrKey") String projectId);
 
     @GET("/rest/api/2/search?maxResults=150&expand=transitions")
-    Observable<JiraIssueList> getProjectIssues(@Query("jql") String query);
+    JiraIssueList getProjectIssues(@Query("jql") String query, @Query("startAt") long startAt);
 
     @GET("/rest/api/2/issue/{issueIdOrKey}/comment")
     void getIssueComments(@Path("issueIdOrKey") String issueId, @NonNull Callback<Comments> callback);

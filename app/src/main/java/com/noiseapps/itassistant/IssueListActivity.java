@@ -33,7 +33,6 @@ import com.noiseapps.itassistant.fragment.NewIssueFragment_;
 import com.noiseapps.itassistant.model.NavigationModel;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
-import com.noiseapps.itassistant.model.jira.issues.JiraIssueList;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 import com.noiseapps.itassistant.utils.Consts;
@@ -200,10 +199,8 @@ public class IssueListActivity extends AppCompatActivity
                 } else {
                     failedAccounts++;
                 }
-                final JiraIssueList myProjectIssues = jiraConnector.getAssignedToMe();
-                if (myProjectIssues != null) {
-                    myIssues.addAll(myProjectIssues.getIssues());
-                }
+                final List<Issue> myProjectIssues = jiraConnector.getAssignedToMe();
+                myIssues.addAll(myProjectIssues);
             } catch (Exception e) {
                 Logger.e(e, e.getMessage());
             }
