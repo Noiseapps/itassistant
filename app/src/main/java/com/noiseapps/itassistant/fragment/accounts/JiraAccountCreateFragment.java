@@ -124,11 +124,11 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
     }
 
     void saveAccount() {
-        int id = accountsDao.getNextId();
+        int id = getAccountId();
         final String avatarFilename = AccountTypes.getAccountName(AccountTypes.ACC_JIRA) + SEPARATOR + id + SEPARATOR + currentConfig.getUsername() + "_avatar.png";
         final String path = imageUtils.saveAvatar(avatarBitmap, avatarFilename);
         currentConfig.setAvatarPath(path);
-        accountsDao.add(currentConfig);
+        accountsDao.addOrUpdate(currentConfig);
         handler.removeCallbacksAndMessages(null);
         callbacks.onAccountSaved();
     }
@@ -143,8 +143,11 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
         toolbar.setTitleTextColor(ContextCompat.getColor(getContext(), R.color.white));
         final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
-
             actionBar.setTitle(R.string.addJiraAccount);
+            if(editAccount != null) {
+                actionBar.setTitle(R.string.editJiraAccount);
+            }
+
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
         }
@@ -194,8 +197,9 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
         final String username = this.username.getText().toString();
         final String password = this.password.getText().toString();
         progressDialog.setTitle(getString(R.string.loggingIn));
-        currentConfig = new BaseAccount(accountsDao.getNextId(), username, accountName, password, host, "", AccountTypes.ACC_JIRA);
-        if (existsInDb()) {
+        int id = getAccountId();
+        currentConfig = new BaseAccount(id, username, accountName, password, host, "", AccountTypes.ACC_JIRA);
+        if (editAccount == null && existsInDb()) {
             Snackbar.make(saveFab, R.string.configExists, Snackbar.LENGTH_LONG).show();
             hideProgress();
             return;
@@ -203,6 +207,16 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
         connector.setCurrentConfig(currentConfig);
         AuthenticatedPicasso.setConfig(getActivity(), currentConfig);
         getUserData();
+    }
+
+    private int getAccountId() {
+        int id;
+        if(editAccount == null) {
+            id = accountsDao.getNextId();
+        } else {
+            id = editAccount.getId();
+        }
+        return id;
     }
 
     void getUserData() {

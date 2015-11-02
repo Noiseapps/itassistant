@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             android:layout_width="match_parent"
-             android:id="@+id/listItemWrapper"
-             android:layout_height="72dp">
+<FrameLayout
+    android:id="@+id/listItemWrapper"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="72dp"
+    app:cardUseCompatPadding="true">
 
     <RelativeLayout
         android:id="@+id/listItemRoot"
+        android:elevation="4dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/list_background"
         android:orientation="vertical"
         android:paddingBottom="8dp"
         android:paddingLeft="16dp"
@@ -47,5 +51,6 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="14sp"/>
     </RelativeLayout>
+
 
 </FrameLayout>

@@ -81,6 +81,31 @@ public class IssueListActivity extends AppCompatActivity
     private ArrayList<Issue> myIssues;
 
     @Override
+    public void onItemSelected(Issue issue, JiraProject jiraProject) {
+        if (mTwoPane) {
+            final IssueDetailFragment fragment = IssueDetailFragment_.builder().issue(issue).build();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.issue_detail_container, fragment)
+                    .commit();
+        } else {
+            IssueDetailActivity_.intent(this).issue(issue).start();
+        }
+    }
+
+    @Override
+    public void onAddNewIssue(JiraProject jiraProject) {
+        final String key = jiraProject.getKey();
+        if (mTwoPane) {
+            final NewIssueFragment fragment = NewIssueFragment_.builder().projectKey(key).build();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.issue_detail_container, fragment)
+                    .commit();
+        } else {
+            NewIssueActivity_.intent(this).projectKey(key).startForResult(NEW_ISSUE_REQUEST);
+        }
+    }
+
+    @Override
     public void onEditIssue(Issue issue) {
         final String key = issue.getFields().getProject().getKey();
         if (mTwoPane) {
@@ -91,6 +116,16 @@ public class IssueListActivity extends AppCompatActivity
         } else {
             NewIssueActivity_.intent(this).projectKey(key).issue(issue).startForResult(NEW_ISSUE_REQUEST);
         }
+    }
+
+    @EventBusAction
+    public void onEvent(@Nullable OpenDrawerEvent event) {
+        drawerLayout.openDrawer(GravityCompat.START);
+    }
+
+    @Override
+    public void onIssueCreated() {
+        listFragment.reload();
     }
 
     @AfterViews
@@ -166,7 +201,7 @@ public class IssueListActivity extends AppCompatActivity
                     failedAccounts++;
                 }
                 final JiraIssueList myProjectIssues = jiraConnector.getAssignedToMe();
-                if(myProjectIssues != null) {
+                if (myProjectIssues != null) {
                     myIssues.addAll(myProjectIssues.getIssues());
                 }
             } catch (Exception e) {
@@ -185,25 +220,9 @@ public class IssueListActivity extends AppCompatActivity
     }
 
     private void showInfoAboutFailedAccounts(int failedAccounts) {
-        if(failedAccounts > 0) {
+        if (failedAccounts > 0) {
             Snackbar.make(recyclerView, getString(R.string.failedToReadAccountData, failedAccounts), Snackbar.LENGTH_LONG).show();
         }
-    }
-
-    @UiThread
-    void showErrorDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.errorDownloading).setMessage(R.string.errorDownloadingMsg).
-                setPositiveButton(R.string.retry, (dialog, which) -> {
-                    downloadData();
-                }).
-                setNegativeButton(R.string.quit, (dialog, which) -> {
-                    finish();
-                }).
-                setNeutralButton(R.string.settings, (dialog, which) -> {
-                    final Intent settings = new Intent(Settings.ACTION_WIFI_SETTINGS);
-                    startActivity(settings);
-                }).show();
     }
 
     @UiThread
@@ -251,41 +270,20 @@ public class IssueListActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public void onItemSelected(Issue issue, JiraProject jiraProject) {
-        if (mTwoPane) {
-            final IssueDetailFragment fragment = IssueDetailFragment_.builder().issue(issue).build();
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.issue_detail_container, fragment)
-                    .commit();
-        } else {
-            IssueDetailActivity_.intent(this).issue(issue).start();
-        }
-    }
-
-    @Override
-    public void onAddNewIssue(JiraProject jiraProject) {
-        final String key = jiraProject.getKey();
-        if (mTwoPane) {
-            final NewIssueFragment fragment = NewIssueFragment_.builder().projectKey(key).build();
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.issue_detail_container, fragment)
-                    .commit();
-        } else {
-            NewIssueActivity_.intent(this).projectKey(key).startForResult(NEW_ISSUE_REQUEST);
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        EventBus.getDefault().unregister(this);
-        super.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        EventBus.getDefault().register(this);
-        super.onResume();
+    @UiThread
+    void showErrorDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.errorDownloading).setMessage(R.string.errorDownloadingMsg).
+                setPositiveButton(R.string.retry, (dialog, which) -> {
+                    downloadData();
+                }).
+                setNegativeButton(R.string.quit, (dialog, which) -> {
+                    finish();
+                }).
+                setNeutralButton(R.string.settings, (dialog, which) -> {
+                    final Intent settings = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                    startActivity(settings);
+                }).show();
     }
 
 //    @Click(R.id.openDrawer)
@@ -293,15 +291,13 @@ public class IssueListActivity extends AppCompatActivity
 //        onEvent(null);
 //    }
 
-    @EventBusAction
-    public void onEvent(@Nullable OpenDrawerEvent event) {
-        drawerLayout.openDrawer(GravityCompat.START);
-    }
-
-
     @Click(R.id.actionSettings)
     void onSettingsAction() {
         showNotImplemented();
+    }
+
+    private void showNotImplemented() {
+        Snackbar.make(drawerLayout, R.string.optionUnavailable, Snackbar.LENGTH_LONG).show();
     }
 
     @Click(R.id.actionAssignedToMe)
@@ -309,18 +305,16 @@ public class IssueListActivity extends AppCompatActivity
         initMyIssues(myIssues);
     }
 
-    private void showNotImplemented() {
-        Snackbar.make(drawerLayout, R.string.optionUnavailable, Snackbar.LENGTH_LONG).show();
-    }
-
     @Click(R.id.actionAccounts)
     void onAccountAction() {
         startAccountsActivity(false);
     }
+
     @Click(R.id.actionAbout)
     void onAboutAction() {
         showNotImplemented();
     }
+
     @Click(R.id.actionFeedback)
     void onFeedbackAction() {
         showNotImplemented();
@@ -345,7 +339,14 @@ public class IssueListActivity extends AppCompatActivity
     }
 
     @Override
-    public void onIssueCreated() {
-        listFragment.reload();
+    protected void onPause() {
+        EventBus.getDefault().unregister(this);
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        EventBus.getDefault().register(this);
+        super.onResume();
     }
 }

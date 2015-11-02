@@ -1,5 +1,9 @@
 package com.noiseapps.itassistant.database.dao;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gson.reflect.TypeToken;
 import com.noiseapps.itassistant.database.Preferences_;
 import com.noiseapps.itassistant.model.account.BaseAccount;
@@ -7,10 +11,6 @@ import com.noiseapps.itassistant.model.account.BaseAccount;
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.sharedpreferences.Pref;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 
 
 @EBean(scope = EBean.Scope.Singleton)
@@ -23,6 +23,21 @@ public class AccountsDao extends BaseDao<BaseAccount> {
 
     @Pref
     Preferences_ preferences;
+
+    public void addOrUpdate(BaseAccount currentConfig) {
+        boolean updated = false;
+        for (int i = 0; i < allItems.size(); i++) {
+            if(allItems.get(i).getId() == currentConfig.getId()) {
+                allItems.set(i, currentConfig);
+                updated = true;
+                break;
+            }
+        }
+        if(!updated) {
+            add(currentConfig);
+        }
+        save(allItems);
+    }
 
     @AfterInject
     void init() {

@@ -13,6 +13,7 @@ import java.util.List;
 
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.RecyclerViewSwipeManager;
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.SwipeableItemAdapter;
+import com.h6ah4i.android.widget.advrecyclerview.swipeable.SwipeableItemConstants;
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.action.SwipeResultAction;
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.action.SwipeResultActionDefault;
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.action.SwipeResultActionRemoveItem;
@@ -52,12 +53,18 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.
 
     @Override
     public void onSetSwipeBackground(ViewHolder holder, int position, int type) {
+        int bgRes = 0;
+        switch (type) {
+            case SwipeableItemConstants.DRAWABLE_SWIPE_NEUTRAL_BACKGROUND:
+                bgRes = R.color.white;
+                break;
+            case SwipeableItemConstants.DRAWABLE_SWIPE_LEFT_BACKGROUND:
+            case SwipeableItemConstants.DRAWABLE_SWIPE_RIGHT_BACKGROUND:
+                bgRes = R.drawable.item_swipe_delete;
+                break;
+        }
 
-    }
-
-    public void setDataSet(List<BaseAccount> accounts) {
-        this.dataSet.clear();
-        this.dataSet.addAll(accounts);
+        holder.itemView.setBackgroundResource(bgRes);
     }
 
     @Override
@@ -131,7 +138,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.
         void build(BaseAccount item) {
             this.item = item;
             Picasso.with(context).cancelRequest(avatarView);
-            username.setText(item.getUsername());
+            username.setText(item.getName());
             url.setText(item.getUrl());
             final RequestCreator picassoLoad;
             if(item.getAccountType() == AccountTypes.ACC_JIRA || item.getAccountType() == AccountTypes.ACC_STASH) {

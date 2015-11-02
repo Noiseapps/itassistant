@@ -16,4 +16,5 @@
     <color name="listItemBackground">#ffffff</color>
     <color name="listItemBackgroundHighlight">#cccccc</color>
     <color name="white">#ffffff</color>
+    <color name="stateDelete">#F44336</color>
 </resources>

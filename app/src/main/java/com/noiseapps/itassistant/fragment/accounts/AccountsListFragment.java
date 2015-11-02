@@ -23,6 +23,7 @@ import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.AccountListAdapter;
 import com.noiseapps.itassistant.database.dao.AccountsDao;
 import com.noiseapps.itassistant.model.account.BaseAccount;
+import com.noiseapps.itassistant.utils.DividerItemDecoration;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -106,6 +107,7 @@ public class AccountsListFragment extends Fragment {
 //        animator.setSupportsChangeAnimations(false);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
         recyclerView.setAdapter(wrappedAdapter);
 //        recyclerView.setItemAnimator(animator);
         recyclerViewTouchActionGuardManager.attachRecyclerView(recyclerView);

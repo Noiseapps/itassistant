@@ -124,4 +124,5 @@
     <string name="selectFilter">Filter issues</string>
     <string name="removed">Account removed</string>
     <string name="undo">Undo</string>
+    <string name="editJiraAccount">Edit Jira account</string>
 </resources>
