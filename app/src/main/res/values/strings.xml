@@ -125,4 +125,10 @@
     <string name="removed">Account removed</string>
     <string name="undo">Undo</string>
     <string name="editJiraAccount">Edit Jira account</string>
+    <string name="submit">Submit</string>
+    <string name="feedbackInfo">Do you have any suggestions concerning the functionality of this app? Please, post it here so that I can improve it!</string>
+    <string name="feedbackYourComments">Enter your feedback here…</string>
+    <string name="feedbackThanks">Thanks for your feedback!</string>
+    <string name="feedbackResponse">Response for your question</string>
+    <string name="rate">Rate</string>
 </resources>

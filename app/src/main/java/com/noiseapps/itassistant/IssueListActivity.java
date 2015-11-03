@@ -40,6 +40,8 @@ import com.noiseapps.itassistant.utils.DividerItemDecoration;
 import com.noiseapps.itassistant.utils.events.EventBusAction;
 import com.noiseapps.itassistant.utils.events.OpenDrawerEvent;
 import com.orhanobut.logger.Logger;
+import com.suredigit.inappfeedback.FeedbackDialog;
+import com.suredigit.inappfeedback.FeedbackSettings;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -78,6 +80,7 @@ public class IssueListActivity extends AppCompatActivity
     private boolean mTwoPane;
     private ProgressDialog progressDialog;
     private ArrayList<Issue> myIssues;
+    private FeedbackDialog feedbackDialog;
 
     @Override
     public void onItemSelected(Issue issue, JiraProject jiraProject) {
@@ -141,6 +144,8 @@ public class IssueListActivity extends AppCompatActivity
         }
         initToolbar();
         isTwoPane();
+
+        feedbackDialog = new FeedbackDialog(this, "AF-EBD0453F2EC0-CF");
     }
 
     private void setTablet() {
@@ -314,7 +319,19 @@ public class IssueListActivity extends AppCompatActivity
 
     @Click(R.id.actionFeedback)
     void onFeedbackAction() {
-        showNotImplemented();
+        final FeedbackSettings settings = new FeedbackSettings();
+        settings.setCancelButtonText(getString(R.string.cancel));
+        settings.setSendButtonText(getString(R.string.submit));
+        settings.setText(getString(R.string.feedbackInfo));
+        settings.setTitle(getString(R.string.feedback));
+        settings.setYourComments(getString(R.string.feedbackYourComments));
+        settings.setToast(getString(R.string.feedbackThanks));
+        settings.setReplyTitle(getString(R.string.feedbackResponse));
+        settings.setReplyCloseButtonText(getString(R.string.close));
+        settings.setReplyRateButtonText(getString(R.string.rate));
+        settings.setModal(true);
+        feedbackDialog.setSettings(settings);
+        feedbackDialog.show();
     }
 
     @OnActivityResult(ACCOUNTS_REQUEST)
@@ -338,6 +355,9 @@ public class IssueListActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         EventBus.getDefault().unregister(this);
+        if(feedbackDialog != null) {
+            feedbackDialog.dismiss();
+        }
         super.onPause();
     }
 
