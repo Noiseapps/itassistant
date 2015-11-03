@@ -125,18 +125,25 @@ public class JiraConnector {
         apiService.addIssueComment(issueId, comment, callback);
     }
 
-    public void getIssueWorkLog(@NonNull String issueId, Callback<WorkLogs> callback) {
+    @NonNull
+    public Observable<List<WorkLogItem>> getIssueWorkLog(@NonNull String issueId) {
         if(apiService == null) {
-            return;
+            return Observable.just(new ArrayList<>());
         }
-        apiService.getIssueWorkLog(issueId, callback);
-    }
-
-    public Observable<JiraProjectDetails> getProjectDetails(@NonNull String projectId) {
-        if(apiService == null) {
-            return null;
+        final List<WorkLogItem> workLogItems = new ArrayList<>();
+        long total;
+        long startAt = 0;
+        try {
+            do {
+                final WorkLogs assignedToMe = apiService.getIssueWorkLog(issueId, startAt);
+                total = assignedToMe.getTotal();
+                startAt += assignedToMe.getMaxResults();
+                workLogItems.addAll(assignedToMe.getWorklogs());
+            } while (workLogItems.size() != total);
+        } catch (RetrofitError error) {
+            return Observable.just(new ArrayList<>());
         }
-        return apiService.getProjectDetails(projectId);
+        return Observable.just(workLogItems);
     }
 
     public void postIssueWorkLog(String issueId, String newEstimate, WorkLogItem workLog, Callback<WorkLogItem> callback){
@@ -144,6 +151,13 @@ public class JiraConnector {
             return;
         }
         apiService.postIssueWorkLog(issueId, newEstimate, workLog, callback);
+    }
+
+    public Observable<JiraProjectDetails> getProjectDetails(@NonNull String projectId) {
+        if(apiService == null) {
+            return null;
+        }
+        return apiService.getProjectDetails(projectId);
     }
 
     public void getProjectStatuses(@NonNull String issueId, Callback<List<IssueStatus>> callback) {

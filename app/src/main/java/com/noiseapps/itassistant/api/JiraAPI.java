@@ -60,7 +60,7 @@ public interface JiraAPI {
     void addIssueComment(@Path("issueIdOrKey") String issueId, @Body Comment comment, @NonNull Callback<Comment> callback);
 
     @GET("/rest/api/2/issue/{issueIdOrKey}/worklog")
-    void getIssueWorkLog(@Path("issueIdOrKey") String issueId, @NonNull Callback<WorkLogs> callback);
+    WorkLogs getIssueWorkLog(@Path("issueIdOrKey") String issueId, @Query("startAt") long startAt);
 
     @POST("/rest/api/2/issue/{issueIdOrKey}/worklog?adjustEstimate=new")
     void postIssueWorkLog(@Path("issueIdOrKey") String issueId, @Query("newEstimate") String newEstimate, @Body WorkLogItem comment, @NonNull Callback<WorkLogItem> callback);

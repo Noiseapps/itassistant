@@ -88,6 +88,7 @@ dependencies {
     compile 'com.github.jorgecastilloprz:fabprogresscircle:1.01@aar'
     compile 'io.reactivex:rxandroid:1.0.1'
     compile 'io.reactivex:rxjava:1.0.14'
+    compile files('libs/feedback_v6.jar')
 }
 
 apt {

@@ -22,8 +22,8 @@ import com.noiseapps.itassistant.adapters.WorkLogAdapter;
 import com.noiseapps.itassistant.connector.JiraConnector;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogItem;
-import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogs;
 import com.noiseapps.itassistant.utils.Consts;
+import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -36,6 +36,8 @@ import org.joda.time.MutableDateTime;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 @EFragment(R.layout.fragment_work_log)
 public class WorkLogFragment extends Fragment {
@@ -59,7 +61,10 @@ public class WorkLogFragment extends Fragment {
         adapter = new WorkLogAdapter(getContext(), new ArrayList<>());
         workLogList.setAdapter(adapter);
         initViewVisibility();
-        jiraConnector.getIssueWorkLog(issue.getId(), new WorkLogCallbacks());
+        jiraConnector.getIssueWorkLog(issue.getId()).
+                subscribeOn(Schedulers.io()).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribe(this::onWorkLogsDownloaded, this::onDownloadError);
     }
 
     private void initViewVisibility() {
@@ -67,13 +72,6 @@ public class WorkLogFragment extends Fragment {
         noWorkLogsView.setVisibility(View.GONE);
         workLogList.setVisibility(View.GONE);
         loadingWorkLogs.setVisibility(View.VISIBLE);
-    }
-
-    private void showEmptyView() {
-        noWorkLogsView.setVisibility(View.VISIBLE);
-        workLogList.setVisibility(View.GONE);
-        loadingWorkLogs.setVisibility(View.GONE);
-        errorView.setVisibility(View.GONE);
     }
 
     @Click(R.id.addWorkLogFab)
@@ -105,7 +103,7 @@ public class WorkLogFragment extends Fragment {
                     editWorkLog.setText(dateTime.toString(Consts.DATE_FORMAT));
                 }
             };
-            final DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), onDateSetListener, dateTime.getYear(), dateTime.getMonthOfYear()-1, dateTime.getDayOfMonth());
+            final DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), onDateSetListener, dateTime.getYear(), dateTime.getMonthOfYear() - 1, dateTime.getDayOfMonth());
             datePickerDialog.getDatePicker().setMaxDate(dateTime.getMillis());
             datePickerDialog.show();
         });
@@ -118,7 +116,7 @@ public class WorkLogFragment extends Fragment {
             final String newEstimate = remainingText.getText().toString().trim();
             final String timeSpent = workedText.getText().toString().trim();
             boolean valid = validateInput(newEstimate, timeSpent, workedText, remainingText);
-            if(valid) {
+            if (valid) {
                 final WorkLogItem logItem = new WorkLogItem();
                 logItem.setComment(commentText.getText().toString());
                 logItem.setTimeSpent(timeSpent);
@@ -131,11 +129,11 @@ public class WorkLogFragment extends Fragment {
 
     private boolean validateInput(String newEstimate, String timeSpent, EditText workedText, EditText remainingText) {
         boolean valid = true;
-        if(!validateWorkLog(timeSpent)) {
+        if (!validateWorkLog(timeSpent)) {
             valid = false;
             workedText.setError(getString(R.string.invalidFormat));
         }
-        if(!validateWorkLog(newEstimate)) {
+        if (!validateWorkLog(newEstimate)) {
             valid = false;
             remainingText.setError(getString(R.string.invalidFormat));
         }
@@ -170,24 +168,27 @@ public class WorkLogFragment extends Fragment {
         alertDialog.dismiss();
     }
 
-    private class WorkLogCallbacks implements Callback<WorkLogs> {
-        @Override
-        public void success(WorkLogs workLogs, Response response) {
-            fabProgressCircle.setVisibility(View.VISIBLE);
-            loadingWorkLogs.setVisibility(View.GONE);
-            final List<WorkLogItem> worklogs = workLogs.getWorklogs();
-            if(worklogs.isEmpty()) {
-                showEmptyView();
-            } else {
-                adapter.setItems(worklogs);
-                workLogList.setVisibility(View.VISIBLE);
-            }
-        }
+    private void onDownloadError(Throwable throwable) {
+        Logger.e(throwable, throwable.getMessage());
+        loadingWorkLogs.setVisibility(View.GONE);
+        errorView.setVisibility(View.VISIBLE);
+    }
 
-        @Override
-        public void failure(RetrofitError error) {
-            loadingWorkLogs.setVisibility(View.GONE);
-            errorView.setVisibility(View.VISIBLE);
+    private void onWorkLogsDownloaded(List<WorkLogItem> worklogs) {
+        fabProgressCircle.setVisibility(View.VISIBLE);
+        loadingWorkLogs.setVisibility(View.GONE);
+        if (worklogs.isEmpty()) {
+            showEmptyView();
+        } else {
+            adapter.setItems(worklogs);
+            workLogList.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void showEmptyView() {
+        noWorkLogsView.setVisibility(View.VISIBLE);
+        workLogList.setVisibility(View.GONE);
+        loadingWorkLogs.setVisibility(View.GONE);
+        errorView.setVisibility(View.GONE);
     }
 }
