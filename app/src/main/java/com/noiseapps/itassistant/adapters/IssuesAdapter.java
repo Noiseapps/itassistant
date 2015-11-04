@@ -96,6 +96,7 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
             issue.getFields().getAggregateProgress().getPercent();
             final Assignee issueAssignee = issue.getFields().getAssignee();
             if (issueAssignee != null) {
+                avatar.setVisibility(View.VISIBLE);
                 final String avatarUrl = issueAssignee.getAvatarUrls().get48x48();
                 Logger.d(avatarUrl);
                 authPicasso.load(avatarUrl).

@@ -131,4 +131,7 @@
     <string name="feedbackThanks">Thanks for your feedback!</string>
     <string name="feedbackResponse">Response for your question</string>
     <string name="rate">Rate</string>
+    <string name="sort">Sort</string>
+    <string name="search">Search</string>
+    <string name="selectSort">Sort by</string>
 </resources>

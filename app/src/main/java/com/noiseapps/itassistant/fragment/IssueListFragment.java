@@ -1,15 +1,21 @@
 package com.noiseapps.itassistant.fragment;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -24,12 +30,14 @@ import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.connector.JiraConnector;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
+import com.noiseapps.itassistant.model.jira.issues.Fields;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.issues.JiraIssueList;
 import com.noiseapps.itassistant.model.jira.issues.Project;
 import com.noiseapps.itassistant.model.jira.issues.Status;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
+import com.noiseapps.itassistant.utils.Comparators;
 import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
@@ -45,6 +53,7 @@ import org.androidannotations.annotations.ViewById;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -52,6 +61,7 @@ import java.util.Set;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 @EFragment(R.layout.fragment_issue_list)
@@ -93,7 +103,8 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     private boolean isEmpty;
     private Subscription projectDownloadSubscriber;
     private boolean[] checkedItems;
-    private String[] filters;
+    private String[] filters, sorts;
+    private int selectedSort;
 
     @Override
     public void onItemSelected(Issue selectedIssue) {
@@ -118,6 +129,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     @AfterViews
     void init() {
         filters = getContext().getResources().getStringArray(R.array.issuesFilters);
+        sorts = getContext().getResources().getStringArray(R.array.issuesSort);
         checkedItems = new boolean[filters.length];
         setRetainInstance(true);
         setHasOptionsMenu(jiraIssueList != null);
@@ -176,21 +188,27 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     private void onProjectsDownloaded() {
         noProject.setVisibility(View.GONE);
         isEmpty = jiraIssueList.getIssues().isEmpty();
-        final PagerAdapter adapter = makeAdapter(jiraIssueList.getIssues());
+        final PagerAdapter adapter = fillAdapter(jiraIssueList.getIssues(), false);
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         hideProgress(false);
         setHasOptionsMenu(true);
     }
 
-    @NonNull
-    private PagerAdapter makeAdapter(List<Issue> jiraIssueList) {
+    private PagerAdapter fillAdapter(List<Issue> jiraIssueList, boolean assignedToMe) {
         final Set<WorkflowObject> workflows = new HashSet<>();
         final ListMultimap<String, Issue> issuesInWorkflow = ArrayListMultimap.create();
         for (Issue issue : jiraIssueList) {
-            final Status status = issue.getFields().getStatus();
-            final String id = status.getId();
-            final String name = status.getName();
+            final String name, id;
+            if(assignedToMe) {
+                final Project project = issue.getFields().getProject();
+                id = project.getId();
+                name = project.getKey();
+            } else {
+                final Status status = issue.getFields().getStatus();
+                id = status.getId();
+                name = status.getName();
+            }
             workflows.add(new WorkflowObject(id, name));
             issuesInWorkflow.put(name, issue);
         }
@@ -233,6 +251,81 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         setProject(jiraProject, baseAccount);
     }
 
+    @OptionsItem(R.id.actionSort)
+    public void sort() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.selectSort);
+        builder.setSingleChoiceItems(sorts, selectedSort, (dialog, which) -> selectedSort = which);
+        builder.setPositiveButton(R.string.sort, (dialog, which) -> {
+            handleSortIssues(selectedSort);
+        });
+
+        builder.show();
+    }
+
+    private void handleSortIssues(int which) {
+        selectedSort = which;
+        Comparator<Issue> comparator = (lhs, rhs) -> 0;
+        switch (which) {
+            case 0:
+                break;
+            case 1:
+                comparator = Comparators.ISSUE.BY_KEY;
+                break;
+            case 2:
+                comparator = Comparators.ISSUE.BY_TYPE;
+                break;
+            case 3:
+                comparator = Comparators.ISSUE.BY_PRIORITY;
+                break;
+            case 4:
+                comparator = Comparators.ISSUE.BY_SUMMARY;
+                break;
+            case 5:
+                comparator = Comparators.ISSUE.BY_ASSIGNEE;
+                break;
+            case 6:
+                comparator = Comparators.ISSUE.BY_MODIFIED;
+                break;
+            case 7:
+                comparator = Comparators.ISSUE.BY_CREATED;
+                break;
+            default:
+                break;
+        }
+        final List<Issue> issues = new ArrayList<>(jiraIssueList.getIssues());
+        Collections.sort(issues, comparator);
+        fillAdapter(issues, false);
+
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        final MenuItem item = menu.findItem(R.id.actionSearch);
+        final SearchView actionView = (SearchView) MenuItemCompat.getActionView(item);
+        actionView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                final List<Issue> issues = jiraIssueList.getIssues();
+                if (query.isEmpty()) {
+                    onListFiltered(issues);
+                    return true;
+                }
+                final Iterable<Issue> filter = Iterables.filter(issues, new SearchFilter(query));
+                final ArrayList<Issue> filtered = Lists.newArrayList(filter);
+                onListFiltered(filtered);
+                Logger.d(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
     @OptionsItem(R.id.actionFilter)
     public void showFilterDialog() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -254,12 +347,11 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         final Predicate<Issue> filterQuery = Predicates.or(assigneeFilter, reporterFilter);
         final Iterable<Issue> filteredIssues = Iterables.filter(jiraIssueList.getIssues(), filterQuery);
         final ArrayList<Issue> filteredList = Lists.newArrayList(filteredIssues);
-        Logger.d("Before " + jiraIssueList.getIssues().size() + " After " + filteredList.size());
         onListFiltered(filteredList);
     }
 
     private void onListFiltered(List<Issue> filteredList) {
-        final PagerAdapter pagerAdapter = makeAdapter(filteredList);
+        final PagerAdapter pagerAdapter = fillAdapter(filteredList, false);
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
     }
@@ -271,7 +363,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         showProgress();
         isEmpty = myIssues.isEmpty();
         setToolbarTitle(getString(R.string.myIssues));
-        final PagerAdapter pagerAdapter = makeMyIssuesAdapter(myIssues);
+        final PagerAdapter pagerAdapter = fillAdapter(myIssues, true);
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
         hideProgress(true);
@@ -283,19 +375,6 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         if (supportActionBar != null) {
             supportActionBar.setTitle(title);
         }
-    }
-
-    private PagerAdapter makeMyIssuesAdapter(List<Issue> myIssues) {
-        final Set<WorkflowObject> workflows = new HashSet<>();
-        final ListMultimap<String, Issue> issuesInWorkflow = ArrayListMultimap.create();
-        for (Issue issue : myIssues) {
-            final Project project = issue.getFields().getProject();
-            final String id = project.getId();
-            final String name = project.getKey();
-            workflows.add(new WorkflowObject(id, name));
-            issuesInWorkflow.put(name, issue);
-        }
-        return new WorkflowAdapter(workflows, issuesInWorkflow, true);
     }
 
     public interface Callbacks {
@@ -341,6 +420,25 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
             final boolean result = active && username.equalsIgnoreCase(reporter);
             Logger.d(String.valueOf(result));
             return result;
+        }
+    }
+
+    private class SearchFilter implements Predicate<Issue> {
+        final String query;
+
+        private SearchFilter(String query) {
+            this.query = query;
+        }
+
+        @Override
+        public boolean apply(Issue issue) {
+            final String lowerQuery = query.toLowerCase();
+            final boolean keyContains = issue.getKey().toLowerCase().contains(lowerQuery);
+            final Fields fields = issue.getFields();
+            final boolean summaryContains = fields.getSummary().toLowerCase().contains(lowerQuery);
+            final boolean descriptionContains = fields.getDescription() != null && fields.getDescription().toLowerCase().contains(lowerQuery);
+            final boolean assigneeContains = fields.getAssignee() != null && fields.getAssignee().getDisplayName().toLowerCase().contains(lowerQuery);
+            return keyContains || summaryContains || descriptionContains || assigneeContains;
         }
     }
 
