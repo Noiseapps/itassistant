@@ -1,7 +1,6 @@
 package com.noiseapps.itassistant.fragment;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -18,6 +17,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.google.common.base.Predicate;
@@ -51,17 +57,9 @@ import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 @EFragment(R.layout.fragment_issue_list)
@@ -295,7 +293,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         }
         final List<Issue> issues = new ArrayList<>(jiraIssueList.getIssues());
         Collections.sort(issues, comparator);
-        fillAdapter(issues, false);
+        onListFiltered(issues);
 
     }
 
