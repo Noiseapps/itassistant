@@ -6,6 +6,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.FrameLayout;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.noiseapps.itassistant.fragment.accounts.AccountsActivityCallbacks;
 import com.noiseapps.itassistant.fragment.accounts.AccountsListFragment_;
 import com.noiseapps.itassistant.fragment.accounts.JiraAccountCreateFragment;
@@ -19,6 +22,8 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.ViewById;
 
+import java.util.Map;
+
 @EActivity(R.layout.activity_accounts)
 public class AccountsActivity extends AppCompatActivity implements AccountsActivityCallbacks {
 
@@ -27,6 +32,18 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
 
     @Extra
     boolean showAccountForm;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        GoogleAnalytics.getInstance(this).reportActivityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        GoogleAnalytics.getInstance(this).reportActivityStop(this);
+    }
 
     @Override
     public void onAddAccount() {
@@ -45,6 +62,12 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
 
     @Override
     public void onAccountSaved() {
+        final Map<String, String> build = new HitBuilders.EventBuilder().
+                setCategory("ACCOUNTS").
+                setAction("ADD").
+                setLabel("ADDED").
+                setValue(100).build();
+        AnalyticsTrackers.getTracker().send(build);
         clearBackstack();
         init();
         setResult(RESULT_OK);
@@ -68,6 +91,7 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
 
     @AfterViews
     void init() {
+        AnalyticsTrackers.getInstance().sendScreenVisit("Accounts");
         setTablet();
         setResult(RESULT_CANCELED);
         getSupportFragmentManager().beginTransaction().replace(R.id.container, AccountsListFragment_.builder().build()).commit();

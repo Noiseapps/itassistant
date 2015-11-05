@@ -3,7 +3,7 @@ package com.noiseapps.itassistant.utils
 import com.noiseapps.itassistant.model.jira.issues.Issue
 import java.util.*
 
-class Comparators{
+class Comparators {
 
     object ISSUE {
         val BY_KEY : Comparator<Issue> = Comparator { l, r -> l.key.compareTo(r.key) }

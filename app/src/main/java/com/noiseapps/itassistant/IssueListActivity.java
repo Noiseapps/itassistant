@@ -3,6 +3,7 @@ package com.noiseapps.itassistant;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -21,6 +22,8 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
 import com.noiseapps.itassistant.adapters.NavigationMenuAdapter;
 import com.noiseapps.itassistant.connector.JiraConnector;
@@ -81,6 +84,7 @@ public class IssueListActivity extends AppCompatActivity
     private ProgressDialog progressDialog;
     private ArrayList<Issue> myIssues;
     private FeedbackDialog feedbackDialog;
+    private Tracker tracker;
 
     @Override
     public void onItemSelected(Issue issue, JiraProject jiraProject) {
@@ -123,6 +127,14 @@ public class IssueListActivity extends AppCompatActivity
     @EventBusAction
     public void onEvent(@Nullable OpenDrawerEvent event) {
         drawerLayout.openDrawer(GravityCompat.START);
+    }
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        tracker = AnalyticsTrackers.getTracker();
+        tracker.setScreenName(getClass().getSimpleName());
+        tracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override
@@ -288,11 +300,6 @@ public class IssueListActivity extends AppCompatActivity
                 }).show();
     }
 
-//    @Click(R.id.openDrawer)
-//    void openDrawer() {
-//        onEvent(null);
-//    }
-
     @Click(R.id.actionSettings)
     void onSettingsAction() {
         showNotImplemented();
@@ -347,6 +354,7 @@ public class IssueListActivity extends AppCompatActivity
     @OnActivityResult(NEW_ISSUE_REQUEST)
     void onIssueAdded(int resultCode) {
         Logger.w("" + resultCode);
+        AnalyticsTrackers.getInstance().get(AnalyticsTrackers.Target.APP);
         if (resultCode == RESULT_OK) {
             listFragment.reload();
         }

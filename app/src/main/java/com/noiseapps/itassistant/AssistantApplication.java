@@ -2,12 +2,18 @@ package com.noiseapps.itassistant;
 
 import android.app.Application;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.noiseapps.itassistant.utils.Analytics;
+
 import net.danlew.android.joda.JodaTimeAndroid;
 
 import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.HttpSender;
 import org.androidannotations.annotations.EApplication;
+
+import java.util.Map;
 
 import jonathanfinerty.once.Once;
 
@@ -27,5 +33,9 @@ public class AssistantApplication extends Application {
         JodaTimeAndroid.init(this);
         Once.initialise(this);
         ACRA.init(this);
+        AnalyticsTrackers.initialize(this);
+        final Map<String, String> event = new HitBuilders.EventBuilder(Analytics.CATEGORIES.APP, Analytics.ACTIONS.OPEN).build();
+        AnalyticsTrackers.getTracker().send(event);
+        GoogleAnalytics.getInstance(this).dispatchLocalHits();
     }
 }
