@@ -14,6 +14,14 @@
         android:icon="@drawable/ic_filter_list_white_24px"
         android:title="@string/filter"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/actionSplitBy"
+        android:icon="@drawable/ic_call_split_white_24px"
+        android:title="@string/split"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+
     <item
         android:id="@+id/actionSort"
         android:icon="@drawable/ic_sort"

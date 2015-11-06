@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -65,10 +66,11 @@ public class IssueListActivity extends AppCompatActivity
 
     public static final int ACCOUNTS_REQUEST = 633;
     public static final int NEW_ISSUE_REQUEST = 5135;
+    public static final int DELAY_MILLIS = 2000;
     @ViewById
     Toolbar toolbar;
-    @ViewById
-    RecyclerView recyclerView;
+    @ViewById(R.id.recyclerView)
+    RecyclerView navigationRecycler;
     @ViewById
     View mainLayout;
     @ViewById
@@ -85,6 +87,8 @@ public class IssueListActivity extends AppCompatActivity
     private ArrayList<Issue> myIssues;
     private FeedbackDialog feedbackDialog;
     private Tracker tracker;
+    private boolean doubleClicked;
+    private Handler handler;
 
     @Override
     public void onItemSelected(Issue issue, JiraProject jiraProject) {
@@ -144,6 +148,7 @@ public class IssueListActivity extends AppCompatActivity
 
     @AfterViews
     void init() {
+        handler = new Handler();
         setTablet();
         if (accountsDao.getAll().isEmpty()) {
             showNoAccountsDialog();
@@ -183,6 +188,20 @@ public class IssueListActivity extends AppCompatActivity
 
     private void startAccountsActivity(boolean showForm) {
         AccountsActivity_.intent(this).showAccountForm(showForm).startForResult(ACCOUNTS_REQUEST);
+    }
+
+    @Override
+    public void onBackPressed() {
+        final boolean isSearchOpen = listFragment.isSearchViewOpen();
+        if(isSearchOpen) {
+            listFragment.closeSearchView();
+        } else if(!doubleClicked) {
+            Snackbar.make(mainLayout, R.string.tapAgainToExit, Snackbar.LENGTH_LONG).show();
+            doubleClicked = true;
+            handler.postDelayed(() -> doubleClicked = false, DELAY_MILLIS);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     private void initToolbar() {
@@ -235,7 +254,7 @@ public class IssueListActivity extends AppCompatActivity
 
     private void showInfoAboutFailedAccounts(int failedAccounts) {
         if (failedAccounts > 0) {
-            Snackbar.make(recyclerView, getString(R.string.failedToReadAccountData, failedAccounts), Snackbar.LENGTH_LONG).show();
+            Snackbar.make(navigationRecycler, getString(R.string.failedToReadAccountData, failedAccounts), Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -266,12 +285,12 @@ public class IssueListActivity extends AppCompatActivity
             listFragment.setProject(jiraProject, baseAccount);
         });
         final RecyclerView.Adapter wrappedAdapter = manager.createWrappedAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(wrappedAdapter);
+        navigationRecycler.setLayoutManager(new LinearLayoutManager(this));
+        navigationRecycler.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
+        navigationRecycler.setHasFixedSize(true);
+        navigationRecycler.setAdapter(wrappedAdapter);
         manager.expandAll();
-        manager.attachRecyclerView(recyclerView);
+        manager.attachRecyclerView(navigationRecycler);
         if (!Once.beenDone(Once.THIS_APP_INSTALL, Consts.SHOW_DRAWER)) {
             drawerLayout.openDrawer(GravityCompat.START);
             Once.markDone(Consts.SHOW_DRAWER);
@@ -302,6 +321,7 @@ public class IssueListActivity extends AppCompatActivity
 
     @Click(R.id.actionSettings)
     void onSettingsAction() {
+        drawerLayout.closeDrawer(GravityCompat.START);
         showNotImplemented();
     }
 
@@ -311,21 +331,25 @@ public class IssueListActivity extends AppCompatActivity
 
     @Click(R.id.actionAssignedToMe)
     void onAssignedToMeAction() {
+        drawerLayout.closeDrawer(GravityCompat.START);
         initMyIssues(myIssues);
     }
 
     @Click(R.id.actionAccounts)
     void onAccountAction() {
+        drawerLayout.closeDrawer(GravityCompat.START);
         startAccountsActivity(false);
     }
 
     @Click(R.id.actionAbout)
     void onAboutAction() {
+        drawerLayout.closeDrawer(GravityCompat.START);
         showNotImplemented();
     }
 
     @Click(R.id.actionFeedback)
     void onFeedbackAction() {
+        drawerLayout.closeDrawer(GravityCompat.START);
         final FeedbackSettings settings = new FeedbackSettings();
         settings.setCancelButtonText(getString(R.string.cancel));
         settings.setSendButtonText(getString(R.string.submit));

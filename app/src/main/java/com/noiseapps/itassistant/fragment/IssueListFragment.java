@@ -101,8 +101,9 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     private boolean isEmpty;
     private Subscription projectDownloadSubscriber;
     private boolean[] checkedItems;
-    private String[] filters, sorts;
+    private String[] filters, sorts, splits;
     private int selectedSort;
+    private SearchView actionView;
 
     @Override
     public void onItemSelected(Issue selectedIssue) {
@@ -128,6 +129,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     void init() {
         filters = getContext().getResources().getStringArray(R.array.issuesFilters);
         sorts = getContext().getResources().getStringArray(R.array.issuesSort);
+        splits = getContext().getResources().getStringArray(R.array.issuesSplits);
         checkedItems = new boolean[filters.length];
         setRetainInstance(true);
         setHasOptionsMenu(jiraIssueList != null);
@@ -148,6 +150,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         setToolbarTitle(jiraProject.getName());
         this.jiraProject = jiraProject;
         this.baseAccount = baseAccount;
+        getActivity().invalidateOptionsMenu();
         displayData();
     }
 
@@ -176,17 +179,17 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
                     return null;
                 }).subscribeOn(Schedulers.io()).
                 observeOn(AndroidSchedulers.mainThread()).
-                subscribe(o -> onProjectsDownloaded(), throwable -> {
+                subscribe(o -> onProjectsDownloaded(false), throwable -> {
                     isEmpty = true;
                     noProject.setVisibility(View.GONE);
                     hideProgress(false);
                 }, () -> projectDownloadSubscriber = null);
     }
 
-    private void onProjectsDownloaded() {
+    private void onProjectsDownloaded(boolean assignedToMe) {
         noProject.setVisibility(View.GONE);
         isEmpty = jiraIssueList.getIssues().isEmpty();
-        final PagerAdapter adapter = fillAdapter(jiraIssueList.getIssues(), false);
+        final PagerAdapter adapter = fillAdapter(jiraIssueList.getIssues(), assignedToMe);
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         hideProgress(false);
@@ -261,6 +264,21 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         builder.show();
     }
 
+    @OptionsItem(R.id.actionSplitBy)
+    public void onSplitSelected() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.selectSplit);
+        builder.setSingleChoiceItems(splits, selectedSort, (dialog, which) -> selectedSort  = which);
+        builder.setPositiveButton(R.string.sort, (dialog, which) -> {
+            final List<Issue> issues = jiraIssueList.getIssues();
+            final PagerAdapter pagerAdapter = fillAdapter(issues, selectedSort == 0);
+            viewPager.setAdapter(pagerAdapter);
+            tabLayout.setupWithViewPager(viewPager);
+        });
+
+        builder.show();
+    }
+
     private void handleSortIssues(int which) {
         selectedSort = which;
         Comparator<Issue> comparator = (lhs, rhs) -> 0;
@@ -300,7 +318,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         final MenuItem item = menu.findItem(R.id.actionSearch);
-        final SearchView actionView = (SearchView) MenuItemCompat.getActionView(item);
+        actionView = (SearchView) MenuItemCompat.getActionView(item);
         actionView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -317,7 +335,12 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
+            public boolean onQueryTextChange(String query) {
+                final List<Issue> issues = jiraIssueList.getIssues();
+                if (query.isEmpty()) {
+                    onListFiltered(issues);
+                    return true;
+                }
                 return false;
             }
         });
@@ -335,6 +358,17 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         builder.show();
     }
 
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.actionRefresh).setVisible(baseAccount != null);
+        menu.findItem(R.id.actionFilter).setVisible(baseAccount != null);
+        menu.findItem(R.id.actionSplitBy).setVisible(baseAccount == null);
+    }
+
+    public boolean isSearchViewOpen() {
+        return !actionView.isIconified();
+    }
+
     private void handleFilterSelected() {
         if (!checkedItems[0] && !checkedItems[1]) {
             onListFiltered(jiraIssueList.getIssues());
@@ -349,7 +383,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     }
 
     private void onListFiltered(List<Issue> filteredList) {
-        final PagerAdapter pagerAdapter = fillAdapter(filteredList, false);
+        final PagerAdapter pagerAdapter = fillAdapter(filteredList, jiraProject == null);
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
     }
@@ -358,14 +392,17 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         if (projectDownloadSubscriber != null) {
             projectDownloadSubscriber.unsubscribe();
         }
+        baseAccount = null;
+        jiraIssueList = new JiraIssueList();
+        jiraIssueList.setIssues(myIssues);
         showProgress();
-        isEmpty = myIssues.isEmpty();
         setToolbarTitle(getString(R.string.myIssues));
-        final PagerAdapter pagerAdapter = fillAdapter(myIssues, true);
-        viewPager.setAdapter(pagerAdapter);
-        tabLayout.setupWithViewPager(viewPager);
-        hideProgress(true);
-        setHasOptionsMenu(false);
+        onProjectsDownloaded(true);
+        getActivity().invalidateOptionsMenu();
+//        final PagerAdapter pagerAdapter = fillAdapter(myIssues, true);
+//        viewPager.setAdapter(pagerAdapter);
+//        tabLayout.setupWithViewPager(viewPager);
+//        hideProgress(true);
     }
 
     private void setToolbarTitle(String title) {
@@ -373,6 +410,11 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         if (supportActionBar != null) {
             supportActionBar.setTitle(title);
         }
+    }
+
+    public void closeSearchView() {
+        actionView.clearFocus();
+        actionView.setIconified(true);
     }
 
     public interface Callbacks {

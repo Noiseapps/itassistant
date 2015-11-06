@@ -26,6 +26,7 @@ import com.noiseapps.itassistant.utils.Consts;
 import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
@@ -61,6 +62,11 @@ public class WorkLogFragment extends Fragment {
         adapter = new WorkLogAdapter(getContext(), new ArrayList<>());
         workLogList.setAdapter(adapter);
         initViewVisibility();
+        getWorklogs();
+    }
+
+    @Background
+    void getWorklogs() {
         jiraConnector.getIssueWorkLog(issue.getId()).
                 subscribeOn(Schedulers.io()).
                 observeOn(AndroidSchedulers.mainThread()).

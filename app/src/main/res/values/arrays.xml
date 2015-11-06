@@ -31,4 +31,8 @@
         <item>Modification date</item>
         <item>Created date</item>
     </string-array>
+    <string-array name="issuesSplits">
+        <item>Project</item>
+        <item>Workflow status</item>
+    </string-array>
 </resources>

@@ -4,16 +4,16 @@
     android:layout_height="match_parent">
 
     <TextView
-        style="@style/AppTheme.MenuItem"
         android:id="@+id/actionAssignedToMe"
+        style="@style/AppTheme.MenuItem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/view6"
         android:background="@drawable/list_background"
         android:clickable="true"
         android:drawableStart="@drawable/ic_home_24dp"
-        android:text="@string/myIssues"
-        android:layout_below="@+id/view6"
-        android:layout_alignParentStart="true" />
+        android:text="@string/myIssues" />
 
     <View
         android:id="@+id/view6"
@@ -26,8 +26,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/view"
-        android:layout_gravity="center_horizontal"
-        android:layout_below="@+id/actionAssignedToMe" />
+        android:layout_below="@+id/separator"
+        android:layout_gravity="center_horizontal" />
+
+    <View
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/actionAssignedToMe"
+        android:background="@color/colorAccent" />
 
     <View
         android:id="@+id/view"

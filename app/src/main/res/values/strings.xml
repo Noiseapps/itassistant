@@ -134,4 +134,7 @@
     <string name="sort">Sort</string>
     <string name="search">Search</string>
     <string name="selectSort">Sort by</string>
+    <string name="tapAgainToExit">Tap Back again to exit</string>
+    <string name="split">Split by</string>
+    <string name="selectSplit">Split by</string>
 </resources>
