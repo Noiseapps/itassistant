@@ -9,20 +9,33 @@
     tools:context=".IssueListActivity">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:id="@+id/issue_list"
-              android:name="com.noiseapps.itassistant.fragment.IssueListFragment_"
-              android:layout_width="0dp"
-              android:layout_weight="2"
-              android:layout_height="match_parent"
-              tools:context=".IssueListActivity"
-              tools:layout="@android:layout/list_content" />
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/issue_list"
+        android:name="com.noiseapps.itassistant.fragment.IssueListFragment_"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        tools:context=".IssueListActivity"
+        tools:layout="@android:layout/list_content" />
 
 
     <FrameLayout
         android:id="@+id/issue_detail_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="3" />
+        android:layout_weight="3">
+
+        <TextView
+            android:id="@+id/nothingSelectedInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:alpha=".5"
+            android:drawableTop="@drawable/ic_warning_24dp"
+            android:gravity="center"
+            android:text="@string/nothingSelected"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </FrameLayout>
 
 </LinearLayout>

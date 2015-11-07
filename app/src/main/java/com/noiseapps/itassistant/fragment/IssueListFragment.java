@@ -18,13 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -38,7 +31,6 @@ import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.Fields;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
-import com.noiseapps.itassistant.model.jira.issues.JiraIssueList;
 import com.noiseapps.itassistant.model.jira.issues.Project;
 import com.noiseapps.itassistant.model.jira.issues.Status;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
@@ -56,6 +48,13 @@ import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import rx.Observable;
 import rx.Subscription;
@@ -90,7 +89,8 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     @ViewById
     TabLayout tabLayout;
     @InstanceState
-    JiraIssueList jiraIssueList;
+    ArrayList<Issue> issues;
+    //    JiraIssueList jiraIssueList;
     @InstanceState
     BaseAccount baseAccount;
     @InstanceState
@@ -132,13 +132,13 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         splits = getContext().getResources().getStringArray(R.array.issuesSplits);
         checkedItems = new boolean[filters.length];
         setRetainInstance(true);
-        setHasOptionsMenu(jiraIssueList != null);
+        setHasOptionsMenu(issues != null);
         mCallbacks = (Callbacks) getActivity();
         final ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (supportActionBar != null) {
             supportActionBar.setTitle(jiraProject.getName());
         }
-        if (jiraIssueList != null) {
+        if (issues != null) {
             displayData();
         }
     }
@@ -174,7 +174,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         projectDownloadSubscriber = Observable.zip(jiraConnector.getProjectIssues(projectKey),
                 jiraConnector.getProjectMembers(projectKey),
                 (jiraIssueList, assignees) -> {
-                    IssueListFragment.this.jiraIssueList = jiraIssueList;
+                    IssueListFragment.this.issues = new ArrayList<Issue>(jiraIssueList.getIssues());
                     IssueListFragment.this.assignees = new ArrayList<>(assignees);
                     return null;
                 }).subscribeOn(Schedulers.io()).
@@ -188,8 +188,8 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
 
     private void onProjectsDownloaded(boolean assignedToMe) {
         noProject.setVisibility(View.GONE);
-        isEmpty = jiraIssueList.getIssues().isEmpty();
-        final PagerAdapter adapter = fillAdapter(jiraIssueList.getIssues(), assignedToMe);
+        isEmpty = issues.isEmpty();
+        final PagerAdapter adapter = fillAdapter(issues, assignedToMe);
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         hideProgress(false);
@@ -201,7 +201,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         final ListMultimap<String, Issue> issuesInWorkflow = ArrayListMultimap.create();
         for (Issue issue : jiraIssueList) {
             final String name, id;
-            if(assignedToMe) {
+            if (assignedToMe) {
                 final Project project = issue.getFields().getProject();
                 id = project.getId();
                 name = project.getKey();
@@ -248,7 +248,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
 
     @OptionsItem(R.id.actionRefresh)
     public void reload() {
-        jiraIssueList = null;
+        issues = null;
         setProject(jiraProject, baseAccount);
     }
 
@@ -268,9 +268,9 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     public void onSplitSelected() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.selectSplit);
-        builder.setSingleChoiceItems(splits, selectedSort, (dialog, which) -> selectedSort  = which);
+        builder.setSingleChoiceItems(splits, selectedSort, (dialog, which) -> selectedSort = which);
         builder.setPositiveButton(R.string.sort, (dialog, which) -> {
-            final List<Issue> issues = jiraIssueList.getIssues();
+            final List<Issue> issues = this.issues;
             final PagerAdapter pagerAdapter = fillAdapter(issues, selectedSort == 0);
             viewPager.setAdapter(pagerAdapter);
             tabLayout.setupWithViewPager(viewPager);
@@ -309,7 +309,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
             default:
                 break;
         }
-        final List<Issue> issues = new ArrayList<>(jiraIssueList.getIssues());
+        final List<Issue> issues = new ArrayList<>(this.issues);
         Collections.sort(issues, comparator);
         onListFiltered(issues);
 
@@ -322,7 +322,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         actionView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                final List<Issue> issues = jiraIssueList.getIssues();
+                final List<Issue> issues = IssueListFragment.this.issues;
                 if (query.isEmpty()) {
                     onListFiltered(issues);
                     return true;
@@ -336,7 +336,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
 
             @Override
             public boolean onQueryTextChange(String query) {
-                final List<Issue> issues = jiraIssueList.getIssues();
+                final List<Issue> issues = IssueListFragment.this.issues;
                 if (query.isEmpty()) {
                     onListFiltered(issues);
                     return true;
@@ -371,19 +371,19 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
 
     private void handleFilterSelected() {
         if (!checkedItems[0] && !checkedItems[1]) {
-            onListFiltered(jiraIssueList.getIssues());
+            onListFiltered(issues);
             return;
         }
         final Predicate<Issue> assigneeFilter = new AssignedToMeFilter(checkedItems[0]);
         final Predicate<Issue> reporterFilter = new ReportedByMeFilter(checkedItems[1]);
         final Predicate<Issue> filterQuery = Predicates.or(assigneeFilter, reporterFilter);
-        final Iterable<Issue> filteredIssues = Iterables.filter(jiraIssueList.getIssues(), filterQuery);
+        final Iterable<Issue> filteredIssues = Iterables.filter(issues, filterQuery);
         final ArrayList<Issue> filteredList = Lists.newArrayList(filteredIssues);
         onListFiltered(filteredList);
     }
 
     private void onListFiltered(List<Issue> filteredList) {
-        final PagerAdapter pagerAdapter = fillAdapter(filteredList, jiraProject == null);
+        final PagerAdapter pagerAdapter = fillAdapter(filteredList, jiraProject == null && selectedSort == 0);
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
     }
@@ -392,9 +392,9 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         if (projectDownloadSubscriber != null) {
             projectDownloadSubscriber.unsubscribe();
         }
+        jiraProject = null;
         baseAccount = null;
-        jiraIssueList = new JiraIssueList();
-        jiraIssueList.setIssues(myIssues);
+        this.issues = new ArrayList<>(myIssues);
         showProgress();
         setToolbarTitle(getString(R.string.myIssues));
         onProjectsDownloaded(true);

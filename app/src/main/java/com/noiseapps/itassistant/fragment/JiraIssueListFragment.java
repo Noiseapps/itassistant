@@ -85,7 +85,6 @@ public class JiraIssueListFragment extends Fragment {
         issuesRecycler.setLayoutManager(new LinearLayoutManager(context));
         final Picasso authPicasso = AuthenticatedPicasso.getAuthPicasso(context, jiraConnector.getCurrentConfig());
         adapter = new IssuesAdapter(context, issues, authPicasso, new AdapterCallback(), assignedToMe);
-        issuesRecycler.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
         issuesRecycler.setAdapter(adapter);
     }
 

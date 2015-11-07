@@ -72,7 +72,7 @@ public class IssueListActivity extends AppCompatActivity
     @ViewById(R.id.recyclerView)
     RecyclerView navigationRecycler;
     @ViewById
-    View mainLayout;
+    View mainLayout, nothingSelectedInfo;
     @ViewById
     DrawerLayout drawerLayout;
     @FragmentById(R.id.issue_list)
@@ -93,6 +93,7 @@ public class IssueListActivity extends AppCompatActivity
     @Override
     public void onItemSelected(Issue issue, JiraProject jiraProject) {
         if (mTwoPane) {
+            nothingSelectedInfo.setVisibility(View.GONE);
             final IssueDetailFragment fragment = IssueDetailFragment_.builder().issue(issue).build();
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.issue_detail_container, fragment)
@@ -106,6 +107,7 @@ public class IssueListActivity extends AppCompatActivity
     public void onAddNewIssue(JiraProject jiraProject) {
         final String key = jiraProject.getKey();
         if (mTwoPane) {
+            nothingSelectedInfo.setVisibility(View.GONE);
             final NewIssueFragment fragment = NewIssueFragment_.builder().projectKey(key).build();
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.issue_detail_container, fragment)
@@ -119,6 +121,7 @@ public class IssueListActivity extends AppCompatActivity
     public void onEditIssue(Issue issue) {
         final String key = issue.getFields().getProject().getKey();
         if (mTwoPane) {
+            nothingSelectedInfo.setVisibility(View.GONE);
             final NewIssueFragment fragment = NewIssueFragment_.builder().projectKey(key).issue(issue).build();
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.issue_detail_container, fragment)
