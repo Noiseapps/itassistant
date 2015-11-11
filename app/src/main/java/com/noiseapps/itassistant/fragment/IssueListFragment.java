@@ -2,6 +2,7 @@ package com.noiseapps.itassistant.fragment;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -68,18 +69,23 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
         public void onItemSelected(Issue id, JiraProject jiraProject) {
+            Logger.d("DummyItemSelected");
         }
 
         @Override
         public void onAddNewIssue(JiraProject jiraProject) {
+            Logger.d("DummyItemSelected");
         }
 
         @Override
         public void onEditIssue(Issue issue) {
+            Logger.d("DummyItemSelected");
         }
     };
     @Bean
     JiraConnector jiraConnector;
+    @ViewById
+    CoordinatorLayout coordinatorLayout;
     @ViewById
     LinearLayout loadingView, tabView, emptyList, noProject;
     @ViewById
@@ -187,6 +193,9 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     }
 
     private void onProjectsDownloaded(boolean assignedToMe) {
+        if(assignedToMe) {
+            coordinatorLayout.removeView(fabProgressCircle);
+        }
         noProject.setVisibility(View.GONE);
         isEmpty = issues.isEmpty();
         final PagerAdapter adapter = fillAdapter(issues, assignedToMe);

@@ -72,6 +72,7 @@
         android:layout_gravity="bottom|right"
         android:layout_margin="16dp"
         android:clickable="true"
+        app:layout_behavior="com.noiseapps.itassistant.utils.FabHideBehavior"
         android:src="@drawable/ic_add_white_24px"
         app:backgroundTint="@color/colorAccent"
         app:elevation="6dp"/>

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -69,6 +70,8 @@ public class IssueListActivity extends AppCompatActivity
     public static final int DELAY_MILLIS = 2000;
     @ViewById
     Toolbar toolbar;
+    @ViewById
+    CoordinatorLayout coordinatorLayout;
     @ViewById(R.id.recyclerView)
     RecyclerView navigationRecycler;
     @ViewById
@@ -257,7 +260,7 @@ public class IssueListActivity extends AppCompatActivity
 
     private void showInfoAboutFailedAccounts(int failedAccounts) {
         if (failedAccounts > 0) {
-            Snackbar.make(navigationRecycler, getString(R.string.failedToReadAccountData, failedAccounts), Snackbar.LENGTH_LONG).show();
+            Snackbar.make(mainLayout, getString(R.string.failedToReadAccountData, failedAccounts), Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -329,7 +332,7 @@ public class IssueListActivity extends AppCompatActivity
     }
 
     private void showNotImplemented() {
-        Snackbar.make(drawerLayout, R.string.optionUnavailable, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(mainLayout, R.string.optionUnavailable, Snackbar.LENGTH_LONG).show();
     }
 
     @Click(R.id.actionAssignedToMe)

@@ -10,8 +10,8 @@
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
+        android:id="@+id/coordinatorLayout"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
         tools:context=".MainActivity">
 
         <android.support.design.widget.AppBarLayout
@@ -44,6 +44,7 @@
     <android.support.design.widget.NavigationView
         android:id="@+id/view2"
         android:layout_width="320dp"
+        android:paddingTop="25dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@android:color/white">
