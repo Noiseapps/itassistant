@@ -1,6 +1,6 @@
 package com.noiseapps.itassistant;
 
-import android.app.Application;
+import android.support.multidex.MultiDexApplication;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
@@ -25,7 +25,7 @@ import jonathanfinerty.once.Once;
         formUriBasicAuthPassword = "itassistant12"
 )
 @EApplication
-public class AssistantApplication extends Application {
+public class AssistantApplication extends MultiDexApplication {
 
     @Override
     public void onCreate() {

@@ -180,7 +180,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         projectDownloadSubscriber = Observable.zip(jiraConnector.getProjectIssues(projectKey),
                 jiraConnector.getProjectMembers(projectKey),
                 (jiraIssueList, assignees) -> {
-                    IssueListFragment.this.issues = new ArrayList<Issue>(jiraIssueList.getIssues());
+                    IssueListFragment.this.issues = new ArrayList<>(jiraIssueList.getIssues());
                     IssueListFragment.this.assignees = new ArrayList<>(assignees);
                     return null;
                 }).subscribeOn(Schedulers.io()).
@@ -193,9 +193,6 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     }
 
     private void onProjectsDownloaded(boolean assignedToMe) {
-        if(assignedToMe) {
-            coordinatorLayout.removeView(fabProgressCircle);
-        }
         noProject.setVisibility(View.GONE);
         isEmpty = issues.isEmpty();
         final PagerAdapter adapter = fillAdapter(issues, assignedToMe);
