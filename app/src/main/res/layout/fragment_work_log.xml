@@ -27,9 +27,9 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <ProgressBar
+        <me.zhanghai.android.materialprogressbar.MaterialProgressBar
             android:id="@+id/progressBar2"
-            style="?android:attr/progressBarStyleLarge"
+            style="@style/Widget.MaterialProgressBar.ProgressBar.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -60,19 +60,19 @@
 
     <ListView
         android:id="@+id/workLogList"
-        android:divider="@null"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:divider="@null" />
 
     <com.github.jorgecastilloprz.FABProgressCircle
         android:id="@+id/fabProgressCircle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right|end"
-        app:finalIcon="@drawable/ic_done"
-        app:layout_behavior="com.noiseapps.itassistant.utils.FabBehavior"
         app:arcColor="@color/colorPrimary"
         app:arcWidth="4dp"
+        app:finalIcon="@drawable/ic_done"
+        app:layout_behavior="com.noiseapps.itassistant.utils.FabBehavior"
         app:reusable="true">
 
         <android.support.design.widget.FloatingActionButton

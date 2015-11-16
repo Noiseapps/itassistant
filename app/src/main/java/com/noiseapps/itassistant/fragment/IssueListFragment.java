@@ -10,7 +10,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
@@ -19,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.afollestad.materialdialogs.AlertDialogWrapper;
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -260,7 +260,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
 
     @OptionsItem(R.id.actionSort)
     public void sort() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final AlertDialogWrapper.Builder builder = new AlertDialogWrapper.Builder(getActivity());
         builder.setTitle(R.string.selectSort);
         builder.setSingleChoiceItems(sorts, selectedSort, (dialog, which) -> selectedSort = which);
         builder.setPositiveButton(R.string.sort, (dialog, which) -> {
@@ -272,7 +272,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
 
     @OptionsItem(R.id.actionSplitBy)
     public void onSplitSelected() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final AlertDialogWrapper.Builder builder = new AlertDialogWrapper.Builder(getActivity());
         builder.setTitle(R.string.selectSplit);
         builder.setSingleChoiceItems(splits, selectedSort, (dialog, which) -> selectedSort = which);
         builder.setPositiveButton(R.string.sort, (dialog, which) -> {
@@ -355,7 +355,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
 
     @OptionsItem(R.id.actionFilter)
     public void showFilterDialog() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final AlertDialogWrapper.Builder builder = new AlertDialogWrapper.Builder(getActivity());
         builder.setTitle(R.string.selectFilter);
         builder.setMultiChoiceItems(filters, checkedItems, (dialog, which, isChecked) -> {
             checkedItems[which] = isChecked;

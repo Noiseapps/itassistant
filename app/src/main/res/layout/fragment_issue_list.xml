@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinatorLayout"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/tabView"
-        android:visibility="gone"
-        tools:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tabLayout"
@@ -22,13 +22,13 @@
             android:layout_gravity="center_horizontal"
             android:elevation="2dp"
             app:tabMode="scrollable"
-            app:tabTextAppearance="?android:attr/textAppearanceLarge"/>
+            app:tabTextAppearance="?android:attr/textAppearanceLarge" />
 
         <android.support.v4.view.ViewPager
             android:id="@+id/viewPager"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"/>
+            android:layout_gravity="center_horizontal" />
     </LinearLayout>
 
     <LinearLayout
@@ -39,28 +39,28 @@
         android:orientation="vertical"
         android:visibility="gone">
 
-        <ProgressBar
+        <me.zhanghai.android.materialprogressbar.MaterialProgressBar
             android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleLarge"
+            style="@style/Widget.MaterialProgressBar.ProgressBar.Large"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/textView"
-            android:alpha=".5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:alpha=".5"
             android:text="@string/fetchingIssues"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>
+            android:textAppearance="?android:attr/textAppearanceLarge" />
     </LinearLayout>
 
     <LinearLayout
-        android:visibility="gone"
         android:id="@+id/emptyList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"
@@ -69,7 +69,7 @@
             android:drawableTop="@drawable/ic_warning_24dp"
             android:gravity="center"
             android:text="@string/noIssuesForProject"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
     </LinearLayout>
 
@@ -87,7 +87,7 @@
             android:drawableTop="@drawable/ic_error"
             android:gravity="center"
             android:text="@string/noProject"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
     </LinearLayout>
 
@@ -110,6 +110,6 @@
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_add_white_24px"
-            app:layout_anchor="@id/tabView"/>
+            app:layout_anchor="@id/tabView" />
     </com.github.jorgecastilloprz.FABProgressCircle>
 </android.support.design.widget.CoordinatorLayout>

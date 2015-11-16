@@ -1,6 +1,5 @@
 package com.noiseapps.itassistant;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -14,16 +13,14 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.afollestad.materialdialogs.AlertDialogWrapper;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
@@ -58,6 +55,9 @@ import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.greenrobot.event.EventBus;
 import jonathanfinerty.once.Once;
 
@@ -86,10 +86,9 @@ public class IssueListActivity extends AppCompatActivity
     JiraConnector jiraConnector;
     ArrayList<NavigationModel> navigationModels;
     private boolean mTwoPane;
-    private ProgressDialog progressDialog;
+    private MaterialDialog progressDialog;
     private ArrayList<Issue> myIssues;
     private FeedbackDialog feedbackDialog;
-    private Tracker tracker;
     private boolean doubleClicked;
     private Handler handler;
 
@@ -142,7 +141,7 @@ public class IssueListActivity extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tracker = AnalyticsTrackers.getTracker();
+        final Tracker tracker = AnalyticsTrackers.getTracker();
         tracker.setScreenName(getClass().getSimpleName());
         tracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
@@ -180,7 +179,7 @@ public class IssueListActivity extends AppCompatActivity
     }
 
     private void showNoAccountsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialogWrapper.Builder builder = new AlertDialogWrapper.Builder(this);
         builder.setTitle(R.string.noAccounts);
         builder.setMessage(R.string.noAccountsMsg);
         builder.setPositiveButton(R.string.yes, (dialog, which) -> {
@@ -266,12 +265,17 @@ public class IssueListActivity extends AppCompatActivity
 
     @UiThread
     void showProgress() {
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.setTitle(R.string.fetchingData);
-        progressDialog.show();
+        progressDialog = new MaterialDialog.Builder(this).
+        content(R.string.fetchingData).
+        progress(true, 0).cancelable(false).show();
+
+
+//        progressDialog = new ProgressDialog(this);
+//        progressDialog.setIndeterminate(true);
+//        progressDialog.setCancelable(false);
+//        progressDialog.setCanceledOnTouchOutside(false);
+//        progressDialog.setTitle(R.string.fetchingData);
+//        progressDialog.show();
     }
 
     @UiThread
@@ -311,7 +315,7 @@ public class IssueListActivity extends AppCompatActivity
 
     @UiThread
     void showErrorDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialogWrapper.Builder builder = new AlertDialogWrapper.Builder(this);
         builder.setTitle(R.string.errorDownloading).setMessage(R.string.errorDownloadingMsg).
                 setPositiveButton(R.string.retry, (dialog, which) -> {
                     downloadData();

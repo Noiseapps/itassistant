@@ -10,8 +10,8 @@
     android:layout_gravity="center"
     tools:showIn="@layout/fragment_new_issue">
 
-    <ProgressBar
-        style="?android:attr/progressBarStyleLarge"
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+        style="@style/Widget.MaterialProgressBar.ProgressBar.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"/>

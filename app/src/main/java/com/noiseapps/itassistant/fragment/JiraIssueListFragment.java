@@ -1,11 +1,9 @@
 package com.noiseapps.itassistant.fragment;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,9 +11,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.afollestad.materialdialogs.AlertDialogWrapper;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.IssuesAdapter;
 import com.noiseapps.itassistant.connector.JiraConnector;
@@ -23,7 +20,6 @@ import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.issues.Transition;
 import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
-import com.noiseapps.itassistant.utils.DividerItemDecoration;
 import com.noiseapps.itassistant.utils.ToggleList;
 import com.orhanobut.logger.Logger;
 import com.squareup.picasso.Picasso;
@@ -36,6 +32,9 @@ import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit.client.Response;
 
@@ -58,7 +57,7 @@ public class JiraIssueListFragment extends Fragment {
     private IssueListCallback callback;
     private ActionMode actionMode;
     private IssuesAdapter adapter;
-    private ProgressDialog progressDialog;
+    private MaterialDialog progressDialog;
 
     public interface IssueListCallback {
         void onItemSelected(Issue selectedIssue);
@@ -153,13 +152,11 @@ public class JiraIssueListFragment extends Fragment {
             items[i] = transition.getName();
         }
         final int[] successful = {0};
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final AlertDialogWrapper.Builder builder = new AlertDialogWrapper.Builder(getActivity());
         builder.setTitle(R.string.selectTransition);
         builder.setItems(items, (dialog, which) -> {
             showProgress(R.string.changingTransitions);
-            progressDialog.setIndeterminate(false);
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            progressDialog.setMax(issueList.size());
+            progressDialog.setMaxProgress(issueList.size());
             progressDialog.show();
 
             final Transition transition = transitions.get(which);
@@ -191,7 +188,7 @@ public class JiraIssueListFragment extends Fragment {
 
     @UiThread
     void incrementProgress() {
-        progressDialog.incrementProgressBy(1);
+        progressDialog.incrementProgress(1);
     }
 
     @UiThread
@@ -205,10 +202,14 @@ public class JiraIssueListFragment extends Fragment {
     }
 
     private void showProgress(@StringRes int changingTransitions) {
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setTitle(changingTransitions);
-        progressDialog.setCancelable(false);
-        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog = new MaterialDialog.Builder(getActivity()).
+                title(changingTransitions).
+                cancelable(false).
+                progress(false, 0, true).build();
+//        progressDialog = new ProgressDialog(getActivity());
+//        progressDialog.setTitle(changingTransitions);
+//        progressDialog.setCancelable(false);
+//        progressDialog.setCanceledOnTouchOutside(false);
     }
 
     private void showAssigneeDialog(ToggleList<Issue> toggleList) {
@@ -219,13 +220,11 @@ public class JiraIssueListFragment extends Fragment {
             items[i+1] = assignee.getDisplayName();
         }
         final int[] successful = {0};
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final AlertDialogWrapper.Builder builder = new AlertDialogWrapper.Builder(getActivity());
         builder.setTitle(R.string.selectAssignee);
         builder.setItems(items, (dialog, which) -> {
             showProgress(R.string.changingAssignee);
-            progressDialog.setIndeterminate(false);
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            progressDialog.setMax(toggleList.size());
+            progressDialog.setMaxProgress(toggleList.size());
             progressDialog.show();
 
             final Assignee assignee;

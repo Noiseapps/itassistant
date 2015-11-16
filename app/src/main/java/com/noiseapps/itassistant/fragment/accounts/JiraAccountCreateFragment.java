@@ -19,6 +19,7 @@ import android.widget.RelativeLayout;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
@@ -85,7 +86,7 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
     @ViewById
     FloatingActionButton saveFab;
     private Validator validator;
-    private ProgressDialog progressDialog;
+    private MaterialDialog progressDialog;
     private boolean requestCanceled;
     private BaseAccount currentConfig;
     private Bitmap avatarBitmap;
@@ -171,13 +172,21 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
     }
 
     private void showProgress() {
-        progressDialog = new ProgressDialog(getContext());
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(true);
-        progressDialog.setCanceledOnTouchOutside(true);
-        progressDialog.setOnCancelListener(this);
-        progressDialog.setTitle(getString(R.string.validatingForm));
-        progressDialog.show();
+        progressDialog = new MaterialDialog.Builder(getActivity()).
+                title(R.string.validatingForm).
+                progress(true, 0).
+                cancelable(true).
+                cancelListener(this).
+                show();
+
+
+//        progressDialog = new ProgressDialog(getContext());
+//        progressDialog.setIndeterminate(true);
+//        progressDialog.setCancelable(true);
+//        progressDialog.setCanceledOnTouchOutside(true);
+//        progressDialog.setOnCancelListener(this);
+//        progressDialog.setTitle(getString(R.string.validatingForm));
+//        progressDialog.show();
     }
 
     @EditorAction(R.id.password)
