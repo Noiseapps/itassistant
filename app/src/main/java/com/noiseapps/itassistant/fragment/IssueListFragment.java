@@ -19,7 +19,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.afollestad.materialdialogs.AlertDialogWrapper;
-import com.github.jorgecastilloprz.FABProgressCircle;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ArrayListMultimap;
@@ -37,6 +36,7 @@ import com.noiseapps.itassistant.model.jira.issues.Status;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 import com.noiseapps.itassistant.utils.Comparators;
+import com.noiseapps.itassistant.utils.views.MyFabProgressCircle;
 import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
@@ -91,7 +91,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     @ViewById
     ViewPager viewPager;
     @ViewById
-    FABProgressCircle fabProgressCircle;
+    MyFabProgressCircle fabProgressCircle;
     @ViewById
     TabLayout tabLayout;
     @InstanceState
@@ -188,7 +188,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
                 subscribe(o -> onProjectsDownloaded(false), throwable -> {
                     isEmpty = true;
                     noProject.setVisibility(View.GONE);
-                    hideProgress(false);
+                    hideProgress(false, false);
                 }, () -> projectDownloadSubscriber = null);
     }
 
@@ -201,7 +201,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         final PagerAdapter adapter = fillAdapter(issues, assignedToMe);
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
-        hideProgress(false);
+        hideProgress(false, assignedToMe);
         setHasOptionsMenu(true);
     }
 
@@ -226,16 +226,25 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     }
 
     @UiThread
-    void hideProgress(boolean hideActionButton) {
+    void hideProgress(boolean hideActionButton, boolean assignedToMe) {
         loadingView.setVisibility(View.GONE);
-        //todo check if assigned to me
-        fabProgressCircle.setVisibility(hideActionButton ? View.GONE : View.VISIBLE);
+        setFabVisibility(hideActionButton, assignedToMe);
         if (isEmpty) {
             emptyList.setVisibility(View.VISIBLE);
             tabView.setVisibility(View.GONE);
         } else {
             tabView.setVisibility(View.VISIBLE);
             emptyList.setVisibility(View.GONE);
+        }
+    }
+
+    private void setFabVisibility(boolean hideActionButton, boolean assignedToMe) {
+        if(assignedToMe || hideActionButton) {
+            fabProgressCircle.collapse();
+            fabProgressCircle.setVisibility(View.GONE);
+        } else {
+            fabProgressCircle.expand();
+            fabProgressCircle.setVisibility(View.VISIBLE);
         }
     }
 

@@ -39,6 +39,7 @@ import com.noiseapps.itassistant.model.jira.projects.createmeta.Timetracking;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.Versions;
 import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 import com.noiseapps.itassistant.utils.Consts;
+import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -104,7 +105,10 @@ public class NewIssueFragment extends Fragment {
                 jiraConnector.getProjectMembers(projectKey),
                 ZipModel::new).subscribeOn(Schedulers.io()).
                 observeOn(AndroidSchedulers.mainThread()).
-                subscribe(zipModel -> showForm(zipModel.metaModel, zipModel.assignees));
+                subscribe(zipModel -> showForm(zipModel.metaModel, zipModel.assignees), throwable -> {
+                    Logger.e(throwable, throwable.getMessage());
+                    //todo show error view
+                });
     }
 
     @Click(R.id.saveIssueFab)
