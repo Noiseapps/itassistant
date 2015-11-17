@@ -63,7 +63,7 @@
         android:layout_height="match_parent"
         android:divider="@null" />
 
-    <com.github.jorgecastilloprz.FABProgressCircle
+    <com.noiseapps.itassistant.utils.views.MyFabProgressCircle
         android:id="@+id/fabProgressCircle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -82,5 +82,5 @@
             android:layout_margin="@dimen/fabMargin"
             android:elevation="6dp"
             android:src="@drawable/ic_comment_white_24px" />
-    </com.github.jorgecastilloprz.FABProgressCircle>
+    </com.noiseapps.itassistant.utils.views.MyFabProgressCircle>
 </android.support.design.widget.CoordinatorLayout>

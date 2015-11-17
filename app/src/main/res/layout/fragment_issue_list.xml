@@ -92,7 +92,7 @@
     </LinearLayout>
 
 
-    <com.github.jorgecastilloprz.FABProgressCircle
+    <com.noiseapps.itassistant.utils.views.MyFabProgressCircle
         android:id="@+id/fabProgressCircle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -111,5 +111,5 @@
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_add_white_24px"
             app:layout_anchor="@id/tabView" />
-    </com.github.jorgecastilloprz.FABProgressCircle>
+    </com.noiseapps.itassistant.utils.views.MyFabProgressCircle>
 </android.support.design.widget.CoordinatorLayout>

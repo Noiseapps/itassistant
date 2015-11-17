@@ -193,6 +193,9 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     }
 
     private void onProjectsDownloaded(boolean assignedToMe) {
+        if(assignedToMe) {
+            fabProgressCircle.setVisibility(View.GONE);
+        }
         noProject.setVisibility(View.GONE);
         isEmpty = issues.isEmpty();
         final PagerAdapter adapter = fillAdapter(issues, assignedToMe);
@@ -225,6 +228,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     @UiThread
     void hideProgress(boolean hideActionButton) {
         loadingView.setVisibility(View.GONE);
+        //todo check if assigned to me
         fabProgressCircle.setVisibility(hideActionButton ? View.GONE : View.VISIBLE);
         if (isEmpty) {
             emptyList.setVisibility(View.VISIBLE);

@@ -280,7 +280,7 @@ public class IssueListActivity extends AppCompatActivity
 
     @UiThread
     void hideProgress() {
-        if (progressDialog != null) {
+        if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
             progressDialog = null;
         }

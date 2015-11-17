@@ -47,10 +47,10 @@ public class FabBehavior extends CoordinatorLayout.Behavior<MyFabProgressCircle>
                                int dxUnconsumed,
                                int dyUnconsumed) {
         super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
-        if (dyConsumed > 0 && child.getVisibility() == View.VISIBLE) {
-            child.setVisibility(View.INVISIBLE);
-        } else if (dyConsumed < 0 && child.getVisibility() != View.VISIBLE) {
-            child.setVisibility(View.VISIBLE);
+        if (dyConsumed > 0 && !child.isCollapsed()) {
+            child.collapse();
+        } else if (dyConsumed < 0 && child.isCollapsed()) {
+            child.expand();
         }
     }
 }
