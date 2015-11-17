@@ -107,7 +107,7 @@ public class NewIssueFragment extends Fragment {
                 observeOn(AndroidSchedulers.mainThread()).
                 subscribe(zipModel -> showForm(zipModel.metaModel, zipModel.assignees), throwable -> {
                     Logger.e(throwable, throwable.getMessage());
-                    //todo show error view
+                    showError();
                 });
     }
 
@@ -261,15 +261,12 @@ public class NewIssueFragment extends Fragment {
 
     @Click(R.id.estimatedDueDate)
     void onSelectEndDate() {
-        final DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                dateTime.setYear(year);
-                dateTime.setMonthOfYear(monthOfYear + 1);
-                dateTime.setDayOfMonth(dayOfMonth);
-                dateTime.setMillisOfDay(0);
-                estimatedDueDate.setText(dateTime.toString(Consts.DATE_FORMAT));
-            }
+        final DatePickerDialog.OnDateSetListener onDateSetListener = (view, year, monthOfYear, dayOfMonth) -> {
+            dateTime.setYear(year);
+            dateTime.setMonthOfYear(monthOfYear + 1);
+            dateTime.setDayOfMonth(dayOfMonth);
+            dateTime.setMillisOfDay(0);
+            estimatedDueDate.setText(dateTime.toString(Consts.DATE_FORMAT));
         };
         final DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), onDateSetListener, dateTime.getYear(), dateTime.getMonthOfYear() - 1, dateTime.getDayOfMonth());
         datePickerDialog.show();

@@ -42,5 +42,5 @@
             android:elevation="6dp"
             android:src="@drawable/ic_save_white_24px"/>
     </com.noiseapps.itassistant.utils.views.MyFabProgressCircle>
-
+<!--TODO add error view-->
 </android.support.design.widget.CoordinatorLayout>
