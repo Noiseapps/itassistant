@@ -72,4 +72,9 @@ public class AllowedValue {
     public void setSubtask(boolean subtask) {
         this.subtask = subtask;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

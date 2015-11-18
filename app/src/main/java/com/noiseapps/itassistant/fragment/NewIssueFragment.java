@@ -7,9 +7,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -74,11 +77,13 @@ public class NewIssueFragment extends Fragment {
     @ViewById
     TextView estimatedDueDate;
     @ViewById
+    MultiAutoCompleteTextView fixedInVersionSpinner, versionSpinner;
+    @ViewById
     LinearLayout noProjectData, fetchingDataProgress, versionContainer, fixVersionContainer;
     @ViewById
     EditText issueDescription, issueSummary, issueEstimatedWorkLog, issueRemainingWorkLog, issueEnvironment;
     @ViewById
-    Spinner issueTypeSpinner, issuePrioritySpinner, assigneeSpinner, fixedInVersionSpinner, versionSpinner;
+    Spinner issueTypeSpinner, issuePrioritySpinner, assigneeSpinner;
     @ViewById
     FloatingActionButton saveIssueFab;
     @ViewById
@@ -175,16 +180,16 @@ public class NewIssueFragment extends Fragment {
             issueDescription.setError(getString(R.string.fieldRequired));
             valid = false;
         }
-        final AllowedValue selectedVersion = (AllowedValue) versionSpinner.getSelectedItem();
-        final Versions versions = selectedIssueType.getFields().getVersions();
-        if (versions != null && versions.isRequired() && selectedVersion.getId().isEmpty()) {
-            valid = false;
-        }
-        final AllowedValue selectedFixVersion = (AllowedValue) fixedInVersionSpinner.getSelectedItem();
-        final FixVersions fixVersions = selectedIssueType.getFields().getFixVersions();
-        if (fixVersions != null && fixVersions.isRequired() && selectedFixVersion.getId().isEmpty()) {
-            valid = false;
-        }
+//        final AllowedValue selectedVersion = (AllowedValue) versionSpinner.getSelectedItem();
+//        final Versions versions = selectedIssueType.getFields().getVersions();
+//        if (versions != null && versions.isRequired() && selectedVersion.getId().isEmpty()) {
+//            valid = false;
+//        }
+//        final AllowedValue selectedFixVersion = (AllowedValue) fixedInVersionSpinner.getSelectedItem();
+//        final FixVersions fixVersions = selectedIssueType.getFields().getFixVersions();
+//        if (fixVersions != null && fixVersions.isRequired() && selectedFixVersion.getId().isEmpty()) {
+//            valid = false;
+//        }
         final Environment environment = selectedIssueType.getFields().getEnvironment();
         if (environment != null && environment.isRequired() && issueEnvironment.getText().toString().isEmpty()) {
             issueEnvironment.setError(getString(R.string.fieldRequired));
@@ -318,8 +323,14 @@ public class NewIssueFragment extends Fragment {
         setIssueTypeSpinnerSelector(issueTypes, priorityAdapter, versionsAdapter, fixedInVersionAdapter);
 
         issuePrioritySpinner.setAdapter(priorityAdapter);
-        versionSpinner.setAdapter(versionsAdapter);
-        fixedInVersionSpinner.setAdapter(fixedInVersionAdapter);
+        versionSpinner.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        versionSpinner.setThreshold(1);
+        versionSpinner.setAdapter(new ArrayAdapter<>(getActivity(), R.layout.item_spinner_title, R.id.title, allowedVersions));
+
+        fixedInVersionSpinner.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        fixedInVersionSpinner.setThreshold(1);
+        fixedInVersionSpinner.setAdapter(new ArrayAdapter<>(getActivity(), R.layout.item_spinner_title, R.id.title, allowedFixVersions));
+
         assigneeSpinner.setAdapter(assigneeSpinnerAdapter);
         issueTypeSpinner.setAdapter(typeSpinnerAdapter);
         if (allowedVersions.size() == 1) {

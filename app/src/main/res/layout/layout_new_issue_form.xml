@@ -231,7 +231,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             <!-- todo change to mutliautocomplete textview-->
-            <Spinner
+            <MultiAutoCompleteTextView
                 android:id="@+id/versionSpinner"
                 android:layout_width="0dp"
                 android:layout_weight="3"
@@ -258,7 +258,7 @@
 
 
             <!-- todo change to mutliautocomplete textview-->
-            <Spinner
+            <MultiAutoCompleteTextView
                 android:id="@+id/fixedInVersionSpinner"
                 android:layout_width="0dp"
                 android:layout_weight="3"
