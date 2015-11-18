@@ -20,6 +20,7 @@
     <string-array name="issuesFilters">
         <item>Assigned to me</item>
         <item>Reported by me</item>
+        <item>Unreleased</item>
     </string-array>
     <string-array name="issuesSort">
         <item>Default</item>

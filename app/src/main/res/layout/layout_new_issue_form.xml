@@ -230,6 +230,7 @@
                 android:text="@string/issueVersion"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
+            <!-- todo change to mutliautocomplete textview-->
             <Spinner
                 android:id="@+id/versionSpinner"
                 android:layout_width="0dp"
@@ -255,6 +256,8 @@
                 android:text="@string/fixedInVersion"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
+
+            <!-- todo change to mutliautocomplete textview-->
             <Spinner
                 android:id="@+id/fixedInVersionSpinner"
                 android:layout_width="0dp"

@@ -100,10 +100,12 @@ public class Fields implements Parcelable {
     @Expose
     private long aggregatetimespent;
 
-    /**
-     * No args constructor for use in serialization
-     */
-    public Fields() {
+    public List<FixVersion> getFixVersions() {
+        return fixVersions;
+    }
+
+    public void setFixVersions(List<FixVersion> fixVersions) {
+        this.fixVersions = fixVersions;
     }
 
     @Override
@@ -111,7 +113,7 @@ public class Fields implements Parcelable {
         return "Fields{" +
                 "summary='" + summary + '\'' +
                 ", progress=" + progress +
-                ", issuetype=" + issueType +
+                ", issueType=" + issueType +
                 ", timespent=" + timespent +
                 ", reporter=" + reporter +
                 ", updated='" + updated + '\'' +
@@ -125,7 +127,7 @@ public class Fields implements Parcelable {
                 ", workratio=" + workratio +
                 ", project=" + project +
                 ", environment='" + environment + '\'' +
-                ", aggregateprogress=" + aggregateProgress +
+                ", aggregateProgress=" + aggregateProgress +
                 ", components=" + components +
                 ", votes=" + votes +
                 ", resolution=" + resolution +
@@ -137,7 +139,109 @@ public class Fields implements Parcelable {
                 ", aggregatetimeestimate=" + aggregatetimeestimate +
                 ", timeestimate=" + timeestimate +
                 ", aggregatetimespent=" + aggregatetimespent +
+                ", fixVersions=" + fixVersions +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Fields fields = (Fields) o;
+
+        if (timespent != fields.timespent) return false;
+        if (workratio != fields.workratio) return false;
+        if (aggregatetimeoriginalestimate != fields.aggregatetimeoriginalestimate) return false;
+        if (aggregatetimeestimate != fields.aggregatetimeestimate) return false;
+        if (timeestimate != fields.timeestimate) return false;
+        if (aggregatetimespent != fields.aggregatetimespent) return false;
+        if (summary != null ? !summary.equals(fields.summary) : fields.summary != null)
+            return false;
+        if (progress != null ? !progress.equals(fields.progress) : fields.progress != null)
+            return false;
+        if (issueType != null ? !issueType.equals(fields.issueType) : fields.issueType != null)
+            return false;
+        if (reporter != null ? !reporter.equals(fields.reporter) : fields.reporter != null)
+            return false;
+        if (updated != null ? !updated.equals(fields.updated) : fields.updated != null)
+            return false;
+        if (created != null ? !created.equals(fields.created) : fields.created != null)
+            return false;
+        if (priority != null ? !priority.equals(fields.priority) : fields.priority != null)
+            return false;
+        if (description != null ? !description.equals(fields.description) : fields.description != null)
+            return false;
+        if (issuelinks != null ? !issuelinks.equals(fields.issuelinks) : fields.issuelinks != null)
+            return false;
+        if (status != null ? !status.equals(fields.status) : fields.status != null) return false;
+        if (labels != null ? !labels.equals(fields.labels) : fields.labels != null) return false;
+        if (parent != null ? !parent.equals(fields.parent) : fields.parent != null) return false;
+        if (project != null ? !project.equals(fields.project) : fields.project != null)
+            return false;
+        if (environment != null ? !environment.equals(fields.environment) : fields.environment != null)
+            return false;
+        if (aggregateProgress != null ? !aggregateProgress.equals(fields.aggregateProgress) : fields.aggregateProgress != null)
+            return false;
+        if (components != null ? !components.equals(fields.components) : fields.components != null)
+            return false;
+        if (votes != null ? !votes.equals(fields.votes) : fields.votes != null) return false;
+        if (resolution != null ? !resolution.equals(fields.resolution) : fields.resolution != null)
+            return false;
+        if (resolutiondate != null ? !resolutiondate.equals(fields.resolutiondate) : fields.resolutiondate != null)
+            return false;
+        if (duedate != null ? !duedate.equals(fields.duedate) : fields.duedate != null)
+            return false;
+        if (watches != null ? !watches.equals(fields.watches) : fields.watches != null)
+            return false;
+        if (assignee != null ? !assignee.equals(fields.assignee) : fields.assignee != null)
+            return false;
+        if (fixVersions != null ? !fixVersions.equals(fields.fixVersions) : fields.fixVersions != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = summary != null ? summary.hashCode() : 0;
+        result = 31 * result + (progress != null ? progress.hashCode() : 0);
+        result = 31 * result + (issueType != null ? issueType.hashCode() : 0);
+        result = 31 * result + (int) (timespent ^ (timespent >>> 32));
+        result = 31 * result + (reporter != null ? reporter.hashCode() : 0);
+        result = 31 * result + (updated != null ? updated.hashCode() : 0);
+        result = 31 * result + (created != null ? created.hashCode() : 0);
+        result = 31 * result + (priority != null ? priority.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (issuelinks != null ? issuelinks.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + (labels != null ? labels.hashCode() : 0);
+        result = 31 * result + (parent != null ? parent.hashCode() : 0);
+        result = 31 * result + (int) (workratio ^ (workratio >>> 32));
+        result = 31 * result + (project != null ? project.hashCode() : 0);
+        result = 31 * result + (environment != null ? environment.hashCode() : 0);
+        result = 31 * result + (aggregateProgress != null ? aggregateProgress.hashCode() : 0);
+        result = 31 * result + (components != null ? components.hashCode() : 0);
+        result = 31 * result + (votes != null ? votes.hashCode() : 0);
+        result = 31 * result + (resolution != null ? resolution.hashCode() : 0);
+        result = 31 * result + (resolutiondate != null ? resolutiondate.hashCode() : 0);
+        result = 31 * result + (int) (aggregatetimeoriginalestimate ^ (aggregatetimeoriginalestimate >>> 32));
+        result = 31 * result + (duedate != null ? duedate.hashCode() : 0);
+        result = 31 * result + (watches != null ? watches.hashCode() : 0);
+        result = 31 * result + (assignee != null ? assignee.hashCode() : 0);
+        result = 31 * result + (int) (aggregatetimeestimate ^ (aggregatetimeestimate >>> 32));
+        result = 31 * result + (int) (timeestimate ^ (timeestimate >>> 32));
+        result = 31 * result + (int) (aggregatetimespent ^ (aggregatetimespent >>> 32));
+        result = 31 * result + (fixVersions != null ? fixVersions.hashCode() : 0);
+        return result;
+    }
+
+    private List<FixVersion> fixVersions = new ArrayList<FixVersion>();
+
+    /**
+     * No args constructor for use in serialization
+     */
+    public Fields() {
     }
 
     public String getSummary() {
@@ -369,96 +473,6 @@ public class Fields implements Parcelable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Fields fields = (Fields) o;
-
-        if (timespent != fields.timespent) return false;
-        if (workratio != fields.workratio) return false;
-        if (aggregatetimeoriginalestimate != fields.aggregatetimeoriginalestimate) return false;
-        if (aggregatetimeestimate != fields.aggregatetimeestimate) return false;
-        if (timeestimate != fields.timeestimate) return false;
-        if (aggregatetimespent != fields.aggregatetimespent) return false;
-        if (summary != null ? !summary.equals(fields.summary) : fields.summary != null)
-            return false;
-        if (progress != null ? !progress.equals(fields.progress) : fields.progress != null)
-            return false;
-        if (issueType != null ? !issueType.equals(fields.issueType) : fields.issueType != null)
-            return false;
-        if (reporter != null ? !reporter.equals(fields.reporter) : fields.reporter != null)
-            return false;
-        if (updated != null ? !updated.equals(fields.updated) : fields.updated != null)
-            return false;
-        if (created != null ? !created.equals(fields.created) : fields.created != null)
-            return false;
-        if (priority != null ? !priority.equals(fields.priority) : fields.priority != null)
-            return false;
-        if (description != null ? !description.equals(fields.description) : fields.description != null)
-            return false;
-        if (issuelinks != null ? !issuelinks.equals(fields.issuelinks) : fields.issuelinks != null)
-            return false;
-        if (status != null ? !status.equals(fields.status) : fields.status != null) return false;
-        if (labels != null ? !labels.equals(fields.labels) : fields.labels != null) return false;
-        if (parent != null ? !parent.equals(fields.parent) : fields.parent != null) return false;
-        if (project != null ? !project.equals(fields.project) : fields.project != null)
-            return false;
-        if (environment != null ? !environment.equals(fields.environment) : fields.environment != null)
-            return false;
-        if (aggregateProgress != null ? !aggregateProgress.equals(fields.aggregateProgress) : fields.aggregateProgress != null)
-            return false;
-        if (components != null ? !components.equals(fields.components) : fields.components != null)
-            return false;
-        if (votes != null ? !votes.equals(fields.votes) : fields.votes != null) return false;
-        if (resolution != null ? !resolution.equals(fields.resolution) : fields.resolution != null)
-            return false;
-        if (resolutiondate != null ? !resolutiondate.equals(fields.resolutiondate) : fields.resolutiondate != null)
-            return false;
-        if (duedate != null ? !duedate.equals(fields.duedate) : fields.duedate != null)
-            return false;
-        if (watches != null ? !watches.equals(fields.watches) : fields.watches != null)
-            return false;
-        if (assignee != null ? !assignee.equals(fields.assignee) : fields.assignee != null)
-            return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = summary != null ? summary.hashCode() : 0;
-        result = 31 * result + (progress != null ? progress.hashCode() : 0);
-        result = 31 * result + (issueType != null ? issueType.hashCode() : 0);
-        result = 31 * result + (int) (timespent ^ (timespent >>> 32));
-        result = 31 * result + (reporter != null ? reporter.hashCode() : 0);
-        result = 31 * result + (updated != null ? updated.hashCode() : 0);
-        result = 31 * result + (created != null ? created.hashCode() : 0);
-        result = 31 * result + (priority != null ? priority.hashCode() : 0);
-        result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (issuelinks != null ? issuelinks.hashCode() : 0);
-        result = 31 * result + (status != null ? status.hashCode() : 0);
-        result = 31 * result + (labels != null ? labels.hashCode() : 0);
-        result = 31 * result + (parent != null ? parent.hashCode() : 0);
-        result = 31 * result + (int) (workratio ^ (workratio >>> 32));
-        result = 31 * result + (project != null ? project.hashCode() : 0);
-        result = 31 * result + (environment != null ? environment.hashCode() : 0);
-        result = 31 * result + (aggregateProgress != null ? aggregateProgress.hashCode() : 0);
-        result = 31 * result + (components != null ? components.hashCode() : 0);
-        result = 31 * result + (votes != null ? votes.hashCode() : 0);
-        result = 31 * result + (resolution != null ? resolution.hashCode() : 0);
-        result = 31 * result + (resolutiondate != null ? resolutiondate.hashCode() : 0);
-        result = 31 * result + (int) (aggregatetimeoriginalestimate ^ (aggregatetimeoriginalestimate >>> 32));
-        result = 31 * result + (duedate != null ? duedate.hashCode() : 0);
-        result = 31 * result + (watches != null ? watches.hashCode() : 0);
-        result = 31 * result + (assignee != null ? assignee.hashCode() : 0);
-        result = 31 * result + (int) (aggregatetimeestimate ^ (aggregatetimeestimate >>> 32));
-        result = 31 * result + (int) (timeestimate ^ (timeestimate >>> 32));
-        result = 31 * result + (int) (aggregatetimespent ^ (aggregatetimespent >>> 32));
-        return result;
-    }
-
-    @Override
     public int describeContents() {
         return 0;
     }
@@ -483,6 +497,7 @@ public class Fields implements Parcelable {
         dest.writeString(this.environment);
         dest.writeParcelable(this.aggregateProgress, 0);
         dest.writeTypedList(components);
+        dest.writeTypedList(fixVersions);
         dest.writeParcelable(this.votes, 0);
         dest.writeParcelable(this.resolution, 0);
         dest.writeString(this.resolutiondate);
@@ -514,6 +529,7 @@ public class Fields implements Parcelable {
         this.environment = in.readString();
         this.aggregateProgress = in.readParcelable(AggregateProgress.class.getClassLoader());
         this.components = in.createTypedArrayList(Component.CREATOR);
+        this.fixVersions = in.createTypedArrayList(FixVersion.CREATOR);
         this.votes = in.readParcelable(Votes.class.getClassLoader());
         this.resolution = in.readParcelable(Resolution.class.getClassLoader());
         this.resolutiondate = in.readString();

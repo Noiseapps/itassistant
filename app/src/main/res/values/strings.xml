@@ -108,7 +108,7 @@
     <string name="fieldRequired">This field is required</string>
     <string name="refresh">Refresh</string>
     <string name="noProject">No project selected</string>
-    <string name="yourAccountName">Your account name</string>
+    <string name="yourAccountName">Your account name e.g. My work JIRA</string>
     <string name="issueMoreInfo">More actions…</string>
     <string name="selectTransition">Transition to…</string>
     <string name="statusChanged">Issue status changed</string>

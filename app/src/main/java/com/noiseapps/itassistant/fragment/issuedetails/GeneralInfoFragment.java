@@ -18,10 +18,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.joda.time.DateTime;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 @EFragment(R.layout.fragment_general_info)
 public class GeneralInfoFragment extends Fragment {
     @ViewById
-    TextView type, priority, labels, status, issueName, assignee, reporter, description, created, modified;
+    TextView type, priority, labels, fixedInVersion, status, issueName, assignee, reporter, description, created, modified;
     @ViewById
     TextRoundCornerProgressBar estimated, left, logged;
     @FragmentArg
@@ -42,6 +45,7 @@ public class GeneralInfoFragment extends Fragment {
         status.setText(issueFields.getStatus().getName());
         labels.setText(StringUtils.join(issueFields.getLabels(), ", "));
         issueName.setText(String.format("%s (%s)", issueFields.getSummary(), issue.getKey()));
+        fixedInVersion.setText(StringUtils.join(issueFields.getFixVersions(), ", "));
 //        issueName.setSelected(true);
         description.setText(issueFields.getDescription());
     }

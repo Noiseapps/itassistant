@@ -10,6 +10,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.afollestad.materialdialogs.AlertDialogWrapper;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ArrayListMultimap;
@@ -30,6 +32,7 @@ import com.noiseapps.itassistant.connector.JiraConnector;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.Fields;
+import com.noiseapps.itassistant.model.jira.issues.FixVersion;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.issues.Project;
 import com.noiseapps.itassistant.model.jira.issues.Status;
@@ -203,6 +206,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         tabLayout.setupWithViewPager(viewPager);
         hideProgress(false, assignedToMe);
         setHasOptionsMenu(true);
+        handleFilterSelected();
     }
 
     private PagerAdapter fillAdapter(List<Issue> jiraIssueList, boolean assignedToMe) {
@@ -368,7 +372,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
 
     @OptionsItem(R.id.actionFilter)
     public void showFilterDialog() {
-        final AlertDialogWrapper.Builder builder = new AlertDialogWrapper.Builder(getActivity());
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.selectFilter);
         builder.setMultiChoiceItems(filters, checkedItems, (dialog, which, isChecked) -> {
             checkedItems[which] = isChecked;
@@ -389,13 +393,14 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     }
 
     private void handleFilterSelected() {
-        if (!checkedItems[0] && !checkedItems[1]) {
+        if (!checkedItems[0] && !checkedItems[1] && !checkedItems[2]) {
             onListFiltered(issues);
             return;
         }
         final Predicate<Issue> assigneeFilter = new AssignedToMeFilter(checkedItems[0]);
         final Predicate<Issue> reporterFilter = new ReportedByMeFilter(checkedItems[1]);
-        final Predicate<Issue> filterQuery = Predicates.or(assigneeFilter, reporterFilter);
+        final Predicate<Issue> unreleasedFilter = new UnreleasedFilter(checkedItems[2]);
+        final Predicate<Issue> filterQuery = Predicates.or(assigneeFilter, reporterFilter, unreleasedFilter);
         final Iterable<Issue> filteredIssues = Iterables.filter(issues, filterQuery);
         final ArrayList<Issue> filteredList = Lists.newArrayList(filteredIssues);
         onListFiltered(filteredList);
@@ -461,6 +466,24 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
             final boolean result = assignee != null && baseAccount.getUsername().equalsIgnoreCase(assignee.getName());
             Logger.d(input.getKey() + ", " + result);
             return result;
+        }
+    }
+
+    private class UnreleasedFilter implements Predicate<Issue> {
+
+        private final boolean active;
+
+        private UnreleasedFilter(boolean active) {
+            this.active = active;
+        }
+
+        @Override
+        public boolean apply(Issue input) {
+            if (!active) {
+                return false;
+            }
+            final List<FixVersion> fixVersions = input.getFields().getFixVersions();
+            return fixVersions.isEmpty();
         }
     }
 

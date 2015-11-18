@@ -198,13 +198,13 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
 
     @Override
     public void onValidationSucceeded() {
-        String host = this.host.getText().toString();
+        String host = this.host.getText().toString().trim();
         if (!StringUtils.validUrl(host)) {
             host = "http://" + host;
         }
-        final String accountName = this.accountName.getText().toString();
-        final String username = this.username.getText().toString();
-        final String password = this.password.getText().toString();
+        final String accountName = this.accountName.getText().toString().trim();
+        final String username = this.username.getText().toString().trim();
+        final String password = this.password.getText().toString().trim();
         progressDialog.setTitle(getString(R.string.loggingIn));
         int id = getAccountId();
         currentConfig = new BaseAccount(id, username, accountName, password, host, "", AccountTypes.ACC_JIRA);
