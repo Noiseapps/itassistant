@@ -1,6 +1,8 @@
 package com.noiseapps.itassistant.model.jira.projects.createissue;
 
 
+import java.util.List;
+
 @SuppressWarnings("unused, FieldCanBeLocal")
 public class CreateIssueModel {
 
@@ -19,6 +21,17 @@ public class CreateIssueModel {
         private String description;
         private String environment;
         private String duedate;
+        private List<IdField> versions;
+
+        public void setFixVersions(List<IdField> fixVersions) {
+            this.fixVersions = fixVersions;
+        }
+
+        public void setVersions(List<IdField> versions) {
+            this.versions = versions;
+        }
+
+        private List<IdField> fixVersions;
         private Timetracking timetracking;
 
         public void setTimetracking(Timetracking timetracking) {

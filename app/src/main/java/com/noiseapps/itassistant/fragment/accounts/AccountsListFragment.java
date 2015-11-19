@@ -103,13 +103,9 @@ public class AccountsListFragment extends Fragment {
         recyclerViewSwipeManager = new RecyclerViewSwipeManager();
         wrappedAdapter = recyclerViewSwipeManager.createWrappedAdapter(listAdapter);
 
-//        final GeneralItemAnimator animator = new SwipeDismissItemAnimator();
-//        animator.setSupportsChangeAnimations(false);
-
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
         recyclerView.setAdapter(wrappedAdapter);
-//        recyclerView.setItemAnimator(animator);
         recyclerViewTouchActionGuardManager.attachRecyclerView(recyclerView);
         recyclerViewSwipeManager.attachRecyclerView(recyclerView);
     }

@@ -5,16 +5,17 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.noiseapps.itassistant.R;
@@ -42,6 +43,7 @@ import com.noiseapps.itassistant.model.jira.projects.createmeta.Timetracking;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.Versions;
 import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 import com.noiseapps.itassistant.utils.Consts;
+import com.noiseapps.itassistant.utils.ToggleList;
 import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
@@ -50,11 +52,8 @@ import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.MutableDateTime;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -77,11 +76,9 @@ public class NewIssueFragment extends Fragment {
     @ViewById
     TextView estimatedDueDate;
     @ViewById
-    MultiAutoCompleteTextView fixedInVersionSpinner, versionSpinner;
-    @ViewById
     LinearLayout noProjectData, fetchingDataProgress, versionContainer, fixVersionContainer;
     @ViewById
-    EditText issueDescription, issueSummary, issueEstimatedWorkLog, issueRemainingWorkLog, issueEnvironment;
+    EditText issueDescription, issueSummary, issueEstimatedWorkLog, issueRemainingWorkLog, issueEnvironment,  fixedInVersionSpinner, versionSpinner;
     @ViewById
     Spinner issueTypeSpinner, issuePrioritySpinner, assigneeSpinner;
     @ViewById
@@ -94,6 +91,8 @@ public class NewIssueFragment extends Fragment {
     private NewIssueCallbacks callbacks;
     private IssueType selectedIssueType;
     private MutableDateTime dateTime = new MutableDateTime();
+    private boolean[] selectedVersions, selectedFixVersions;
+    private ToggleList<AllowedValue> selectedVersionsIds = new ToggleList<>(), selectedFixVersionsIds = new ToggleList<>();
 
     @AfterViews
     void init() {
@@ -137,7 +136,7 @@ public class NewIssueFragment extends Fragment {
             public void success(CreateIssueResponse createIssueResponse, Response response) {
                 fabProgressCircle.beginFinalAnimation();
                 Snackbar.make(fabProgressCircle, R.string.issueAdded, Snackbar.LENGTH_LONG).show();
-//                callbacks.onIssueCreated();
+                callbacks.onIssueCreated();
                 //TODO show issue details if in two pane
             }
 
@@ -231,6 +230,7 @@ public class NewIssueFragment extends Fragment {
         fields.setIssuetype(new IdField(selectedType.getId()));
         fields.setSummary(issueSummary.getText().toString());
         fields.setDescription(issueDescription.getText().toString());
+        setVersions(fields);
 
         final Duedate duedate = selectedIssueType.getFields().getDuedate();
         final String dueDateString = estimatedDueDate.getText().toString();
@@ -243,6 +243,20 @@ public class NewIssueFragment extends Fragment {
             fields.setTimetracking(new CreateIssueModel.Timetracking(issueEstimatedWorkLog.getText().toString(), issueRemainingWorkLog.getText().toString()));
         }
         return fields;
+    }
+
+    private void setVersions(CreateIssueModel.Fields fields) {
+        final ArrayList<IdField> versions = new ArrayList<>();
+        for (AllowedValue value : selectedVersionsIds) {
+            versions.add(new IdField(value.getId()));
+        }
+        final ArrayList<IdField> fixVersions = new ArrayList<>();
+        for (AllowedValue value : selectedFixVersionsIds) {
+            fixVersions.add(new IdField(value.getId()));
+        }
+
+        fields.setVersions(versions);
+        fields.setFixVersions(fixVersions);
     }
 
     public boolean validateWorkLog(String workLog) {
@@ -282,8 +296,6 @@ public class NewIssueFragment extends Fragment {
         issueDescription.setText(issue.getFields().getDescription());
         estimatedDueDate.setText(issue.getFields().getDuedate());
         issueEnvironment.setText(issue.getFields().getEnvironment());
-        // TODO
-//        issueTypeSpinner.setSelection(issueTypeSpinner.getAdapter()..getPosition(issue.getFields().getIssueType()));
     }
 
     private void fillForm(CreateMetaModel createMetaModel, List<Assignee> assignees) {
@@ -323,13 +335,7 @@ public class NewIssueFragment extends Fragment {
         setIssueTypeSpinnerSelector(issueTypes, priorityAdapter, versionsAdapter, fixedInVersionAdapter);
 
         issuePrioritySpinner.setAdapter(priorityAdapter);
-        versionSpinner.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
-        versionSpinner.setThreshold(1);
-        versionSpinner.setAdapter(new ArrayAdapter<>(getActivity(), R.layout.item_spinner_title, R.id.title, allowedVersions));
-
-        fixedInVersionSpinner.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
-        fixedInVersionSpinner.setThreshold(1);
-        fixedInVersionSpinner.setAdapter(new ArrayAdapter<>(getActivity(), R.layout.item_spinner_title, R.id.title, allowedFixVersions));
+        setVersionData(allowedVersions, allowedFixVersions);
 
         assigneeSpinner.setAdapter(assigneeSpinnerAdapter);
         issueTypeSpinner.setAdapter(typeSpinnerAdapter);
@@ -339,6 +345,52 @@ public class NewIssueFragment extends Fragment {
         if (allowedFixVersions.size() == 1) {
             versionContainer.setVisibility(View.GONE);
         }
+    }
+
+    private void setVersionData(List<AllowedValue> allowedVersions, List<AllowedValue> allowedFixVersions) {
+        final String[] versions = new String[allowedVersions.size()];
+        final String[] fixVersions = new String[allowedVersions.size()];
+        selectedVersionsIds = new ToggleList<>();
+        selectedFixVersionsIds = new ToggleList<>();
+        selectedVersions = new boolean[allowedVersions.size()];
+        selectedFixVersions = new boolean[allowedVersions.size()];
+
+        for (int i = 0; i < allowedVersions.size(); i++) {
+            AllowedValue value = allowedVersions.get(i);
+            versions[i] = value.getName();
+        }
+        for (int i = 0; i < allowedFixVersions.size(); i++) {
+            AllowedValue value = allowedVersions.get(i);
+            fixVersions[i] = value.getName();
+        }
+
+        versionSpinner.setOnClickListener(v -> {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(R.string.issueVersion);
+            builder.setMultiChoiceItems(versions, selectedVersions, (dialog, which, isChecked) -> {
+                selectedVersions[which] = isChecked;
+                selectedVersionsIds.toggle(allowedVersions.get(which));
+            });
+            builder.setPositiveButton(R.string.ok, (dialog, which) -> {
+                versionSpinner.setText(StringUtils.join(selectedVersionsIds, ", "));
+                dialog.dismiss();
+            });
+            builder.show();
+        });
+
+        fixedInVersionSpinner.setOnClickListener(v -> {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(R.string.issueVersion);
+            builder.setMultiChoiceItems(fixVersions, selectedFixVersions, (dialog, which, isChecked) -> {
+                selectedFixVersions[which] = isChecked;
+                selectedFixVersionsIds.toggle(allowedFixVersions.get(which));
+            });
+            builder.setPositiveButton(R.string.ok, (dialog, which) -> {
+                fixedInVersionSpinner.setText(StringUtils.join(selectedFixVersionsIds, ", "));
+                dialog.dismiss();
+            });
+            builder.show();
+        });
     }
 
     private List<AllowedValue> getVersions(Fields fields) {

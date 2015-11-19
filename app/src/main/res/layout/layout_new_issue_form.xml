@@ -230,11 +230,13 @@
                 android:text="@string/issueVersion"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
-            <!-- todo change to mutliautocomplete textview-->
-            <MultiAutoCompleteTextView
+            <EditText
                 android:id="@+id/versionSpinner"
                 android:layout_width="0dp"
                 android:layout_weight="3"
+                android:inputType="none"
+                android:focusable="false"
+                android:hint="@string/issueVersion"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"/>
         </LinearLayout>
@@ -256,61 +258,12 @@
                 android:text="@string/fixedInVersion"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
-
-            <!-- todo change to mutliautocomplete textview-->
-            <MultiAutoCompleteTextView
+            <EditText
                 android:id="@+id/fixedInVersionSpinner"
                 android:layout_width="0dp"
-                android:layout_weight="3"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:weightSum="5"
-            android:visibility="gone"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="8dp">
-
-            <TextView
-                style="@style/AppTheme.LabelTheme"
-                android:layout_width="0dp"
-                android:layout_weight="2"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:text="@string/issueEpicLink"
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-            <Spinner
-                android:id="@+id/epicLinkSpinner"
-                android:layout_width="0dp"
-                android:layout_weight="3"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:weightSum="5"
-            android:visibility="gone"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="8dp">
-
-            <TextView
-                style="@style/AppTheme.LabelTheme"
-                android:layout_width="0dp"
-                android:layout_weight="2"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:text="@string/issueSprint"
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-            <Spinner
-                android:id="@+id/sprintSpinner"
-                android:layout_width="0dp"
+                android:hint="@string/fixedInVersion"
+                android:inputType="none"
+                android:focusable="false"
                 android:layout_weight="3"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"/>
