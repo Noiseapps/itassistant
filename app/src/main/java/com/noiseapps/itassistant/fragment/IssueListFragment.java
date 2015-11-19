@@ -19,8 +19,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.afollestad.materialdialogs.AlertDialogWrapper;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ArrayListMultimap;
@@ -52,13 +58,6 @@ import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import rx.Observable;
 import rx.Subscription;
@@ -400,7 +399,8 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         final Predicate<Issue> assigneeFilter = new AssignedToMeFilter(checkedItems[0]);
         final Predicate<Issue> reporterFilter = new ReportedByMeFilter(checkedItems[1]);
         final Predicate<Issue> unreleasedFilter = new UnreleasedFilter(checkedItems[2]);
-        final Predicate<Issue> filterQuery = Predicates.or(assigneeFilter, reporterFilter, unreleasedFilter);
+        //noinspection unchecked
+        final Predicate<Issue> filterQuery = Predicates.and(assigneeFilter, reporterFilter, unreleasedFilter);
         final Iterable<Issue> filteredIssues = Iterables.filter(issues, filterQuery);
         final ArrayList<Issue> filteredList = Lists.newArrayList(filteredIssues);
         onListFiltered(filteredList);
@@ -423,10 +423,6 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         setToolbarTitle(getString(R.string.myIssues));
         onProjectsDownloaded(true);
         getActivity().invalidateOptionsMenu();
-//        final PagerAdapter pagerAdapter = fillAdapter(myIssues, true);
-//        viewPager.setAdapter(pagerAdapter);
-//        tabLayout.setupWithViewPager(viewPager);
-//        hideProgress(true);
     }
 
     private void setToolbarTitle(String title) {
@@ -460,12 +456,10 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         @Override
         public boolean apply(Issue input) {
             if (!active) {
-                return false;
+                return true;
             }
             final Assignee assignee = input.getFields().getAssignee();
-            final boolean result = assignee != null && baseAccount.getUsername().equalsIgnoreCase(assignee.getName());
-            Logger.d(input.getKey() + ", " + result);
-            return result;
+            return assignee != null && baseAccount.getUsername().equalsIgnoreCase(assignee.getName());
         }
     }
 
@@ -480,7 +474,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         @Override
         public boolean apply(Issue input) {
             if (!active) {
-                return false;
+                return true;
             }
             final List<FixVersion> fixVersions = input.getFields().getFixVersions();
             return fixVersions.isEmpty();
@@ -497,9 +491,12 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
 
         @Override
         public boolean apply(Issue input) {
+            if(!active) {
+                return true;
+            }
             final String username = baseAccount.getUsername();
             final String reporter = input.getFields().getReporter().getName();
-            final boolean result = active && username.equalsIgnoreCase(reporter);
+            final boolean result = username.equalsIgnoreCase(reporter);
             Logger.d(String.valueOf(result));
             return result;
         }

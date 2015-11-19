@@ -13,8 +13,6 @@ import java.util.List;
 import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractExpandableItemAdapter;
 import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractExpandableItemViewHolder;
 import com.noiseapps.itassistant.R;
-import com.noiseapps.itassistant.database.dao.AccountsDao;
-import com.noiseapps.itassistant.database.dao.AccountsDao_;
 import com.noiseapps.itassistant.model.NavigationModel;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
@@ -29,14 +27,12 @@ public class NavigationMenuAdapter extends AbstractExpandableItemAdapter<Navigat
     private final Context context;
     private List<NavigationModel> navigationModels;
     private final AdapterCallbacks callbacks;
-    private final AccountsDao accountsDao;
     private final LayoutInflater layoutInflater;
 
     public NavigationMenuAdapter(Context context, List<NavigationModel> navigationModels, AdapterCallbacks callbacks) {
         this.context = context;
         this.navigationModels = navigationModels;
         this.callbacks = callbacks;
-        accountsDao = AccountsDao_.getInstance_(context);
         layoutInflater = LayoutInflater.from(context);
         setHasStableIds(true);
     }

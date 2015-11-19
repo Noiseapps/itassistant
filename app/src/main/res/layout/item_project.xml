@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="horizontal"
-              android:elevation="2dp"
               android:padding="8dp"
               android:background="@drawable/list_background"
               android:layout_width="match_parent"

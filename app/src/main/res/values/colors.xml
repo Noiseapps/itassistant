@@ -11,7 +11,7 @@
     <color name="colorDivider">#B6B6B6</color>
 
     <color name="textLabel">#666666</color>
-    <color name="groupHeaderBackground">#E0F7FA</color>
+    <color name="groupHeaderBackground">#FFFDE7</color>
     <color name="listItemHighlight">#E0E0E0</color>
     <color name="listItemBackground">#ffffff</color>
     <color name="listItemBackgroundHighlight">#cccccc</color>
