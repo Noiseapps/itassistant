@@ -296,6 +296,7 @@ public class NewIssueFragment extends Fragment {
         issueDescription.setText(issue.getFields().getDescription());
         estimatedDueDate.setText(issue.getFields().getDuedate());
         issueEnvironment.setText(issue.getFields().getEnvironment());
+        // TODO spinnery i wersje
     }
 
     private void fillForm(CreateMetaModel createMetaModel, List<Assignee> assignees) {
