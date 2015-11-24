@@ -46,6 +46,16 @@ public class AllowedValuesAdapter extends BaseAdapter {
         return position;
     }
 
+    public int getPositionForValue(String value) {
+        for (int i = 0; i < allowedValues.size(); i++) {
+            final AllowedValue item = allowedValues.get(i);
+            if (item.getName().equalsIgnoreCase(value)) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;

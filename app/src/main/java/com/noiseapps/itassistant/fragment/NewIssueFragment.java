@@ -8,8 +8,10 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -76,9 +78,11 @@ public class NewIssueFragment extends Fragment {
     @ViewById
     TextView estimatedDueDate;
     @ViewById
+    MultiAutoCompleteTextView fixedInVersionEditText, versionEditText;
+    @ViewById
     LinearLayout noProjectData, fetchingDataProgress, versionContainer, fixVersionContainer;
     @ViewById
-    EditText issueDescription, issueSummary, issueEstimatedWorkLog, issueRemainingWorkLog, issueEnvironment,  fixedInVersionSpinner, versionSpinner;
+    EditText issueDescription, issueSummary, issueEstimatedWorkLog, issueRemainingWorkLog, issueEnvironment;
     @ViewById
     Spinner issueTypeSpinner, issuePrioritySpinner, assigneeSpinner;
     @ViewById
@@ -135,8 +139,8 @@ public class NewIssueFragment extends Fragment {
             @Override
             public void success(CreateIssueResponse createIssueResponse, Response response) {
                 fabProgressCircle.beginFinalAnimation();
-                Snackbar.make(fabProgressCircle, R.string.issueAdded, Snackbar.LENGTH_LONG).show();
-                callbacks.onIssueCreated();
+                Snackbar.make(fabProgressCircle, R.string.issueUpdated, Snackbar.LENGTH_LONG).show();
+//                callbacks.onIssueCreated();
                 //TODO show issue details if in two pane
             }
 
@@ -220,7 +224,6 @@ public class NewIssueFragment extends Fragment {
 
     private CreateIssueModel.Fields getFields() {
         final CreateIssueModel.Fields fields = new CreateIssueModel.Fields();
-
         final Assignee selectedAssignee = (Assignee) assigneeSpinner.getSelectedItem();
         fields.setAssignee(new NameField(selectedAssignee.getName()));
         fields.setProject(new KeyField(projectKey));
@@ -274,7 +277,7 @@ public class NewIssueFragment extends Fragment {
         fillForm(createMetaModel, assignees);
 
         if (issue != null) {
-            initValues();
+            initValues(createMetaModel,assignees);
         }
     }
 
@@ -291,11 +294,33 @@ public class NewIssueFragment extends Fragment {
         datePickerDialog.show();
     }
 
-    private void initValues() {
-        issueSummary.setText(issue.getFields().getSummary());
-        issueDescription.setText(issue.getFields().getDescription());
-        estimatedDueDate.setText(issue.getFields().getDuedate());
-        issueEnvironment.setText(issue.getFields().getEnvironment());
+    private void initValues(CreateMetaModel createMetaModel, List<Assignee> assignees) {
+        final com.noiseapps.itassistant.model.jira.issues.Fields fields = issue.getFields();
+        issueSummary.setText(fields.getSummary());
+        issueDescription.setText(fields.getDescription());
+        estimatedDueDate.setText(fields.getDuedate());
+        issueEnvironment.setText(fields.getEnvironment());
+        setSpinnerPositions(fields);
+    }
+
+    private void setSpinnerPositions(com.noiseapps.itassistant.model.jira.issues.Fields fields) {
+        final Assignee assignee = fields.getAssignee();
+        if(assignee != null) {
+            final int spinnerPosition = ((AssigneeSpinnerAdapter) assigneeSpinner.getAdapter()).getPositionForAssignee(assignee);
+            assigneeSpinner.setSelection(spinnerPosition);
+        }
+
+        final String issueType = fields.getIssueType().getName();
+        if(assignee != null) {
+            final int spinnerPosition = ((TypeSpinnerAdapter) issueTypeSpinner.getAdapter()).getPositionForValue(issueType);
+            issueTypeSpinner.setSelection(spinnerPosition);
+        }
+
+        final String issuePriority = fields.getPriority().getName();
+        if(assignee != null) {
+            final int spinnerPosition = ((AllowedValuesAdapter) issuePrioritySpinner.getAdapter()).getPositionForValue(issuePriority);
+            issuePrioritySpinner.setSelection(spinnerPosition);
+        }
     }
 
     private void fillForm(CreateMetaModel createMetaModel, List<Assignee> assignees) {
@@ -364,7 +389,7 @@ public class NewIssueFragment extends Fragment {
             fixVersions[i] = value.getName();
         }
 
-        versionSpinner.setOnClickListener(v -> {
+        versionEditText.setOnClickListener(v -> {
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle(R.string.issueVersion);
             builder.setMultiChoiceItems(versions, selectedVersions, (dialog, which, isChecked) -> {
@@ -372,13 +397,13 @@ public class NewIssueFragment extends Fragment {
                 selectedVersionsIds.toggle(allowedVersions.get(which));
             });
             builder.setPositiveButton(R.string.ok, (dialog, which) -> {
-                versionSpinner.setText(StringUtils.join(selectedVersionsIds, ", "));
+                versionEditText.setText(StringUtils.join(selectedVersionsIds, ", "));
                 dialog.dismiss();
             });
             builder.show();
         });
 
-        fixedInVersionSpinner.setOnClickListener(v -> {
+        fixedInVersionEditText.setOnClickListener(v -> {
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle(R.string.issueVersion);
             builder.setMultiChoiceItems(fixVersions, selectedFixVersions, (dialog, which, isChecked) -> {
@@ -386,7 +411,7 @@ public class NewIssueFragment extends Fragment {
                 selectedFixVersionsIds.toggle(allowedFixVersions.get(which));
             });
             builder.setPositiveButton(R.string.ok, (dialog, which) -> {
-                fixedInVersionSpinner.setText(StringUtils.join(selectedFixVersionsIds, ", "));
+                fixedInVersionEditText.setText(StringUtils.join(selectedFixVersionsIds, ", "));
                 dialog.dismiss();
             });
             builder.show();
