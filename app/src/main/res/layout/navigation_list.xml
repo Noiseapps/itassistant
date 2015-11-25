@@ -32,7 +32,7 @@
     <View
         android:id="@+id/separator"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="1dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/actionAssignedToMe"
@@ -41,7 +41,7 @@
     <View
         android:id="@+id/view"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="1dp"
         android:layout_above="@+id/actionSettings"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"

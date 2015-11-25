@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.noiseapps.itassistant.R;
+import com.noiseapps.itassistant.model.jira.projects.createmeta.AllowedValue;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.IssueType;
 import com.squareup.picasso.Picasso;
 
@@ -58,6 +59,16 @@ public class TypeSpinnerAdapter extends BaseAdapter {
         }
         holder.bind(getItem(position));
         return convertView;
+    }
+
+    public int getPositionForValue(String issueType) {
+        for (int i = 0; i < issueTypes.size(); i++) {
+            final IssueType item = issueTypes.get(i);
+            if (item.getName().equalsIgnoreCase(issueType)) {
+                return i;
+            }
+        }
+        return 0;
     }
 
     private class ViewHolder {

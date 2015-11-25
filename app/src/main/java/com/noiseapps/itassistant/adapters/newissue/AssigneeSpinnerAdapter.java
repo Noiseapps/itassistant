@@ -72,6 +72,16 @@ public class AssigneeSpinnerAdapter extends BaseAdapter {
         return convertView;
     }
 
+    public int getPositionForAssignee(@NonNull Assignee assignee) {
+        for (int i = 0; i < assignees.size(); i++) {
+            final Assignee item = assignees.get(i);
+            if(item.getName().equalsIgnoreCase(assignee.getName())) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
     private class ViewHolder {
         private final TextView assignee;
         private final CircleImageView avatar;

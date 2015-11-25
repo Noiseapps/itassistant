@@ -138,4 +138,5 @@
     <string name="split">Split by</string>
     <string name="selectSplit">Split by</string>
     <string name="nothingSelected">Nothing to show.\nSelect issue from the list to see the details.</string>
+    <string name="issueUpdated">Issue updated</string>
 </resources>

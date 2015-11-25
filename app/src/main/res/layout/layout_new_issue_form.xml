@@ -26,62 +26,62 @@
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:text="@string/issueType"
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <Spinner
                 android:id="@+id/issueTypeSpinner"
                 android:layout_width="0dp"
-                android:layout_weight="3"
                 android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"/>
+                android:layout_gravity="center_vertical"
+                android:layout_weight="3" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:weightSum="5"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_margin="8dp">
+            android:layout_margin="8dp"
+            android:weightSum="5">
 
             <TextView
                 style="@style/AppTheme.LabelTheme"
                 android:layout_width="0dp"
-                android:layout_weight="2"
                 android:layout_height="match_parent"
+                android:layout_weight="2"
                 android:gravity="center_vertical"
                 android:text="@string/issuePriority"
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <Spinner
                 android:id="@+id/issuePrioritySpinner"
                 android:layout_width="0dp"
-                android:layout_weight="3"
                 android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"/>
+                android:layout_gravity="center_vertical"
+                android:layout_weight="3" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:weightSum="5"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_margin="8dp">
+            android:layout_margin="8dp"
+            android:weightSum="5">
 
             <TextView
                 style="@style/AppTheme.LabelTheme"
                 android:layout_width="0dp"
-                android:layout_weight="2"
                 android:layout_height="match_parent"
+                android:layout_weight="2"
                 android:gravity="center_vertical"
                 android:text="@string/issueAssignee"
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <Spinner
                 android:id="@+id/assigneeSpinner"
                 android:layout_width="0dp"
-                android:layout_weight="3"
                 android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"/>
+                android:layout_gravity="center_vertical"
+                android:layout_weight="3" />
         </LinearLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -96,7 +96,7 @@
                 android:ems="10"
                 android:hint="@string/summary"
                 android:inputType="text"
-                android:singleLine="true"/>
+                android:singleLine="true" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -110,7 +110,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="@string/issueDescription"
-                android:inputType="textMultiLine"/>
+                android:inputType="textMultiLine" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -125,7 +125,7 @@
                 android:ems="10"
                 android:hint="@string/environment"
                 android:inputType="text"
-                android:singleLine="true"/>
+                android:singleLine="true" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -140,7 +140,7 @@
                 android:ems="10"
                 android:hint="@string/estimatedWorkTime"
                 android:inputType="text"
-                android:singleLine="true"/>
+                android:singleLine="true" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -155,118 +155,120 @@
                 android:ems="10"
                 android:hint="@string/remainingWorkTime"
                 android:inputType="text"
-                android:singleLine="true"/>
+                android:singleLine="true" />
         </android.support.design.widget.TextInputLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:weightSum="5"
-            android:visibility="gone"
             android:layout_gravity="center_horizontal"
-            android:layout_margin="8dp">
+            android:layout_margin="8dp"
+            android:visibility="gone"
+            android:weightSum="5">
 
             <TextView
                 style="@style/AppTheme.LabelTheme"
                 android:layout_width="0dp"
-                android:layout_weight="2"
                 android:layout_height="wrap_content"
+                android:layout_weight="2"
                 android:text="@string/issueAttachment"
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:id="@+id/issueAttachmentFileName"
                 style="@style/AppTheme.BlackText"
                 android:layout_width="0dp"
-                android:layout_weight="3"
                 android:layout_height="wrap_content"
-                android:drawablePadding="8dp"
+                android:layout_weight="3"
                 android:drawableEnd="@drawable/ic_create_24dp"
+                android:drawablePadding="8dp"
                 android:text=""
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
+                android:textAppearance="?android:attr/textAppearanceMedium" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:weightSum="5"
             android:layout_gravity="center_horizontal"
-            android:layout_margin="8dp">
+            android:layout_margin="8dp"
+            android:weightSum="5">
 
             <TextView
                 style="@style/AppTheme.LabelTheme"
                 android:layout_width="0dp"
-                android:layout_weight="3"
                 android:layout_height="wrap_content"
+                android:layout_weight="3"
                 android:text="@string/endDate"
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:id="@+id/estimatedDueDate"
                 style="@style/AppTheme.BlackText"
                 android:layout_width="0dp"
-                android:layout_weight="2"
                 android:layout_height="wrap_content"
-                android:drawablePadding="8dp"
+                android:layout_weight="2"
                 android:drawableEnd="@drawable/ic_create_24dp"
+                android:drawablePadding="8dp"
                 android:text=""
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
+                android:textAppearance="?android:attr/textAppearanceMedium" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/versionContainer"
             android:layout_width="match_parent"
-            android:weightSum="5"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_margin="8dp">
+            android:layout_margin="8dp"
+            android:weightSum="5">
 
             <TextView
                 style="@style/AppTheme.LabelTheme"
                 android:layout_width="0dp"
-                android:layout_weight="2"
                 android:layout_height="match_parent"
+                android:layout_weight="2"
                 android:gravity="center_vertical"
+                android:labelFor="@+id/versionEditText"
                 android:text="@string/issueVersion"
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <EditText
-                android:id="@+id/versionSpinner"
+                android:id="@+id/versionEditText"
                 android:layout_width="0dp"
-                android:layout_weight="3"
-                android:inputType="none"
                 android:focusable="false"
-                android:hint="@string/issueVersion"
+                android:focusableInTouchMode="false"
+                android:inputType="none"
                 android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"/>
+                android:layout_gravity="center_vertical"
+                android:layout_weight="3" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/fixVersionContainer"
             android:layout_width="match_parent"
-            android:weightSum="5"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_margin="8dp">
+            android:layout_margin="8dp"
+            android:weightSum="5">
 
             <TextView
                 style="@style/AppTheme.LabelTheme"
                 android:layout_width="0dp"
-                android:layout_weight="2"
                 android:layout_height="match_parent"
+                android:layout_weight="2"
                 android:gravity="center_vertical"
+                android:labelFor="@+id/fixedInVersionEditText"
                 android:text="@string/fixedInVersion"
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <EditText
-                android:id="@+id/fixedInVersionSpinner"
+                android:id="@+id/fixedInVersionEditText"
                 android:layout_width="0dp"
-                android:hint="@string/fixedInVersion"
-                android:inputType="none"
                 android:focusable="false"
-                android:layout_weight="3"
+                android:focusableInTouchMode="false"
+                android:inputType="none"
                 android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"/>
+                android:layout_gravity="center_vertical"
+                android:layout_weight="3" />
         </LinearLayout>
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

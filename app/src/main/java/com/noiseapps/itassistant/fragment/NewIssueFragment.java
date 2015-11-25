@@ -13,10 +13,6 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
-
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.newissue.AllowedValuesAdapter;
@@ -25,6 +21,7 @@ import com.noiseapps.itassistant.adapters.newissue.TypeSpinnerAdapter;
 import com.noiseapps.itassistant.connector.JiraConnector;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
+import com.noiseapps.itassistant.model.jira.issues.FixVersion;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueModel;
 import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueModel.Fields.IdField;
@@ -55,6 +52,10 @@ import org.androidannotations.annotations.ViewById;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.MutableDateTime;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -76,9 +77,11 @@ public class NewIssueFragment extends Fragment {
     @ViewById
     TextView estimatedDueDate;
     @ViewById
+    EditText fixedInVersionEditText, versionEditText;
+    @ViewById
     LinearLayout noProjectData, fetchingDataProgress, versionContainer, fixVersionContainer;
     @ViewById
-    EditText issueDescription, issueSummary, issueEstimatedWorkLog, issueRemainingWorkLog, issueEnvironment,  fixedInVersionSpinner, versionSpinner;
+    EditText issueDescription, issueSummary, issueEstimatedWorkLog, issueRemainingWorkLog, issueEnvironment;
     @ViewById
     Spinner issueTypeSpinner, issuePrioritySpinner, assigneeSpinner;
     @ViewById
@@ -92,7 +95,7 @@ public class NewIssueFragment extends Fragment {
     private IssueType selectedIssueType;
     private MutableDateTime dateTime = new MutableDateTime();
     private boolean[] selectedVersions, selectedFixVersions;
-    private ToggleList<AllowedValue> selectedVersionsIds = new ToggleList<>(), selectedFixVersionsIds = new ToggleList<>();
+    private ToggleList<ToggleFixItem> selectedVersionsIds = new ToggleList<>(), selectedFixVersionsIds = new ToggleList<>();
 
     @AfterViews
     void init() {
@@ -110,6 +113,7 @@ public class NewIssueFragment extends Fragment {
                 ZipModel::new).subscribeOn(Schedulers.io()).
                 observeOn(AndroidSchedulers.mainThread()).
                 subscribe(zipModel -> showForm(zipModel.metaModel, zipModel.assignees), throwable -> {
+                    throwable.printStackTrace();
                     Logger.e(throwable, throwable.getMessage());
                     showError();
                 });
@@ -135,8 +139,8 @@ public class NewIssueFragment extends Fragment {
             @Override
             public void success(CreateIssueResponse createIssueResponse, Response response) {
                 fabProgressCircle.beginFinalAnimation();
-                Snackbar.make(fabProgressCircle, R.string.issueAdded, Snackbar.LENGTH_LONG).show();
-                callbacks.onIssueCreated();
+                Snackbar.make(fabProgressCircle, R.string.issueUpdated, Snackbar.LENGTH_LONG).show();
+//                callbacks.onIssueCreated();
                 //TODO show issue details if in two pane
             }
 
@@ -220,7 +224,6 @@ public class NewIssueFragment extends Fragment {
 
     private CreateIssueModel.Fields getFields() {
         final CreateIssueModel.Fields fields = new CreateIssueModel.Fields();
-
         final Assignee selectedAssignee = (Assignee) assigneeSpinner.getSelectedItem();
         fields.setAssignee(new NameField(selectedAssignee.getName()));
         fields.setProject(new KeyField(projectKey));
@@ -247,12 +250,12 @@ public class NewIssueFragment extends Fragment {
 
     private void setVersions(CreateIssueModel.Fields fields) {
         final ArrayList<IdField> versions = new ArrayList<>();
-        for (AllowedValue value : selectedVersionsIds) {
-            versions.add(new IdField(value.getId()));
+        for (ToggleFixItem value : selectedVersionsIds) {
+            versions.add(new IdField(value.id));
         }
         final ArrayList<IdField> fixVersions = new ArrayList<>();
-        for (AllowedValue value : selectedFixVersionsIds) {
-            fixVersions.add(new IdField(value.getId()));
+        for (ToggleFixItem value : selectedFixVersionsIds) {
+            fixVersions.add(new IdField(value.id));
         }
 
         fields.setVersions(versions);
@@ -292,11 +295,34 @@ public class NewIssueFragment extends Fragment {
     }
 
     private void initValues() {
-        issueSummary.setText(issue.getFields().getSummary());
-        issueDescription.setText(issue.getFields().getDescription());
-        estimatedDueDate.setText(issue.getFields().getDuedate());
-        issueEnvironment.setText(issue.getFields().getEnvironment());
-        // TODO spinnery i wersje
+        final com.noiseapps.itassistant.model.jira.issues.Fields fields = issue.getFields();
+        issueSummary.setText(fields.getSummary());
+        issueDescription.setText(fields.getDescription());
+        estimatedDueDate.setText(fields.getDuedate());
+        issueEnvironment.setText(fields.getEnvironment());
+        setSpinnerPositions(fields);
+        fixedInVersionEditText.setText(StringUtils.join(fields.getFixVersions(), ","));
+        versionEditText.setText(StringUtils.join(fields.getVersions(), ","));
+    }
+
+    private void setSpinnerPositions(com.noiseapps.itassistant.model.jira.issues.Fields fields) {
+        final Assignee assignee = fields.getAssignee();
+        if (assignee != null) {
+            final int spinnerPosition = ((AssigneeSpinnerAdapter) assigneeSpinner.getAdapter()).getPositionForAssignee(assignee);
+            assigneeSpinner.setSelection(spinnerPosition);
+        }
+
+        final String issueType = fields.getIssueType().getName();
+        if (assignee != null) {
+            final int spinnerPosition = ((TypeSpinnerAdapter) issueTypeSpinner.getAdapter()).getPositionForValue(issueType);
+            issueTypeSpinner.setSelection(spinnerPosition);
+        }
+
+        final String issuePriority = fields.getPriority().getName();
+        if (assignee != null) {
+            final int spinnerPosition = ((AllowedValuesAdapter) issuePrioritySpinner.getAdapter()).getPositionForValue(issuePriority);
+            issuePrioritySpinner.setSelection(spinnerPosition);
+        }
     }
 
     private void fillForm(CreateMetaModel createMetaModel, List<Assignee> assignees) {
@@ -349,6 +375,7 @@ public class NewIssueFragment extends Fragment {
     }
 
     private void setVersionData(List<AllowedValue> allowedVersions, List<AllowedValue> allowedFixVersions) {
+        prepareDataAndVisibility(allowedVersions, allowedFixVersions);
         final String[] versions = new String[allowedVersions.size()];
         final String[] fixVersions = new String[allowedVersions.size()];
         selectedVersionsIds = new ToggleList<>();
@@ -364,34 +391,84 @@ public class NewIssueFragment extends Fragment {
             AllowedValue value = allowedVersions.get(i);
             fixVersions[i] = value.getName();
         }
+        if (issue != null) {
+            initVersionsAndIds(versions, fixVersions);
+        }
 
-        versionSpinner.setOnClickListener(v -> {
+        versionEditText.setOnClickListener(v -> {
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle(R.string.issueVersion);
             builder.setMultiChoiceItems(versions, selectedVersions, (dialog, which, isChecked) -> {
                 selectedVersions[which] = isChecked;
-                selectedVersionsIds.toggle(allowedVersions.get(which));
+                final AllowedValue allowedValue = allowedVersions.get(which);
+                selectedVersionsIds.toggle(new ToggleFixItem(allowedValue.getId(), allowedValue.getName()));
             });
             builder.setPositiveButton(R.string.ok, (dialog, which) -> {
-                versionSpinner.setText(StringUtils.join(selectedVersionsIds, ", "));
+                versionEditText.setText(StringUtils.join(selectedVersionsIds, ", "));
                 dialog.dismiss();
             });
             builder.show();
         });
 
-        fixedInVersionSpinner.setOnClickListener(v -> {
+        fixedInVersionEditText.setOnClickListener(v -> {
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle(R.string.issueVersion);
             builder.setMultiChoiceItems(fixVersions, selectedFixVersions, (dialog, which, isChecked) -> {
                 selectedFixVersions[which] = isChecked;
-                selectedFixVersionsIds.toggle(allowedFixVersions.get(which));
+                final AllowedValue allowedValue = allowedVersions.get(which);
+                selectedFixVersionsIds.toggle(new ToggleFixItem(allowedValue.getId(), allowedValue.getName()));
             });
             builder.setPositiveButton(R.string.ok, (dialog, which) -> {
-                fixedInVersionSpinner.setText(StringUtils.join(selectedFixVersionsIds, ", "));
+                fixedInVersionEditText.setText(StringUtils.join(selectedFixVersionsIds, ", "));
                 dialog.dismiss();
             });
             builder.show();
         });
+    }
+
+    private void initVersionsAndIds(String[] versions, String[] fixVersions) {
+        final com.noiseapps.itassistant.model.jira.issues.Fields fields = issue.getFields();
+        for (FixVersion fixVersion : fields.getFixVersions()) {
+            selectedFixVersionsIds.toggle(new ToggleFixItem(fixVersion.getId(), fixVersion.getName()));
+        }
+        for (FixVersion fixVersion : fields.getVersions()) {
+            selectedVersionsIds.toggle(new ToggleFixItem(fixVersion.getId(), fixVersion.getName()));
+        }
+
+        for (int i = 0; i < versions.length; i++) {
+            final String versionName = versions[i];
+            for (FixVersion version : fields.getVersions()) {
+                if (versionName.equalsIgnoreCase(version.getName())) {
+                    selectedVersions[i] = true;
+                }
+            }
+        }
+
+        for (int i = 0; i < fixVersions.length; i++) {
+            final String versionName = fixVersions[i];
+            for (FixVersion version : fields.getFixVersions()) {
+                if (versionName.equalsIgnoreCase(version.getName())) {
+                    selectedFixVersions[i] = true;
+                }
+            }
+        }
+        versionEditText.setText(StringUtils.join(selectedVersionsIds, ", "));
+        fixedInVersionEditText.setText(StringUtils.join(selectedFixVersionsIds, ", "));
+    }
+
+    private void prepareDataAndVisibility(List<AllowedValue> allowedVersions, List<AllowedValue> allowedFixVersions) {
+        if (!allowedFixVersions.isEmpty()) {
+            allowedFixVersions.remove(0);
+        }
+        if (!allowedVersions.isEmpty()) {
+            allowedVersions.remove(0);
+        }
+        if (allowedVersions.isEmpty()) {
+            versionContainer.setVisibility(View.GONE);
+        }
+        if (allowedFixVersions.isEmpty()) {
+            fixVersionContainer.setVisibility(View.GONE);
+        }
     }
 
     private List<AllowedValue> getVersions(Fields fields) {
@@ -466,6 +543,35 @@ public class NewIssueFragment extends Fragment {
 
     public interface NewIssueCallbacks {
         void onIssueCreated();
+    }
+
+    private class ToggleFixItem {
+        final String id;
+        final String name;
+
+        private ToggleFixItem(String id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            ToggleFixItem that = (ToggleFixItem) o;
+
+            if (id != null ? !id.equals(that.id) : that.id != null) return false;
+            return !(name != null ? !name.equals(that.name) : that.name != null);
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = id != null ? id.hashCode() : 0;
+            result = 31 * result + (name != null ? name.hashCode() : 0);
+            return result;
+        }
     }
 
     private class ZipModel {
