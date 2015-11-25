@@ -6,8 +6,7 @@
     android:layout_height="wrap_content"
     android:background="@color/white"
     android:orientation="vertical"
-    android:padding="16dp"
-    tools:showIn="@layout/fragment_issue_detail">
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/textView2"
@@ -16,14 +15,15 @@
         android:text="@string/issueDetails"
         android:textAppearance="?android:attr/textAppearanceLarge"/>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="8dp"
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textStyle="bold"
             style="@style/AppTheme.LabelTheme"
@@ -32,23 +32,23 @@
 
         <TextView
             android:id="@+id/type"
-            android:layout_width="wrap_content"
+            android:layout_weight="2"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
             android:text="@string/issueDetails"
+            android:gravity="right"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
-    </RelativeLayout>
+    </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="8dp"
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textStyle="bold"
             style="@style/AppTheme.LabelTheme"
@@ -57,25 +57,24 @@
 
         <TextView
             android:id="@+id/priority"
-            android:layout_width="wrap_content"
+            android:layout_weight="2"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
             android:layout_gravity="right"
             android:gravity="right"
             android:text="@string/issueDetails"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
-    </RelativeLayout>
+    </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="8dp"
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textStyle="bold"
             style="@style/AppTheme.LabelTheme"
@@ -84,23 +83,23 @@
 
         <TextView
             android:id="@+id/labels"
-            android:layout_width="wrap_content"
+            android:layout_weight="2"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
+            android:gravity="right"
             android:text="@string/issueDetails"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
-    </RelativeLayout>
+    </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="8dp"
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textStyle="bold"
             style="@style/AppTheme.LabelTheme"
@@ -109,23 +108,23 @@
 
         <TextView
             android:id="@+id/status"
-            android:layout_width="wrap_content"
+            android:layout_weight="2"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
+            android:gravity="right"
             android:text="@string/issueDetails"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
-    </RelativeLayout>
+    </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="8dp"
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textStyle="bold"
             style="@style/AppTheme.LabelTheme"
@@ -134,23 +133,23 @@
 
         <TextView
             android:id="@+id/fixedInVersion"
-            android:layout_width="wrap_content"
+            android:layout_weight="2"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
+            android:gravity="right"
             android:text="@string/issueDetails"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
-    </RelativeLayout>
+    </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="8dp"
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textStyle="bold"
             style="@style/AppTheme.LabelTheme"
@@ -159,41 +158,36 @@
 
         <TextView
             android:id="@+id/version"
-            android:layout_width="wrap_content"
+            android:layout_weight="2"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
+            android:gravity="right"
             android:text="@string/issueDetails"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
-    </RelativeLayout>
+    </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="8dp"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textStyle="bold"
             style="@style/AppTheme.LabelTheme"
             android:text="@string/issueDescription"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/textView3"/>
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
             android:id="@+id/description"
             android:layout_margin="8dp"
-            android:layout_width="wrap_content"
-            android:layout_below="@id/textView3"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/issueDetails"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"/>
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    </RelativeLayout>
+    </LinearLayout>
 
 </LinearLayout>
