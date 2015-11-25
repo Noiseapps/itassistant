@@ -8,10 +8,8 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -27,6 +25,7 @@ import com.noiseapps.itassistant.adapters.newissue.TypeSpinnerAdapter;
 import com.noiseapps.itassistant.connector.JiraConnector;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
+import com.noiseapps.itassistant.model.jira.issues.FixVersion;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueModel;
 import com.noiseapps.itassistant.model.jira.projects.createissue.CreateIssueModel.Fields.IdField;
@@ -78,7 +77,7 @@ public class NewIssueFragment extends Fragment {
     @ViewById
     TextView estimatedDueDate;
     @ViewById
-    MultiAutoCompleteTextView fixedInVersionEditText, versionEditText;
+    EditText fixedInVersionEditText, versionEditText;
     @ViewById
     LinearLayout noProjectData, fetchingDataProgress, versionContainer, fixVersionContainer;
     @ViewById
@@ -96,7 +95,7 @@ public class NewIssueFragment extends Fragment {
     private IssueType selectedIssueType;
     private MutableDateTime dateTime = new MutableDateTime();
     private boolean[] selectedVersions, selectedFixVersions;
-    private ToggleList<AllowedValue> selectedVersionsIds = new ToggleList<>(), selectedFixVersionsIds = new ToggleList<>();
+    private ToggleList<String> selectedVersionsIds = new ToggleList<>(), selectedFixVersionsIds = new ToggleList<>();
 
     @AfterViews
     void init() {
@@ -250,12 +249,12 @@ public class NewIssueFragment extends Fragment {
 
     private void setVersions(CreateIssueModel.Fields fields) {
         final ArrayList<IdField> versions = new ArrayList<>();
-        for (AllowedValue value : selectedVersionsIds) {
-            versions.add(new IdField(value.getId()));
+        for (String value : selectedVersionsIds) {
+            versions.add(new IdField(value));
         }
         final ArrayList<IdField> fixVersions = new ArrayList<>();
-        for (AllowedValue value : selectedFixVersionsIds) {
-            fixVersions.add(new IdField(value.getId()));
+        for (String value : selectedFixVersionsIds) {
+            fixVersions.add(new IdField(value));
         }
 
         fields.setVersions(versions);
@@ -301,6 +300,8 @@ public class NewIssueFragment extends Fragment {
         estimatedDueDate.setText(fields.getDuedate());
         issueEnvironment.setText(fields.getEnvironment());
         setSpinnerPositions(fields);
+        fixedInVersionEditText.setText(StringUtils.join(fields.getFixVersions(), ","));
+        versionEditText.setText(StringUtils.join(fields.getVersions(), ","));
     }
 
     private void setSpinnerPositions(com.noiseapps.itassistant.model.jira.issues.Fields fields) {
@@ -373,12 +374,14 @@ public class NewIssueFragment extends Fragment {
     }
 
     private void setVersionData(List<AllowedValue> allowedVersions, List<AllowedValue> allowedFixVersions) {
+        prepareDataAndVisibility(allowedVersions, allowedFixVersions);
         final String[] versions = new String[allowedVersions.size()];
         final String[] fixVersions = new String[allowedVersions.size()];
         selectedVersionsIds = new ToggleList<>();
         selectedFixVersionsIds = new ToggleList<>();
         selectedVersions = new boolean[allowedVersions.size()];
         selectedFixVersions = new boolean[allowedVersions.size()];
+
 
         for (int i = 0; i < allowedVersions.size(); i++) {
             AllowedValue value = allowedVersions.get(i);
@@ -388,13 +391,14 @@ public class NewIssueFragment extends Fragment {
             AllowedValue value = allowedVersions.get(i);
             fixVersions[i] = value.getName();
         }
+        initVersionsAndIds(versions, fixVersions);
 
         versionEditText.setOnClickListener(v -> {
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle(R.string.issueVersion);
             builder.setMultiChoiceItems(versions, selectedVersions, (dialog, which, isChecked) -> {
                 selectedVersions[which] = isChecked;
-                selectedVersionsIds.toggle(allowedVersions.get(which));
+                selectedVersionsIds.toggle(allowedVersions.get(which).getId());
             });
             builder.setPositiveButton(R.string.ok, (dialog, which) -> {
                 versionEditText.setText(StringUtils.join(selectedVersionsIds, ", "));
@@ -408,7 +412,7 @@ public class NewIssueFragment extends Fragment {
             builder.setTitle(R.string.issueVersion);
             builder.setMultiChoiceItems(fixVersions, selectedFixVersions, (dialog, which, isChecked) -> {
                 selectedFixVersions[which] = isChecked;
-                selectedFixVersionsIds.toggle(allowedFixVersions.get(which));
+                selectedFixVersionsIds.toggle(allowedFixVersions.get(which).getId());
             });
             builder.setPositiveButton(R.string.ok, (dialog, which) -> {
                 fixedInVersionEditText.setText(StringUtils.join(selectedFixVersionsIds, ", "));
@@ -416,6 +420,51 @@ public class NewIssueFragment extends Fragment {
             });
             builder.show();
         });
+    }
+
+    private void initVersionsAndIds(String[] versions, String[] fixVersions) {
+        final com.noiseapps.itassistant.model.jira.issues.Fields fields = issue.getFields();
+        for (FixVersion fixVersion : fields.getFixVersions()) {
+            selectedFixVersionsIds.toggle(fixVersion.getId());
+        }
+        for (FixVersion version : fields.getVersions()) {
+            selectedVersionsIds.toggle(version.getId());
+        }
+
+        for (int i = 0; i < versions.length; i++) {
+            final String versionName = versions[i];
+            for (FixVersion version : fields.getVersions()) {
+                if (versionName.equalsIgnoreCase(version.getName())){
+                    selectedVersions[i] = true;
+                }
+            }
+
+        }
+
+        for (int i = 0; i < fixVersions.length; i++) {
+            final String versionName = fixVersions[i];
+            for (FixVersion version : fields.getFixVersions()) {
+                if (versionName.equalsIgnoreCase(version.getName())){
+                    selectedFixVersions[i] = true;
+                }
+            }
+
+        }
+    }
+
+    private void prepareDataAndVisibility(List<AllowedValue> allowedVersions, List<AllowedValue> allowedFixVersions) {
+        if(!allowedFixVersions.isEmpty()) {
+            allowedFixVersions.remove(0);
+        }
+        if(!allowedVersions.isEmpty()) {
+            allowedVersions.remove(0);
+        }
+        if(allowedVersions.isEmpty()) {
+            versionContainer.setVisibility(View.GONE);
+        }
+        if(allowedFixVersions.isEmpty()){
+            fixVersionContainer.setVisibility(View.GONE);
+        }
     }
 
     private List<AllowedValue> getVersions(Fields fields) {

@@ -14,6 +14,15 @@ import com.noiseapps.itassistant.model.jira.issues.common.IssueType;
 @SuppressWarnings("ALL")
 public class Fields implements Parcelable {
 
+    public static final Creator<Fields> CREATOR = new Creator<Fields>() {
+        public Fields createFromParcel(Parcel source) {
+            return new Fields(source);
+        }
+
+        public Fields[] newArray(int size) {
+            return new Fields[size];
+        }
+    };
     @SerializedName("summary")
     @Expose
     private String summary;
@@ -41,16 +50,15 @@ public class Fields implements Parcelable {
     @SerializedName("description")
     @Expose
     private String description;
-
     @SerializedName("issuelinks")
     @Expose
-    private List<String> issuelinks = new ArrayList<String>();
+    private List<String> issuelinks = new ArrayList<>();
     @SerializedName("status")
     @Expose
     private Status status;
     @SerializedName("labels")
     @Expose
-    private List<String> labels = new ArrayList<String>();
+    private List<String> labels = new ArrayList<>();
     @SerializedName("parent")
     @Expose
     private Issue parent;
@@ -68,7 +76,7 @@ public class Fields implements Parcelable {
     private AggregateProgress aggregateProgress;
     @SerializedName("components")
     @Expose
-    private List<Component> components = new ArrayList<Component>();
+    private List<Component> components = new ArrayList<>();
     @SerializedName("votes")
     @Expose
     private Votes votes;
@@ -99,6 +107,50 @@ public class Fields implements Parcelable {
     @SerializedName("aggregatetimespent")
     @Expose
     private long aggregatetimespent;
+    private List<FixVersion> fixVersions = new ArrayList<>();
+    private List<FixVersion> versions = new ArrayList<>();
+    /**
+     * No args constructor for use in serialization
+     */
+    public Fields() {
+    }
+
+    protected Fields(Parcel in) {
+        this.summary = in.readString();
+        this.progress = in.readParcelable(Progress.class.getClassLoader());
+        this.issueType = in.readParcelable(IssueType.class.getClassLoader());
+        this.timespent = in.readLong();
+        this.reporter = in.readParcelable(Reporter.class.getClassLoader());
+        this.updated = in.readString();
+        this.created = in.readString();
+        this.priority = in.readParcelable(Priority.class.getClassLoader());
+        this.description = in.readString();
+        this.issuelinks = in.createStringArrayList();
+        this.status = in.readParcelable(Status.class.getClassLoader());
+        this.labels = in.createStringArrayList();
+        this.parent = in.readParcelable(Issue.class.getClassLoader());
+        this.workratio = in.readLong();
+        this.project = in.readParcelable(Project.class.getClassLoader());
+        this.environment = in.readString();
+        this.aggregateProgress = in.readParcelable(AggregateProgress.class.getClassLoader());
+        this.components = in.createTypedArrayList(Component.CREATOR);
+        this.fixVersions = in.createTypedArrayList(FixVersion.CREATOR);
+        this.versions = in.createTypedArrayList(FixVersion.CREATOR);
+        this.votes = in.readParcelable(Votes.class.getClassLoader());
+        this.resolution = in.readParcelable(Resolution.class.getClassLoader());
+        this.resolutiondate = in.readString();
+        this.aggregatetimeoriginalestimate = in.readLong();
+        this.duedate = in.readString();
+        this.watches = in.readParcelable(Watches.class.getClassLoader());
+        this.assignee = in.readParcelable(Assignee.class.getClassLoader());
+        this.aggregatetimeestimate = in.readLong();
+        this.timeestimate = in.readLong();
+        this.aggregatetimespent = in.readLong();
+    }
+
+    public static Creator<Fields> getCREATOR() {
+        return CREATOR;
+    }
 
     public List<FixVersion> getFixVersions() {
         return fixVersions;
@@ -106,41 +158,6 @@ public class Fields implements Parcelable {
 
     public void setFixVersions(List<FixVersion> fixVersions) {
         this.fixVersions = fixVersions;
-    }
-
-    @Override
-    public String toString() {
-        return "Fields{" +
-                "summary='" + summary + '\'' +
-                ", progress=" + progress +
-                ", issueType=" + issueType +
-                ", timespent=" + timespent +
-                ", reporter=" + reporter +
-                ", updated='" + updated + '\'' +
-                ", created='" + created + '\'' +
-                ", priority=" + priority +
-                ", description='" + description + '\'' +
-                ", issuelinks=" + issuelinks +
-                ", status=" + status +
-                ", labels=" + labels +
-                ", parent=" + parent +
-                ", workratio=" + workratio +
-                ", project=" + project +
-                ", environment='" + environment + '\'' +
-                ", aggregateProgress=" + aggregateProgress +
-                ", components=" + components +
-                ", votes=" + votes +
-                ", resolution=" + resolution +
-                ", resolutiondate='" + resolutiondate + '\'' +
-                ", aggregatetimeoriginalestimate=" + aggregatetimeoriginalestimate +
-                ", duedate='" + duedate + '\'' +
-                ", watches=" + watches +
-                ", assignee=" + assignee +
-                ", aggregatetimeestimate=" + aggregatetimeestimate +
-                ", timeestimate=" + timeestimate +
-                ", aggregatetimespent=" + aggregatetimespent +
-                ", fixVersions=" + fixVersions +
-                '}';
     }
 
     @Override
@@ -198,6 +215,8 @@ public class Fields implements Parcelable {
             return false;
         if (fixVersions != null ? !fixVersions.equals(fields.fixVersions) : fields.fixVersions != null)
             return false;
+        if (versions != null ? !versions.equals(fields.versions) : fields.versions != null)
+            return false;
 
         return true;
     }
@@ -233,15 +252,52 @@ public class Fields implements Parcelable {
         result = 31 * result + (int) (timeestimate ^ (timeestimate >>> 32));
         result = 31 * result + (int) (aggregatetimespent ^ (aggregatetimespent >>> 32));
         result = 31 * result + (fixVersions != null ? fixVersions.hashCode() : 0);
+        result = 31 * result + (versions != null ? versions.hashCode() : 0);
         return result;
     }
 
-    private List<FixVersion> fixVersions = new ArrayList<FixVersion>();
+    @Override
+    public String toString() {
+        return "Fields{" +
+                "summary='" + summary + '\'' +
+                ", progress=" + progress +
+                ", issueType=" + issueType +
+                ", timespent=" + timespent +
+                ", reporter=" + reporter +
+                ", updated='" + updated + '\'' +
+                ", created='" + created + '\'' +
+                ", priority=" + priority +
+                ", description='" + description + '\'' +
+                ", issuelinks=" + issuelinks +
+                ", status=" + status +
+                ", labels=" + labels +
+                ", parent=" + parent +
+                ", workratio=" + workratio +
+                ", project=" + project +
+                ", environment='" + environment + '\'' +
+                ", aggregateProgress=" + aggregateProgress +
+                ", components=" + components +
+                ", votes=" + votes +
+                ", resolution=" + resolution +
+                ", resolutiondate='" + resolutiondate + '\'' +
+                ", aggregatetimeoriginalestimate=" + aggregatetimeoriginalestimate +
+                ", duedate='" + duedate + '\'' +
+                ", watches=" + watches +
+                ", assignee=" + assignee +
+                ", aggregatetimeestimate=" + aggregatetimeestimate +
+                ", timeestimate=" + timeestimate +
+                ", aggregatetimespent=" + aggregatetimespent +
+                ", fixVersions=" + fixVersions +
+                ", versions=" + versions +
+                '}';
+    }
 
-    /**
-     * No args constructor for use in serialization
-     */
-    public Fields() {
+    public List<FixVersion> getVersions() {
+        return versions;
+    }
+
+    public void setVersions(List<FixVersion> versions) {
+        this.versions = versions;
     }
 
     public String getSummary() {
@@ -468,10 +524,6 @@ public class Fields implements Parcelable {
         this.aggregatetimespent = aggregatetimespent;
     }
 
-    public static Creator<Fields> getCREATOR() {
-        return CREATOR;
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -498,6 +550,7 @@ public class Fields implements Parcelable {
         dest.writeParcelable(this.aggregateProgress, 0);
         dest.writeTypedList(components);
         dest.writeTypedList(fixVersions);
+        dest.writeTypedList(versions);
         dest.writeParcelable(this.votes, 0);
         dest.writeParcelable(this.resolution, 0);
         dest.writeString(this.resolutiondate);
@@ -509,46 +562,4 @@ public class Fields implements Parcelable {
         dest.writeLong(this.timeestimate);
         dest.writeLong(this.aggregatetimespent);
     }
-
-    protected Fields(Parcel in) {
-        this.summary = in.readString();
-        this.progress = in.readParcelable(Progress.class.getClassLoader());
-        this.issueType = in.readParcelable(IssueType.class.getClassLoader());
-        this.timespent = in.readLong();
-        this.reporter = in.readParcelable(Reporter.class.getClassLoader());
-        this.updated = in.readString();
-        this.created = in.readString();
-        this.priority = in.readParcelable(Priority.class.getClassLoader());
-        this.description = in.readString();
-        this.issuelinks = in.createStringArrayList();
-        this.status = in.readParcelable(Status.class.getClassLoader());
-        this.labels = in.createStringArrayList();
-        this.parent = in.readParcelable(Issue.class.getClassLoader());
-        this.workratio = in.readLong();
-        this.project = in.readParcelable(Project.class.getClassLoader());
-        this.environment = in.readString();
-        this.aggregateProgress = in.readParcelable(AggregateProgress.class.getClassLoader());
-        this.components = in.createTypedArrayList(Component.CREATOR);
-        this.fixVersions = in.createTypedArrayList(FixVersion.CREATOR);
-        this.votes = in.readParcelable(Votes.class.getClassLoader());
-        this.resolution = in.readParcelable(Resolution.class.getClassLoader());
-        this.resolutiondate = in.readString();
-        this.aggregatetimeoriginalestimate = in.readLong();
-        this.duedate = in.readString();
-        this.watches = in.readParcelable(Watches.class.getClassLoader());
-        this.assignee = in.readParcelable(Assignee.class.getClassLoader());
-        this.aggregatetimeestimate = in.readLong();
-        this.timeestimate = in.readLong();
-        this.aggregatetimespent = in.readLong();
-    }
-
-    public static final Creator<Fields> CREATOR = new Creator<Fields>() {
-        public Fields createFromParcel(Parcel source) {
-            return new Fields(source);
-        }
-
-        public Fields[] newArray(int size) {
-            return new Fields[size];
-        }
-    };
 }

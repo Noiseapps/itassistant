@@ -231,7 +231,7 @@
                 android:text="@string/issueVersion"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
-            <MultiAutoCompleteTextView
+            <EditText
                 android:id="@+id/versionEditText"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -257,7 +257,7 @@
                 android:text="@string/fixedInVersion"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
-            <MultiAutoCompleteTextView
+            <EditText
                 android:id="@+id/fixedInVersionEditText"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"

@@ -23,7 +23,7 @@ System.out.print(
 
 android {
     compileSdkVersion 23
-    buildToolsVersion buildTools
+    buildToolsVersion '23.0.2'
     defaultConfig {
         applicationId appId
         minSdkVersion 17

@@ -2,6 +2,8 @@ package com.noiseapps.itassistant;
 
 import android.support.multidex.MultiDexApplication;
 
+import java.util.Map;
+
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.noiseapps.itassistant.utils.Analytics;
@@ -11,9 +13,6 @@ import net.danlew.android.joda.JodaTimeAndroid;
 import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.HttpSender;
-import org.androidannotations.annotations.EApplication;
-
-import java.util.Map;
 
 import jonathanfinerty.once.Once;
 
@@ -24,7 +23,6 @@ import jonathanfinerty.once.Once;
         formUriBasicAuthLogin = "itassistant",
         formUriBasicAuthPassword = "itassistant12"
 )
-@EApplication
 public class AssistantApplication extends MultiDexApplication {
 
     @Override

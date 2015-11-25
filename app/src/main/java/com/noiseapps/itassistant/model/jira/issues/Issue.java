@@ -140,7 +140,7 @@ public class Issue implements Parcelable {
         dest.writeString(this.id);
         dest.writeString(this.self);
         dest.writeString(this.key);
-        dest.writeParcelable(this.fields, flags);
+        dest.writeParcelable(this.fields, 0);
         dest.writeTypedList(transitions);
     }
 
@@ -153,7 +153,7 @@ public class Issue implements Parcelable {
         this.transitions = in.createTypedArrayList(Transition.CREATOR);
     }
 
-    public static final Parcelable.Creator<Issue> CREATOR = new Parcelable.Creator<Issue>() {
+    public static final Creator<Issue> CREATOR = new Creator<Issue>() {
         public Issue createFromParcel(Parcel source) {
             return new Issue(source);
         }
