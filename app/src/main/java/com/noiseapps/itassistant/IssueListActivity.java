@@ -18,6 +18,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import com.afollestad.materialdialogs.AlertDialogWrapper;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -54,9 +58,7 @@ import org.androidannotations.annotations.FragmentById;
 import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.joda.time.DateTime;
 
 import de.greenrobot.event.EventBus;
 import jonathanfinerty.once.Once;
@@ -268,14 +270,6 @@ public class IssueListActivity extends AppCompatActivity
         progressDialog = new MaterialDialog.Builder(this).
         content(R.string.fetchingData).
         progress(true, 0).cancelable(false).show();
-
-
-//        progressDialog = new ProgressDialog(this);
-//        progressDialog.setIndeterminate(true);
-//        progressDialog.setCancelable(false);
-//        progressDialog.setCanceledOnTouchOutside(false);
-//        progressDialog.setTitle(R.string.fetchingData);
-//        progressDialog.show();
     }
 
     @UiThread
@@ -354,7 +348,19 @@ public class IssueListActivity extends AppCompatActivity
     @Click(R.id.actionAbout)
     void onAboutAction() {
         drawerLayout.closeDrawer(GravityCompat.START);
-        showNotImplemented();
+        showAboutDialog();
+    }
+
+    private void showAboutDialog() {
+        final MaterialDialog.Builder dialog = new MaterialDialog.Builder(this);
+        dialog.customView(R.layout.dialog_about_app, true);
+        dialog.cancelable(true);
+        final MaterialDialog build = dialog.build();
+        build.setOnShowListener(dialog1 -> {
+            ((TextView) build.findViewById(R.id.appVersion)).setText(BuildConfig.VERSION_NAME);
+            ((TextView) build.findViewById(R.id.copyright)).setText(getString(R.string.copyrightInfo, DateTime.now().getYear()));
+        });
+        build.show();
     }
 
     @Click(R.id.actionFeedback)

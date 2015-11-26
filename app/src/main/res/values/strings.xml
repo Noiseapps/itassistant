@@ -139,4 +139,7 @@
     <string name="selectSplit">Split by</string>
     <string name="nothingSelected">Nothing to show.\nSelect issue from the list to see the details.</string>
     <string name="issueUpdated">Issue updated</string>
+    <string name="aboutEmail">noiseapps@gmail.com</string>
+    <string name="aboutWebsite">http://www.noiseapps.cba.pl</string>
+    <string name="copyrightInfo">© Noiseapps %d</string>
 </resources>
