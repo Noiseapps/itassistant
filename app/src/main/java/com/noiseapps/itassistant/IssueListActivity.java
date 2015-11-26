@@ -357,7 +357,7 @@ public class IssueListActivity extends AppCompatActivity
         dialog.cancelable(true);
         final MaterialDialog build = dialog.build();
         build.setOnShowListener(dialog1 -> {
-            ((TextView) build.findViewById(R.id.appVersion)).setText(BuildConfig.VERSION_NAME);
+            ((TextView) build.findViewById(R.id.appVersion)).setText(getString(R.string.appVersion, BuildConfig.VERSION_NAME));
             ((TextView) build.findViewById(R.id.copyright)).setText(getString(R.string.copyrightInfo, DateTime.now().getYear()));
         });
         build.show();

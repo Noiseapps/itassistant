@@ -142,4 +142,5 @@
     <string name="aboutEmail">noiseapps@gmail.com</string>
     <string name="aboutWebsite">http://www.noiseapps.cba.pl</string>
     <string name="copyrightInfo">© Noiseapps %d</string>
+    <string name="appVersion">v. %s</string>
 </resources>
