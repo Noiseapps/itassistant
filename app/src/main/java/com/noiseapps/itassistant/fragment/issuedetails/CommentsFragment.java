@@ -14,6 +14,7 @@ import com.github.jorgecastilloprz.FABProgressCircle;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.CommentsAdapter;
 import com.noiseapps.itassistant.connector.JiraConnector;
+import com.noiseapps.itassistant.fragment.IssueDetailFragment;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comments;
@@ -33,7 +34,7 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 @EFragment(R.layout.fragment_comment_list)
-public class CommentsFragment extends Fragment {
+public class CommentsFragment extends Fragment implements IssueDetailFragment.DetailFragmentCallbacks {
 
     @Bean
     JiraConnector jiraConnector;
@@ -45,7 +46,6 @@ public class CommentsFragment extends Fragment {
     @ViewById
     View noCommentsView, loadingComments, errorView;
     private CommentsAdapter adapter;
-    private FragmentCallbacks parentFragment;
 
     @AfterViews
     void init() {
@@ -53,7 +53,6 @@ public class CommentsFragment extends Fragment {
     }
 
     private void initComments() {
-        parentFragment = (FragmentCallbacks) getParentFragment();
         adapter = new CommentsAdapter(getContext(), new ArrayList<>());
         commentsList.setLayoutManager(new LinearLayoutManager(getContext()));
 //        fabProgressCircle.setVisibility(View.GONE);
@@ -87,7 +86,6 @@ public class CommentsFragment extends Fragment {
         noCommentsView.setVisibility(View.VISIBLE);
     }
 
-    //    @Click(R.id.addCommentFab)
     void onAddCommentClick() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getString(R.string.postComment, issue.getKey()));
@@ -130,5 +128,11 @@ public class CommentsFragment extends Fragment {
             }
         });
         alertDialog.dismiss();
+    }
+
+    @Override
+    public void onFabClicked(FABProgressCircle circle) {
+        fabProgressCircle = circle;
+        onAddCommentClick();
     }
 }

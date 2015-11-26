@@ -4,12 +4,14 @@ import android.support.v4.app.Fragment;
 import android.widget.TextView;
 
 import com.akexorcist.roundcornerprogressbar.TextRoundCornerProgressBar;
+import com.github.jorgecastilloprz.FABProgressCircle;
 import com.noiseapps.itassistant.R;
+import com.noiseapps.itassistant.fragment.IssueDetailFragment;
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.Fields;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.utils.Consts;
-import com.noiseapps.itassistant.utils.FragmentCallbacks;
+import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
@@ -20,19 +22,16 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.joda.time.DateTime;
 
 @EFragment(R.layout.fragment_general_info)
-public class GeneralInfoFragment extends Fragment {
+public class GeneralInfoFragment extends Fragment implements IssueDetailFragment.DetailFragmentCallbacks {
     @ViewById
     TextView type, priority, labels, fixedInVersion, status, issueName, assignee, reporter, description, created, modified, version;
     @ViewById
     TextRoundCornerProgressBar estimated, left, logged;
     @FragmentArg
     Issue issue;
-    private FragmentCallbacks parentFragment;
 
     @AfterViews
     void init() {
-
-        parentFragment = (FragmentCallbacks) getParentFragment();
         final Fields issueFields = issue.getFields();
         setIssueDetailsData(issueFields);
         setProgressData(issueFields);
@@ -85,5 +84,10 @@ public class GeneralInfoFragment extends Fragment {
         logged.setMax(max);
         logged.setProgress(timeSpent);
         logged.setProgressText(spentDuration);
+    }
+
+    @Override
+    public void onFabClicked(FABProgressCircle circle) {
+        Logger.d("Add timetracking logic here");
     }
 }

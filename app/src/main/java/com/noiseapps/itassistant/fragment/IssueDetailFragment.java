@@ -52,6 +52,7 @@ public class IssueDetailFragment extends Fragment implements FragmentCallbacks {
     FloatingActionButton addWorkLogFab;
     private IssueDetailCallbacks callbacks;
     private DetailFragmentCallbacks childFragmentReceiver;
+    private PagerAdapter pagerAdapter;
 
     public interface DetailFragmentCallbacks {
         void onFabClicked(FABProgressCircle circle);
@@ -68,7 +69,7 @@ public class IssueDetailFragment extends Fragment implements FragmentCallbacks {
         }
         switch (page) {
             case 0:
-                addWorkLogFab.setImageResource(R.drawable.ic_add_white_24px);
+                addWorkLogFab.setImageResource(R.drawable.ic_timer_white_24dp);
                 break;
             case 1:
                 addWorkLogFab.setImageResource(R.drawable.ic_comment_white_24px);
@@ -88,7 +89,8 @@ public class IssueDetailFragment extends Fragment implements FragmentCallbacks {
         callbacks = (IssueDetailCallbacks) getActivity();
         setHasOptionsMenu(true);
         viewPager.setOffscreenPageLimit(3);
-        viewPager.setAdapter(new PagerAdapter());
+        pagerAdapter = new PagerAdapter();
+        viewPager.setAdapter(pagerAdapter);
         viewPager.addOnPageChangeListener(new PageChangeListener());
         tabLayout.setupWithViewPager(viewPager);
         viewPager.setCurrentItem(selectedTab, false);
@@ -160,6 +162,7 @@ public class IssueDetailFragment extends Fragment implements FragmentCallbacks {
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             selectedTab = position;
             setFabIcon(position);
+            childFragmentReceiver = (DetailFragmentCallbacks) pagerAdapter.getItem(position);
         }
 
         @Override

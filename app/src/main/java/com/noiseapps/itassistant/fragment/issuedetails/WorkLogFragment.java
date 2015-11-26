@@ -16,10 +16,10 @@ import com.github.jorgecastilloprz.FABProgressCircle;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.WorkLogAdapter;
 import com.noiseapps.itassistant.connector.JiraConnector;
+import com.noiseapps.itassistant.fragment.IssueDetailFragment;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogItem;
 import com.noiseapps.itassistant.utils.Consts;
-import com.noiseapps.itassistant.utils.FragmentCallbacks;
 import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
@@ -40,7 +40,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 @EFragment(R.layout.fragment_work_log)
-public class WorkLogFragment extends Fragment {
+public class WorkLogFragment extends Fragment implements IssueDetailFragment.DetailFragmentCallbacks {
 
     @Bean
     JiraConnector jiraConnector;
@@ -52,11 +52,9 @@ public class WorkLogFragment extends Fragment {
     @ViewById
     View noWorkLogsView, loadingWorkLogs, errorView;
     private WorkLogAdapter adapter;
-    private FragmentCallbacks parentFragment;
 
     @AfterViews
     void init() {
-        parentFragment = (FragmentCallbacks) getParentFragment();
         adapter = new WorkLogAdapter(getContext(), new ArrayList<>());
         workLogList.setLayoutManager(new LinearLayoutManager(getContext()));
         workLogList.setAdapter(adapter);
@@ -186,5 +184,11 @@ public class WorkLogFragment extends Fragment {
         workLogList.setVisibility(View.GONE);
         loadingWorkLogs.setVisibility(View.GONE);
         errorView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onFabClicked(FABProgressCircle circle) {
+        fabProgressCircle = circle;
+        onAddWorkLog();
     }
 }
