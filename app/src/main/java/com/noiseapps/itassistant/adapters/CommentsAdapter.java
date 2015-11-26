@@ -1,14 +1,11 @@
 package com.noiseapps.itassistant.adapters;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
-
-import java.util.Collections;
-import java.util.List;
 
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
@@ -16,13 +13,17 @@ import com.noiseapps.itassistant.utils.Consts;
 
 import org.joda.time.DateTime;
 
-public class CommentsAdapter extends BaseAdapter {
+import java.util.Collections;
+import java.util.List;
+
+public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHolder> {
     private final Context context;
     private final List<Comment> comments;
 
     public CommentsAdapter(Context context, List<Comment> comments) {
         this.context = context;
         this.comments = comments;
+        setHasStableIds(true);
         sort();
     }
 
@@ -35,38 +36,24 @@ public class CommentsAdapter extends BaseAdapter {
         return DateTime.parse(lhs.getCreated()).compareTo(DateTime.parse(rhs.getCreated()));
     }
 
-    @Override
-    public boolean hasStableIds() {
-        return true;
-    }
-
-    @Override
-    public int getCount() {
-        return comments.size();
-    }
-
-    @Override
     public Comment getItem(int position) {
         return comments.get(position);
     }
 
     @Override
-    public long getItemId(int position) {
-        return position;
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        final View convertView = LayoutInflater.from(context).inflate(R.layout.item_comment, parent, false);
+        return new ViewHolder(convertView);
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.item_comment, parent, false);
-            holder = new ViewHolder(convertView);
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
-        }
+    public void onBindViewHolder(ViewHolder holder, int position) {
         holder.bind(getItem(position));
-        return convertView;
+    }
+
+    @Override
+    public int getItemCount() {
+        return comments.size();
     }
 
     public void addItem(Comment comment) {
@@ -80,10 +67,11 @@ public class CommentsAdapter extends BaseAdapter {
         sort();
     }
 
-    private class ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder{
         TextView body, creator, date;
 
         public ViewHolder(View root) {
+            super(root);
             body = (TextView) root.findViewById(R.id.commentBody);
             creator = (TextView) root.findViewById(R.id.commentCreator);
             date = (TextView) root.findViewById(R.id.commentDate);

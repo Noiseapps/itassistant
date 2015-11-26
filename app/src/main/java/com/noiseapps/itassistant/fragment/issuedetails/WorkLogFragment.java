@@ -2,19 +2,15 @@ package com.noiseapps.itassistant.fragment.issuedetails;
 
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.noiseapps.itassistant.R;
@@ -23,16 +19,19 @@ import com.noiseapps.itassistant.connector.JiraConnector;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogItem;
 import com.noiseapps.itassistant.utils.Consts;
+import com.noiseapps.itassistant.utils.FragmentCallbacks;
 import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
-import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 import org.joda.time.MutableDateTime;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -48,18 +47,18 @@ public class WorkLogFragment extends Fragment {
     @FragmentArg
     Issue issue;
     @ViewById
-    ListView workLogList;
-    @ViewById
+    RecyclerView workLogList;
     FABProgressCircle fabProgressCircle;
-    @ViewById
-    FloatingActionButton addWorkLogFab;
     @ViewById
     View noWorkLogsView, loadingWorkLogs, errorView;
     private WorkLogAdapter adapter;
+    private FragmentCallbacks parentFragment;
 
     @AfterViews
     void init() {
+        parentFragment = (FragmentCallbacks) getParentFragment();
         adapter = new WorkLogAdapter(getContext(), new ArrayList<>());
+        workLogList.setLayoutManager(new LinearLayoutManager(getContext()));
         workLogList.setAdapter(adapter);
         initViewVisibility();
         getWorklogs();
@@ -74,13 +73,11 @@ public class WorkLogFragment extends Fragment {
     }
 
     private void initViewVisibility() {
-        fabProgressCircle.setVisibility(View.GONE);
         noWorkLogsView.setVisibility(View.GONE);
         workLogList.setVisibility(View.GONE);
         loadingWorkLogs.setVisibility(View.VISIBLE);
     }
 
-    @Click(R.id.addWorkLogFab)
     void onAddWorkLog() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getString(R.string.addWorkLog, issue.getKey()));
@@ -99,15 +96,12 @@ public class WorkLogFragment extends Fragment {
         final MutableDateTime dateTime = MutableDateTime.now();
         editWorkLog.setText(dateTime.toString(Consts.DATE_FORMAT));
         editWorkLog.setOnClickListener(v -> {
-            final DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
-                @Override
-                public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                    dateTime.setYear(year);
-                    dateTime.setMonthOfYear(monthOfYear + 1);
-                    dateTime.setDayOfMonth(dayOfMonth);
-                    dateTime.setMillisOfDay(0);
-                    editWorkLog.setText(dateTime.toString(Consts.DATE_FORMAT));
-                }
+            final DatePickerDialog.OnDateSetListener onDateSetListener = (view, year, monthOfYear, dayOfMonth) -> {
+                dateTime.setYear(year);
+                dateTime.setMonthOfYear(monthOfYear + 1);
+                dateTime.setDayOfMonth(dayOfMonth);
+                dateTime.setMillisOfDay(0);
+                editWorkLog.setText(dateTime.toString(Consts.DATE_FORMAT));
             };
             final DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), onDateSetListener, dateTime.getYear(), dateTime.getMonthOfYear() - 1, dateTime.getDayOfMonth());
             datePickerDialog.getDatePicker().setMaxDate(dateTime.getMillis());
@@ -115,7 +109,6 @@ public class WorkLogFragment extends Fragment {
         });
 
         positiveButton.setOnClickListener(v -> {
-            final View dialogRoot = alertDialog.findViewById(R.id.dialogRoot);
             final EditText workedText = (EditText) alertDialog.findViewById(R.id.workedText);
             final EditText remainingText = (EditText) alertDialog.findViewById(R.id.remainingText);
             final EditText commentText = (EditText) alertDialog.findViewById(R.id.commentText);
@@ -127,7 +120,7 @@ public class WorkLogFragment extends Fragment {
                 logItem.setComment(commentText.getText().toString());
                 logItem.setTimeSpent(timeSpent);
                 logItem.setStarted(dateTime.toString(Consts.TIMESTAMP_FORMAT));
-                onPositiveButtonClicked(logItem, newEstimate, alertDialog, dialogRoot);
+                onPositiveButtonClicked(logItem, newEstimate, alertDialog);
             }
         });
         negativeButton.setOnClickListener(v -> alertDialog.dismiss());
@@ -150,15 +143,13 @@ public class WorkLogFragment extends Fragment {
         return !workLog.isEmpty() && Consts.PATTERN.matcher(workLog).matches();
     }
 
-    private void onPositiveButtonClicked(WorkLogItem logItem, String newEstimate, final AlertDialog alertDialog, final View dialogRoot) {
+    private void onPositiveButtonClicked(WorkLogItem logItem, String newEstimate, final AlertDialog alertDialog) {
         fabProgressCircle.show();
-        addWorkLogFab.setEnabled(false);
         jiraConnector.postIssueWorkLog(issue.getId(), newEstimate, logItem, new Callback<WorkLogItem>() {
             @Override
             public void success(WorkLogItem logItem, Response response) {
                 fabProgressCircle.beginFinalAnimation();
                 Snackbar.make(fabProgressCircle, R.string.workLogAdded, Snackbar.LENGTH_LONG).show();
-                addWorkLogFab.setEnabled(true);
                 adapter.addItem(logItem);
                 noWorkLogsView.setVisibility(View.GONE);
                 workLogList.setVisibility(View.VISIBLE);
@@ -166,7 +157,6 @@ public class WorkLogFragment extends Fragment {
 
             @Override
             public void failure(RetrofitError error) {
-                addWorkLogFab.setEnabled(true);
                 fabProgressCircle.hide();
                 Snackbar.make(fabProgressCircle, R.string.failedToLogWork, Snackbar.LENGTH_LONG).show();
             }
@@ -181,7 +171,7 @@ public class WorkLogFragment extends Fragment {
     }
 
     private void onWorkLogsDownloaded(List<WorkLogItem> worklogs) {
-        fabProgressCircle.setVisibility(View.VISIBLE);
+//        fabProgressCircle.setVisibility(View.VISIBLE);
         loadingWorkLogs.setVisibility(View.GONE);
         if (worklogs.isEmpty()) {
             showEmptyView();

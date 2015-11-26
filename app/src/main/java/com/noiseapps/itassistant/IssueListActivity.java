@@ -199,6 +199,10 @@ public class IssueListActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+        if(drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+            return;
+        }
         final boolean isSearchOpen = listFragment.isSearchViewOpen();
         if(isSearchOpen) {
             listFragment.closeSearchView();

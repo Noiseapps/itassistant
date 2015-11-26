@@ -1,19 +1,28 @@
 package com.noiseapps.itassistant.fragment;
 
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
+import com.github.jorgecastilloprz.FABProgressCircle;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.connector.JiraConnector;
 import com.noiseapps.itassistant.fragment.issuedetails.CommentsFragment_;
 import com.noiseapps.itassistant.fragment.issuedetails.GeneralInfoFragment_;
 import com.noiseapps.itassistant.fragment.issuedetails.WorkLogFragment_;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
+import com.noiseapps.itassistant.utils.FragmentCallbacks;
+import com.noiseapps.itassistant.utils.views.MyFabProgressCircle;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.InstanceState;
@@ -23,7 +32,7 @@ import org.androidannotations.annotations.ViewById;
 
 @EFragment(R.layout.fragment_issue_detail)
 @OptionsMenu(R.menu.menu_issue_details)
-public class IssueDetailFragment extends Fragment {
+public class IssueDetailFragment extends Fragment implements FragmentCallbacks {
 
     @InstanceState
     int selectedTab;
@@ -35,7 +44,40 @@ public class IssueDetailFragment extends Fragment {
     ViewPager viewPager;
     @ViewById(R.id.detailTabLayout)
     TabLayout tabLayout;
+    @ViewById(R.id.detail_toolbar)
+    Toolbar toolbar;
+    @ViewById
+    MyFabProgressCircle fabProgressCircle;
+    @ViewById
+    FloatingActionButton addWorkLogFab;
     private IssueDetailCallbacks callbacks;
+    private DetailFragmentCallbacks childFragmentReceiver;
+
+    public interface DetailFragmentCallbacks {
+        void onFabClicked(FABProgressCircle circle);
+    }
+
+    @Click(R.id.addWorkLogFab)
+    void performFabAction() {
+        childFragmentReceiver.onFabClicked(fabProgressCircle);
+    }
+
+    private void setFabIcon(int page) {
+        if(fabProgressCircle.isCollapsed()){
+            fabProgressCircle.expand();
+        }
+        switch (page) {
+            case 0:
+                addWorkLogFab.setImageResource(R.drawable.ic_add_white_24px);
+                break;
+            case 1:
+                addWorkLogFab.setImageResource(R.drawable.ic_comment_white_24px);
+                break;
+            case 2:
+                addWorkLogFab.setImageResource(R.drawable.ic_save_white_24px);
+                break;
+        }
+    }
 
     public interface IssueDetailCallbacks {
         void onEditIssue(Issue issue);
@@ -50,6 +92,19 @@ public class IssueDetailFragment extends Fragment {
         viewPager.addOnPageChangeListener(new PageChangeListener());
         tabLayout.setupWithViewPager(viewPager);
         viewPager.setCurrentItem(selectedTab, false);
+        initToolbar();
+    }
+
+    private void initToolbar() {
+        final AppCompatActivity activity = (AppCompatActivity) getActivity();
+        activity.setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(ContextCompat.getColor(activity, R.color.white));
+        final ActionBar supportActionBar = activity.getSupportActionBar();
+        if (supportActionBar != null) {
+            supportActionBar.setDisplayHomeAsUpEnabled(true);
+            supportActionBar.setHomeButtonEnabled(true);
+            supportActionBar.setTitle(String.format("%s (%s)", issue.getFields().getSummary(), issue.getKey()));
+        }
     }
 
     @OptionsItem(R.id.action_edit)
@@ -104,6 +159,7 @@ public class IssueDetailFragment extends Fragment {
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             selectedTab = position;
+            setFabIcon(position);
         }
 
         @Override
@@ -113,7 +169,11 @@ public class IssueDetailFragment extends Fragment {
 
         @Override
         public void onPageScrollStateChanged(int state) {
-
+            if(state == ViewPager.SCROLL_STATE_DRAGGING) {
+                addWorkLogFab.setEnabled(false);
+            } else if(state == ViewPager.SCROLL_STATE_IDLE) {
+                addWorkLogFab.setEnabled(true);
+            }
         }
     }
 }

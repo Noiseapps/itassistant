@@ -28,10 +28,10 @@ public class AssistantApplication extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+        AnalyticsTrackers.initialize(this);
         JodaTimeAndroid.init(this);
         Once.initialise(this);
         ACRA.init(this);
-        AnalyticsTrackers.initialize(this);
         final Map<String, String> event = new HitBuilders.EventBuilder(Analytics.CATEGORIES.APP, Analytics.ACTIONS.OPEN).build();
         AnalyticsTrackers.getTracker().send(event);
         GoogleAnalytics.getInstance(this).dispatchLocalHits();

@@ -9,6 +9,7 @@ import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.Fields;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.utils.Consts;
+import com.noiseapps.itassistant.utils.FragmentCallbacks;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
@@ -26,9 +27,12 @@ public class GeneralInfoFragment extends Fragment {
     TextRoundCornerProgressBar estimated, left, logged;
     @FragmentArg
     Issue issue;
+    private FragmentCallbacks parentFragment;
 
     @AfterViews
     void init() {
+
+        parentFragment = (FragmentCallbacks) getParentFragment();
         final Fields issueFields = issue.getFields();
         setIssueDetailsData(issueFields);
         setProgressData(issueFields);
@@ -50,7 +54,7 @@ public class GeneralInfoFragment extends Fragment {
 
     private void setPeopleData(Fields issueFields) {
         final Assignee assignee = issueFields.getAssignee();
-        if(assignee != null) {
+        if (assignee != null) {
             this.assignee.setText(assignee.getDisplayName());
         } else {
             this.assignee.setText(R.string.notAssigned);

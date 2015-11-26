@@ -20,8 +20,6 @@ import org.androidannotations.annotations.ViewById;
 public class IssueDetailActivity extends AppCompatActivity implements IssueDetailFragment.IssueDetailCallbacks {
     @Extra
     Issue issue;
-    @ViewById(R.id.detail_toolbar)
-    Toolbar toolbar;
 
     @Override
     public void onEditIssue(Issue issue) {
@@ -32,7 +30,6 @@ public class IssueDetailActivity extends AppCompatActivity implements IssueDetai
     @AfterViews
     void init() {
         setTablet();
-        initToolbar();
         final IssueDetailFragment fragment = IssueDetailFragment_.builder().issue(issue).build();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.issue_detail_container, fragment)
@@ -45,17 +42,6 @@ public class IssueDetailActivity extends AppCompatActivity implements IssueDetai
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
-        }
-    }
-
-    private void initToolbar() {
-        setSupportActionBar(toolbar);
-        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
-        final ActionBar supportActionBar = getSupportActionBar();
-        if (supportActionBar != null) {
-            supportActionBar.setDisplayHomeAsUpEnabled(true);
-            supportActionBar.setHomeButtonEnabled(true);
-            supportActionBar.setTitle(String.format("%s (%s)", issue.getFields().getSummary(), issue.getKey()));
         }
     }
 }

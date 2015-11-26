@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:layout_height="match_parent">
 
     <LinearLayout
@@ -58,30 +59,9 @@
             android:textAppearance="?android:attr/textAppearanceLarge" />
     </LinearLayout>
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/workLogList"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:divider="@null" />
-
-    <com.noiseapps.itassistant.utils.views.MyFabProgressCircle
-        android:id="@+id/fabProgressCircle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right|end"
-        app:arcColor="@color/colorPrimary"
-        app:arcWidth="4dp"
-        app:finalIcon="@drawable/ic_done"
-        app:layout_behavior="com.noiseapps.itassistant.utils.FabBehavior"
-        app:reusable="true">
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/addWorkLogFab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|right|end"
-            android:layout_margin="@dimen/fabMargin"
-            android:elevation="6dp"
-            android:src="@drawable/ic_add_white_24px" />
-    </com.noiseapps.itassistant.utils.views.MyFabProgressCircle>
-</android.support.design.widget.CoordinatorLayout>
+</FrameLayout>

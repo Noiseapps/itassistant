@@ -1,15 +1,11 @@
 package com.noiseapps.itassistant.adapters;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogItem;
@@ -17,7 +13,11 @@ import com.noiseapps.itassistant.utils.Consts;
 
 import org.joda.time.DateTime;
 
-public class WorkLogAdapter extends BaseAdapter {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class WorkLogAdapter extends RecyclerView.Adapter<WorkLogAdapter.ViewHolder> {
 
     private final Context context;
     private final ArrayList<WorkLogItem> workLogItems;
@@ -26,6 +26,7 @@ public class WorkLogAdapter extends BaseAdapter {
         this.context = context;
         this.workLogItems = workLogItems;
         sort();
+        setHasStableIds(true);
     }
 
     public void sort() {
@@ -37,38 +38,24 @@ public class WorkLogAdapter extends BaseAdapter {
         return DateTime.parse(lhs.getStarted()).compareTo(DateTime.parse(rhs.getStarted()));
     }
 
-    @Override
-    public boolean hasStableIds() {
-        return true;
-    }
-
-    @Override
-    public int getCount() {
-        return workLogItems.size();
-    }
-
-    @Override
     public WorkLogItem getItem(int position) {
         return workLogItems.get(position);
     }
 
     @Override
-    public long getItemId(int position) {
-        return position;
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View convertView = LayoutInflater.from(context).inflate(R.layout.item_comment, parent, false);
+        return new ViewHolder(convertView);
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.item_comment, parent, false);
-            holder = new ViewHolder(convertView);
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
-        }
+    public void onBindViewHolder(ViewHolder holder, int position) {
         holder.bind(getItem(position));
-        return convertView;
+    }
+
+    @Override
+    public int getItemCount() {
+        return workLogItems.size();
     }
 
     public void addItem(WorkLogItem workLogItem) {
@@ -83,10 +70,11 @@ public class WorkLogAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    private class ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
         TextView body, creator, date;
 
         public ViewHolder(View root) {
+            super(root);
             body = (TextView) root.findViewById(R.id.commentBody);
             creator = (TextView) root.findViewById(R.id.commentCreator);
             date = (TextView) root.findViewById(R.id.commentDate);
