@@ -60,11 +60,11 @@ public class IssueDetailFragment extends Fragment implements FragmentCallbacks {
 
     public void setTimetrackingStarted() {
         setFabIcon(0);
-        Snackbar.make(fabProgressCircle, getString(R.string.progressStarted, issue.getId()), Snackbar.LENGTH_LONG).show();
+        Snackbar.make(fabProgressCircle, getString(R.string.progressStarted, issue.getKey()), Snackbar.LENGTH_LONG).show();
     }
     public void setTimetrackingStopped() {
         setFabIcon(0);
-        Snackbar.make(fabProgressCircle, getString(R.string.progressCleared, issue.getId()), Snackbar.LENGTH_LONG).show();
+        Snackbar.make(fabProgressCircle, getString(R.string.progressCleared, issue.getKey()), Snackbar.LENGTH_LONG).show();
     }
 
     public interface DetailFragmentCallbacks {
