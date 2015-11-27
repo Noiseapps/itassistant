@@ -1,19 +1,22 @@
 package com.noiseapps.itassistant.fragment.issuedetails;
 
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.widget.TextView;
 
 import com.akexorcist.roundcornerprogressbar.TextRoundCornerProgressBar;
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.noiseapps.itassistant.R;
+import com.noiseapps.itassistant.database.PreferencesDAO;
 import com.noiseapps.itassistant.fragment.IssueDetailFragment;
+import com.noiseapps.itassistant.model.TimeTrackingInfo;
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.Fields;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.utils.Consts;
-import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
@@ -86,8 +89,45 @@ public class GeneralInfoFragment extends Fragment implements IssueDetailFragment
         logged.setProgressText(spentDuration);
     }
 
+    @Bean
+    PreferencesDAO preferencesDAO;
+
     @Override
     public void onFabClicked(FABProgressCircle circle) {
-        Logger.d("Add timetracking logic here");
+        TimeTrackingInfo timeTrackingInfo = preferencesDAO.getTimeTrackingInfo();
+        if(timeTrackingInfo == null || timeTrackingInfo.getIssue() == null) {
+            timeTrackingInfo = new TimeTrackingInfo(issue, DateTime.now().getMillis());
+            preferencesDAO.setTimeTrackingInfo(timeTrackingInfo);
+            ((IssueDetailFragment) getParentFragment()).setTimetrackingStarted();
+        } else {
+            if(timeTrackingInfo.getIssue().getKey().equalsIgnoreCase(issue.getKey())){
+                showStopConfirmationDialog();
+            } else {
+                showStopAndReplaceIssueDialog();
+            }
+        }
+    }
+
+    private void showStopAndReplaceIssueDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.confirmStop).
+                setMessage(getContext().getString(R.string.confirmStopMsg, issue.getId())).
+                setPositiveButton(R.string.save, (dialog, which) -> {
+                    // todo log work, update worklog fragment
+                    preferencesDAO.setTimeTrackingInfo(null);
+                    ((IssueDetailFragment) getParentFragment()).setTimetrackingStopped();
+                }).
+                setNegativeButton(R.string.dontSave, (dialog, which) -> {
+                    preferencesDAO.setTimeTrackingInfo(null);
+                    ((IssueDetailFragment) getParentFragment()).setTimetrackingStopped();
+                }).
+                setNeutralButton(R.string.cancel, (dialog, which) -> {
+                    dialog.dismiss();
+                });
+        builder.show();
+    }
+
+    private void showStopConfirmationDialog() {
+
     }
 }
