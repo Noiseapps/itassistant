@@ -1,6 +1,7 @@
 package com.noiseapps.itassistant.fragment;
 
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -13,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.connector.JiraConnector;
+import com.noiseapps.itassistant.database.PreferencesDAO;
 import com.noiseapps.itassistant.fragment.issuedetails.CommentsFragment_;
 import com.noiseapps.itassistant.fragment.issuedetails.GeneralInfoFragment_;
 import com.noiseapps.itassistant.fragment.issuedetails.WorkLogFragment_;
@@ -50,9 +52,20 @@ public class IssueDetailFragment extends Fragment implements FragmentCallbacks {
     MyFabProgressCircle fabProgressCircle;
     @ViewById
     FloatingActionButton addWorkLogFab;
+    @Bean
+    PreferencesDAO preferencesDAO;
     private IssueDetailCallbacks callbacks;
     private DetailFragmentCallbacks childFragmentReceiver;
     private PagerAdapter pagerAdapter;
+
+    public void setTimetrackingStarted() {
+        setFabIcon(0);
+        Snackbar.make(fabProgressCircle, getString(R.string.progressStarted, issue.getId()), Snackbar.LENGTH_LONG).show();
+    }
+    public void setTimetrackingStopped() {
+        setFabIcon(0);
+        Snackbar.make(fabProgressCircle, getString(R.string.progressCleared, issue.getId()), Snackbar.LENGTH_LONG).show();
+    }
 
     public interface DetailFragmentCallbacks {
         void onFabClicked(FABProgressCircle circle);
@@ -69,7 +82,13 @@ public class IssueDetailFragment extends Fragment implements FragmentCallbacks {
         }
         switch (page) {
             case 0:
-                addWorkLogFab.setImageResource(R.drawable.ic_timer_white_24dp);
+                if(preferencesDAO.getTimeTrackingInfo() == null ||
+                        preferencesDAO.getTimeTrackingInfo().getIssue() == null ||
+                        !preferencesDAO.getTimeTrackingInfo().getIssue().getId().equalsIgnoreCase(issue.getId())){
+                    addWorkLogFab.setImageResource(R.drawable.ic_timer_white_24dp);
+                } else {
+                    addWorkLogFab.setImageResource(R.drawable.ic_timer_off_white_24dp);
+                }
                 break;
             case 1:
                 addWorkLogFab.setImageResource(R.drawable.ic_comment_white_24px);

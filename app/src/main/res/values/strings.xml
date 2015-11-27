@@ -143,4 +143,10 @@
     <string name="aboutWebsite">http://www.noiseapps.cba.pl</string>
     <string name="copyrightInfo">© Noiseapps %d</string>
     <string name="appVersion">v. %s</string>
+    <string name="confirmStop">Save work log</string>
+    <string name="progressStarted">Time tracker for %s started</string>
+    <string name="confirmStopMsg">Are you sure you want to stop progress and log time to %s?</string>
+    <string name="save">Close and save</string>
+    <string name="dontSave">Close, but don\'t save</string>
+    <string name="progressCleared">Timetracking data cleared</string>
 </resources>

@@ -11,4 +11,7 @@ public interface Preferences {
 
     @DefaultString("[]")
     String accounts();
+
+    @DefaultString("{}")
+    String timeTracking();
 }
