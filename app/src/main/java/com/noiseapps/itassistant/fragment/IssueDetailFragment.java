@@ -81,14 +81,12 @@ public class IssueDetailFragment extends Fragment implements FragmentCallbacks {
         WorkLogItem item = new WorkLogItem();
         item.setStarted(new DateTime(timeTrackingInfo.getStarted()).toString(Consts.TIMESTAMP_FORMAT));
         item.setTimeSpentSeconds(timeTrackEnd);
-        jiraConnector.postIssueWorkLog(issue.getId(), "", item, new Callback<WorkLogItem>() {
+        item.setComment("logged");
+        jiraConnector.postIssueWorkLog(issue.getId(), "0", item, new Callback<WorkLogItem>() {
             @Override
             public void success(WorkLogItem logItem, Response response) {
                 fabProgressCircle.beginFinalAnimation();
                 Snackbar.make(fabProgressCircle, R.string.workLogAdded, Snackbar.LENGTH_LONG).show();
-                adapter.addItem(logItem);
-                noWorkLogsView.setVisibility(View.GONE);
-                workLogList.setVisibility(View.VISIBLE);
             }
 
             @Override
