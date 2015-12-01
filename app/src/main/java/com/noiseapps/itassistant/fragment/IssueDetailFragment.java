@@ -10,6 +10,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.noiseapps.itassistant.R;
@@ -18,7 +19,10 @@ import com.noiseapps.itassistant.database.PreferencesDAO;
 import com.noiseapps.itassistant.fragment.issuedetails.CommentsFragment_;
 import com.noiseapps.itassistant.fragment.issuedetails.GeneralInfoFragment_;
 import com.noiseapps.itassistant.fragment.issuedetails.WorkLogFragment_;
+import com.noiseapps.itassistant.model.TimeTrackingInfo;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
+import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogItem;
+import com.noiseapps.itassistant.utils.Consts;
 import com.noiseapps.itassistant.utils.FragmentCallbacks;
 import com.noiseapps.itassistant.utils.views.MyFabProgressCircle;
 
@@ -31,6 +35,11 @@ import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.ViewById;
+import org.joda.time.DateTime;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 @EFragment(R.layout.fragment_issue_detail)
 @OptionsMenu(R.menu.menu_issue_details)
@@ -67,6 +76,30 @@ public class IssueDetailFragment extends Fragment implements FragmentCallbacks {
         Snackbar.make(fabProgressCircle, getString(R.string.progressCleared, issue.getKey()), Snackbar.LENGTH_LONG).show();
     }
 
+    public void setTimetrackingStopped(TimeTrackingInfo timeTrackingInfo, int timeTrackEnd) {
+        fabProgressCircle.show();
+        WorkLogItem item = new WorkLogItem();
+        item.setStarted(new DateTime(timeTrackingInfo.getStarted()).toString(Consts.TIMESTAMP_FORMAT));
+        item.setTimeSpentSeconds(timeTrackEnd);
+        jiraConnector.postIssueWorkLog(issue.getId(), "", item, new Callback<WorkLogItem>() {
+            @Override
+            public void success(WorkLogItem logItem, Response response) {
+                fabProgressCircle.beginFinalAnimation();
+                Snackbar.make(fabProgressCircle, R.string.workLogAdded, Snackbar.LENGTH_LONG).show();
+                adapter.addItem(logItem);
+                noWorkLogsView.setVisibility(View.GONE);
+                workLogList.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fabProgressCircle.hide();
+                Snackbar.make(fabProgressCircle, R.string.failedToLogWork, Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
+
+
     public interface DetailFragmentCallbacks {
         void onFabClicked(FABProgressCircle circle);
     }
@@ -83,8 +116,7 @@ public class IssueDetailFragment extends Fragment implements FragmentCallbacks {
         switch (page) {
             case 0:
                 if(preferencesDAO.getTimeTrackingInfo() == null ||
-                        preferencesDAO.getTimeTrackingInfo().getIssue() == null ||
-                        !preferencesDAO.getTimeTrackingInfo().getIssue().getId().equalsIgnoreCase(issue.getId())){
+                        preferencesDAO.getTimeTrackingInfo().getIssue() == null){
                     addWorkLogFab.setImageResource(R.drawable.ic_timer_white_24dp);
                 } else {
                     addWorkLogFab.setImageResource(R.drawable.ic_timer_off_white_24dp);

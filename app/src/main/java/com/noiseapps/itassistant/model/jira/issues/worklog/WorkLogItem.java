@@ -7,11 +7,9 @@ public class WorkLogItem {
     private Author author;
 
     private String comment;
-
     private String started;
-
     private String timeSpent;
-
+    private int timeSpentSeconds;
     private String id;
 
     @Override
@@ -21,7 +19,8 @@ public class WorkLogItem {
                 ", comment='" + comment + '\'' +
                 ", started='" + started + '\'' +
                 ", timeSpent='" + timeSpent + '\'' +
-                ", id=" + id +
+                ", timeSpentSeconds=" + timeSpentSeconds +
+                ", id='" + id + '\'' +
                 '}';
     }
 
@@ -32,6 +31,7 @@ public class WorkLogItem {
 
         WorkLogItem that = (WorkLogItem) o;
 
+        if (timeSpentSeconds != that.timeSpentSeconds) return false;
         if (author != null ? !author.equals(that.author) : that.author != null) return false;
         if (comment != null ? !comment.equals(that.comment) : that.comment != null) return false;
         if (started != null ? !started.equals(that.started) : that.started != null) return false;
@@ -47,8 +47,18 @@ public class WorkLogItem {
         result = 31 * result + (comment != null ? comment.hashCode() : 0);
         result = 31 * result + (started != null ? started.hashCode() : 0);
         result = 31 * result + (timeSpent != null ? timeSpent.hashCode() : 0);
+        result = 31 * result + timeSpentSeconds;
         result = 31 * result + (id != null ? id.hashCode() : 0);
         return result;
+    }
+
+    public int getTimeSpentSeconds() {
+
+        return timeSpentSeconds;
+    }
+
+    public void setTimeSpentSeconds(int timeSpentSeconds) {
+        this.timeSpentSeconds = timeSpentSeconds;
     }
 
     public Author getAuthor() {

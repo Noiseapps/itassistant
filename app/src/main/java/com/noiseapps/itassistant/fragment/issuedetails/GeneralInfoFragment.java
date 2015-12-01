@@ -14,6 +14,7 @@ import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.Fields;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.utils.Consts;
+import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -23,6 +24,8 @@ import org.androidannotations.annotations.ViewById;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.joda.time.DateTime;
+
+import java.util.concurrent.TimeUnit;
 
 @EFragment(R.layout.fragment_general_info)
 public class GeneralInfoFragment extends Fragment implements IssueDetailFragment.DetailFragmentCallbacks {
@@ -100,22 +103,21 @@ public class GeneralInfoFragment extends Fragment implements IssueDetailFragment
             preferencesDAO.setTimeTrackingInfo(timeTrackingInfo);
             ((IssueDetailFragment) getParentFragment()).setTimetrackingStarted();
         } else {
-            if(timeTrackingInfo.getIssue().getKey().equalsIgnoreCase(issue.getKey())){
-                showStopConfirmationDialog();
-            } else {
-                showStopAndReplaceIssueDialog();
-            }
+            showStopAndReplaceIssueDialog();
         }
     }
 
     private void showStopAndReplaceIssueDialog() {
+        final TimeTrackingInfo timeTrackingInfo = preferencesDAO.getTimeTrackingInfo();
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.confirmStop).
-                setMessage(getContext().getString(R.string.confirmStopMsg, issue.getId())).
+                setMessage(getContext().getString(R.string.confirmStopMsg, timeTrackingInfo.getIssue().getKey())).
                 setPositiveButton(R.string.save, (dialog, which) -> {
-                    // todo log work, update worklog fragment
+                    final long timeTrackEnd = System.currentTimeMillis();
+                    final long trackedSeconds = TimeUnit.MILLISECONDS.toSeconds((timeTrackEnd - timeTrackingInfo.getStarted()));
+                    Logger.d("Tracked : " + trackedSeconds + "s");
                     preferencesDAO.setTimeTrackingInfo(null);
-                    ((IssueDetailFragment) getParentFragment()).setTimetrackingStopped();
+                    ((IssueDetailFragment) getParentFragment()).setTimetrackingStopped(timeTrackingInfo, (int) trackedSeconds);
                 }).
                 setNegativeButton(R.string.dontSave, (dialog, which) -> {
                     preferencesDAO.setTimeTrackingInfo(null);
@@ -125,9 +127,5 @@ public class GeneralInfoFragment extends Fragment implements IssueDetailFragment
                     dialog.dismiss();
                 });
         builder.show();
-    }
-
-    private void showStopConfirmationDialog() {
-
     }
 }
