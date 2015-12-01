@@ -9,7 +9,7 @@ public class WorkLogItem {
     private String comment;
     private String started;
     private String timeSpent;
-    private int timeSpentSeconds;
+    private Integer timeSpentSeconds;
     private String id;
 
     @Override

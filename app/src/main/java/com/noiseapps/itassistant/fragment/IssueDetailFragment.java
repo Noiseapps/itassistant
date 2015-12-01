@@ -76,13 +76,9 @@ public class IssueDetailFragment extends Fragment implements FragmentCallbacks {
         Snackbar.make(fabProgressCircle, getString(R.string.progressCleared, issue.getKey()), Snackbar.LENGTH_LONG).show();
     }
 
-    public void setTimetrackingStopped(TimeTrackingInfo timeTrackingInfo, int timeTrackEnd) {
+    public void setTimetrackingStopped(WorkLogItem logItem) {
         fabProgressCircle.show();
-        WorkLogItem item = new WorkLogItem();
-        item.setStarted(new DateTime(timeTrackingInfo.getStarted()).toString(Consts.TIMESTAMP_FORMAT));
-        item.setTimeSpentSeconds(timeTrackEnd);
-        item.setComment("logged");
-        jiraConnector.postIssueWorkLog(issue.getId(), "0", item, new Callback<WorkLogItem>() {
+        jiraConnector.postIssueWorkLog(issue.getId(), "0", logItem, new Callback<WorkLogItem>() {
             @Override
             public void success(WorkLogItem logItem, Response response) {
                 fabProgressCircle.beginFinalAnimation();
