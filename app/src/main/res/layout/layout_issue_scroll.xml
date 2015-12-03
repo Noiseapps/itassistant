@@ -20,6 +20,7 @@
             android:text="@string/issueType"
             android:clickable="true"
             android:focusable="true"
+            android:scrollHorizontally="true"
             android:singleLine="true"
             android:ellipsize="marquee"
             android:textAppearance="?android:attr/textAppearanceLarge"

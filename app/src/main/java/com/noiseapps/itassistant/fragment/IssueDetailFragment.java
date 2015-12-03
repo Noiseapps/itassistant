@@ -10,7 +10,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.noiseapps.itassistant.R;
@@ -19,10 +18,8 @@ import com.noiseapps.itassistant.database.PreferencesDAO;
 import com.noiseapps.itassistant.fragment.issuedetails.CommentsFragment_;
 import com.noiseapps.itassistant.fragment.issuedetails.GeneralInfoFragment_;
 import com.noiseapps.itassistant.fragment.issuedetails.WorkLogFragment_;
-import com.noiseapps.itassistant.model.TimeTrackingInfo;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.issues.worklog.WorkLogItem;
-import com.noiseapps.itassistant.utils.Consts;
 import com.noiseapps.itassistant.utils.FragmentCallbacks;
 import com.noiseapps.itassistant.utils.views.MyFabProgressCircle;
 
@@ -35,7 +32,6 @@ import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.ViewById;
-import org.joda.time.DateTime;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -78,7 +74,7 @@ public class IssueDetailFragment extends Fragment implements FragmentCallbacks {
 
     public void setTimetrackingStopped(WorkLogItem logItem) {
         fabProgressCircle.show();
-        jiraConnector.postIssueWorkLog(issue.getId(), "0", logItem, new Callback<WorkLogItem>() {
+        jiraConnector.postIssueWorkLog(issue.getId(), getString(R.string.emptyTime), logItem, new Callback<WorkLogItem>() {
             @Override
             public void success(WorkLogItem logItem, Response response) {
                 fabProgressCircle.beginFinalAnimation();

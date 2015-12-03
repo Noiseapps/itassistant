@@ -149,4 +149,8 @@
     <string name="save">Close and save</string>
     <string name="dontSave">Close, but don\'t save</string>
     <string name="progressCleared">Timetracking data cleared</string>
+    <string name="workingOnIssue">Working on issue %s</string>
+    <string name="emptyTime">0m</string>
+    <string name="issueTitle">Title</string>
+    <string name="issueKey">Key</string>
 </resources>

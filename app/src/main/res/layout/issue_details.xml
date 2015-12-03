@@ -9,11 +9,62 @@
     android:padding="16dp">
 
     <TextView
-        android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/issueDetails"
         android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_margin="8dp"-->
+        <!--android:orientation="horizontal">-->
+
+        <!--<TextView-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:textStyle="bold"-->
+            <!--style="@style/AppTheme.LabelTheme"-->
+            <!--android:text="@string/issueKey"-->
+            <!--android:textAppearance="?android:attr/textAppearanceMedium"/>-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/key"-->
+            <!--android:layout_weight="2"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="@string/issueDetails"-->
+            <!--android:gravity="right"-->
+            <!--android:textAppearance="?android:attr/textAppearanceMedium"/>-->
+    <!--</LinearLayout>-->
+
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_margin="8dp"-->
+        <!--android:orientation="horizontal">-->
+
+        <!--<TextView-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:textStyle="bold"-->
+            <!--style="@style/AppTheme.LabelTheme"-->
+            <!--android:text="@string/issueTitle"-->
+            <!--android:textAppearance="?android:attr/textAppearanceMedium"/>-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/title"-->
+            <!--android:layout_weight="2"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="@string/issueDetails"-->
+            <!--android:gravity="right"-->
+            <!--android:textAppearance="?android:attr/textAppearanceMedium"/>-->
+    <!--</LinearLayout>-->
 
     <LinearLayout
         android:layout_width="match_parent"
