@@ -12,6 +12,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.WorkLogAdapter;
@@ -29,9 +32,6 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 import org.joda.time.MutableDateTime;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -88,6 +88,9 @@ public class WorkLogFragment extends Fragment implements IssueDetailFragment.Det
     }
 
     private void onDialogShown(final AlertDialog alertDialog) {
+        final EditText workedText = (EditText) alertDialog.findViewById(R.id.workedText);
+        final EditText remainingText = (EditText) alertDialog.findViewById(R.id.remainingText);
+        final EditText commentText = (EditText) alertDialog.findViewById(R.id.commentText);
         final Button positiveButton = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
         final Button negativeButton = alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
         final TextView editWorkLog = (TextView) alertDialog.findViewById(R.id.editWorkLogDate);
@@ -107,9 +110,6 @@ public class WorkLogFragment extends Fragment implements IssueDetailFragment.Det
         });
 
         positiveButton.setOnClickListener(v -> {
-            final EditText workedText = (EditText) alertDialog.findViewById(R.id.workedText);
-            final EditText remainingText = (EditText) alertDialog.findViewById(R.id.remainingText);
-            final EditText commentText = (EditText) alertDialog.findViewById(R.id.commentText);
             final String newEstimate = remainingText.getText().toString().trim();
             final String timeSpent = workedText.getText().toString().trim();
             boolean valid = validateInput(newEstimate, timeSpent, workedText, remainingText);
@@ -122,6 +122,9 @@ public class WorkLogFragment extends Fragment implements IssueDetailFragment.Det
             }
         });
         negativeButton.setOnClickListener(v -> alertDialog.dismiss());
+
+        remainingText.setText(R.string.emptyTime);
+        commentText.setText(getString(R.string.workingOnIssue, issue.getKey()));
     }
 
     private boolean validateInput(String newEstimate, String timeSpent, EditText workedText, EditText remainingText) {
