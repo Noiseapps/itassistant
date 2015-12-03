@@ -140,14 +140,14 @@ public class NewIssueFragment extends Fragment {
             public void success(CreateIssueResponse createIssueResponse, Response response) {
                 fabProgressCircle.beginFinalAnimation();
                 Snackbar.make(fabProgressCircle, R.string.issueUpdated, Snackbar.LENGTH_LONG).show();
-//                callbacks.onIssueCreated();
+                callbacks.onIssueCreated(issue);
                 //TODO show issue details if in two pane
             }
 
             @Override
             public void failure(RetrofitError error) {
                 fabProgressCircle.hide();
-                Snackbar.make(fabProgressCircle, R.string.failedToPostIssue, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(fabProgressCircle, R.string.failedToUpdateIssue, Snackbar.LENGTH_LONG).show();
             }
         });
     }
@@ -158,7 +158,7 @@ public class NewIssueFragment extends Fragment {
             public void success(CreateIssueResponse createIssueResponse, Response response) {
                 fabProgressCircle.beginFinalAnimation();
                 Snackbar.make(fabProgressCircle, R.string.issueAdded, Snackbar.LENGTH_LONG).show();
-                callbacks.onIssueCreated();
+                callbacks.onIssueCreated(issue);
             }
 
             @Override
@@ -183,16 +183,6 @@ public class NewIssueFragment extends Fragment {
             issueDescription.setError(getString(R.string.fieldRequired));
             valid = false;
         }
-//        final AllowedValue selectedVersion = (AllowedValue) versionSpinner.getSelectedItem();
-//        final Versions versions = selectedIssueType.getFields().getVersions();
-//        if (versions != null && versions.isRequired() && selectedVersion.getId().isEmpty()) {
-//            valid = false;
-//        }
-//        final AllowedValue selectedFixVersion = (AllowedValue) fixedInVersionSpinner.getSelectedItem();
-//        final FixVersions fixVersions = selectedIssueType.getFields().getFixVersions();
-//        if (fixVersions != null && fixVersions.isRequired() && selectedFixVersion.getId().isEmpty()) {
-//            valid = false;
-//        }
         final Environment environment = selectedIssueType.getFields().getEnvironment();
         if (environment != null && environment.isRequired() && issueEnvironment.getText().toString().isEmpty()) {
             issueEnvironment.setError(getString(R.string.fieldRequired));
@@ -542,7 +532,7 @@ public class NewIssueFragment extends Fragment {
     }
 
     public interface NewIssueCallbacks {
-        void onIssueCreated();
+        void onIssueCreated(Issue issue);
     }
 
     private class ToggleFixItem {

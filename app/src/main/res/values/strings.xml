@@ -153,4 +153,5 @@
     <string name="emptyTime">0m</string>
     <string name="issueTitle">Title</string>
     <string name="issueKey">Key</string>
+    <string name="failedToUpdateIssue">Failed to update issue</string>
 </resources>

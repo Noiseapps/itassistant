@@ -95,7 +95,7 @@ public class IssueListActivity extends AppCompatActivity
     private Handler handler;
 
     @Override
-    public void onItemSelected(Issue issue, JiraProject jiraProject) {
+    public void onItemSelected(Issue issue) {
         if (mTwoPane) {
             nothingSelectedInfo.setVisibility(View.GONE);
             final IssueDetailFragment fragment = IssueDetailFragment_.builder().issue(issue).build();
@@ -149,8 +149,11 @@ public class IssueListActivity extends AppCompatActivity
     }
 
     @Override
-    public void onIssueCreated() {
+    public void onIssueCreated(Issue issue) {
         listFragment.reload();
+        if(mTwoPane) {
+            onItemSelected(issue);
+        }
     }
 
     @AfterViews
