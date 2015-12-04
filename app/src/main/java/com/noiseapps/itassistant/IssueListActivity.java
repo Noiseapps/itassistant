@@ -113,7 +113,7 @@ public class IssueListActivity extends AppCompatActivity
         if (mTwoPane) {
             nothingSelectedInfo.setVisibility(View.GONE);
             final NewIssueFragment fragment = NewIssueFragment_.builder().projectKey(key).build();
-            getSupportFragmentManager().beginTransaction()
+            getSupportFragmentManager().beginTransaction().addToBackStack("CREATE")
                     .replace(R.id.issue_detail_container, fragment)
                     .commit();
         } else {
@@ -127,7 +127,7 @@ public class IssueListActivity extends AppCompatActivity
         if (mTwoPane) {
             nothingSelectedInfo.setVisibility(View.GONE);
             final NewIssueFragment fragment = NewIssueFragment_.builder().projectKey(key).issue(issue).build();
-            getSupportFragmentManager().beginTransaction()
+            getSupportFragmentManager().beginTransaction().addToBackStack("EDIT")
                     .replace(R.id.issue_detail_container, fragment)
                     .commit();
         } else {

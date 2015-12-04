@@ -50,7 +50,7 @@
     <string name="quit">Quit</string>
     <string name="selectProject">No issues.\nTry selecting other project from the menu.</string>
     <string name="optionUnavailable">This feature is not yet available</string>
-    <string name="editIssue">Edit issue</string>
+    <string name="editIssue">Edit issue %s</string>
     <string name="createdDate">Created on</string>
     <string name="modifiedDate">Modified on</string>
     <string name="issueDates">Dates</string>

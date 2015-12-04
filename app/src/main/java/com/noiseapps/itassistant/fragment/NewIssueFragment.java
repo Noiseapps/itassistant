@@ -5,13 +5,19 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.noiseapps.itassistant.R;
@@ -51,10 +57,6 @@ import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.MutableDateTime;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -102,6 +104,15 @@ public class NewIssueFragment extends Fragment {
         newIssueForm.setVisibility(View.GONE);
         callbacks = (NewIssueCallbacks) getActivity();
         currentConfig = jiraConnector.getCurrentConfig();
+
+        final ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (supportActionBar != null) {
+            if(issue == null) {
+                supportActionBar.setTitle(getString(R.string.newIssueForProject, projectKey));
+            } else {
+                supportActionBar.setTitle(getString(R.string.editIssue, issue.getKey()));
+            }
+        }
         getProjectDetails();
     }
 
@@ -140,8 +151,7 @@ public class NewIssueFragment extends Fragment {
             public void success(CreateIssueResponse createIssueResponse, Response response) {
                 fabProgressCircle.beginFinalAnimation();
                 Snackbar.make(fabProgressCircle, R.string.issueUpdated, Snackbar.LENGTH_LONG).show();
-                callbacks.onIssueCreated(issue);
-                //TODO show issue details if in two pane
+                getIssueForKey(issue.getKey()).subscribe(issue1 -> callbacks.onIssueCreated(issue1));
             }
 
             @Override
@@ -152,13 +162,17 @@ public class NewIssueFragment extends Fragment {
         });
     }
 
+    private Observable<Issue> getIssueForKey(String key) {
+        return jiraConnector.getIssueDetails(key).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
     private void addNewIssue(CreateIssueModel.Fields fields) {
         jiraConnector.postNewIssue(new CreateIssueModel(fields), new Callback<CreateIssueResponse>() {
             @Override
             public void success(CreateIssueResponse createIssueResponse, Response response) {
                 fabProgressCircle.beginFinalAnimation();
                 Snackbar.make(fabProgressCircle, R.string.issueAdded, Snackbar.LENGTH_LONG).show();
-                callbacks.onIssueCreated(issue);
+                getIssueForKey(createIssueResponse.getKey()).subscribe(issue1 -> callbacks.onIssueCreated(issue1));
             }
 
             @Override
@@ -303,13 +317,13 @@ public class NewIssueFragment extends Fragment {
         }
 
         final String issueType = fields.getIssueType().getName();
-        if (assignee != null) {
+        if (issueType != null) {
             final int spinnerPosition = ((TypeSpinnerAdapter) issueTypeSpinner.getAdapter()).getPositionForValue(issueType);
             issueTypeSpinner.setSelection(spinnerPosition);
         }
 
         final String issuePriority = fields.getPriority().getName();
-        if (assignee != null) {
+        if (issuePriority != null) {
             final int spinnerPosition = ((AllowedValuesAdapter) issuePrioritySpinner.getAdapter()).getPositionForValue(issuePriority);
             issuePrioritySpinner.setSelection(spinnerPosition);
         }
@@ -322,7 +336,6 @@ public class NewIssueFragment extends Fragment {
             filterSubtasks(issueTypes);
         }
         configureSpinners(issueTypes, assignees);
-
     }
 
     private void addNoItem(List<AllowedValue> allowedVersions) {

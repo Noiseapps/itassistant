@@ -5,11 +5,9 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.noiseapps.itassistant.R;
@@ -51,8 +49,6 @@ public class IssueDetailFragment extends Fragment implements FragmentCallbacks {
     ViewPager viewPager;
     @ViewById(R.id.detailTabLayout)
     TabLayout tabLayout;
-    @ViewById(R.id.detail_toolbar)
-    Toolbar toolbar;
     @ViewById
     MyFabProgressCircle fabProgressCircle;
     @ViewById
@@ -140,8 +136,6 @@ public class IssueDetailFragment extends Fragment implements FragmentCallbacks {
 
     private void initToolbar() {
         final AppCompatActivity activity = (AppCompatActivity) getActivity();
-        activity.setSupportActionBar(toolbar);
-        toolbar.setTitleTextColor(ContextCompat.getColor(activity, R.color.white));
         final ActionBar supportActionBar = activity.getSupportActionBar();
         if (supportActionBar != null) {
             supportActionBar.setDisplayHomeAsUpEnabled(true);

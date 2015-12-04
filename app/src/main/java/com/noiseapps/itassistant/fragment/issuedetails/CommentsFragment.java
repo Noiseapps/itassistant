@@ -10,6 +10,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.CommentsAdapter;
@@ -18,7 +21,7 @@ import com.noiseapps.itassistant.fragment.IssueDetailFragment;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comments;
-import com.noiseapps.itassistant.utils.FragmentCallbacks;
+import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -26,12 +29,11 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 @EFragment(R.layout.fragment_comment_list)
 public class CommentsFragment extends Fragment implements IssueDetailFragment.DetailFragmentCallbacks {
@@ -54,15 +56,14 @@ public class CommentsFragment extends Fragment implements IssueDetailFragment.De
 
     private void initComments() {
         adapter = new CommentsAdapter(getContext(), new ArrayList<>());
+        commentsList.setAdapter(adapter);
         commentsList.setLayoutManager(new LinearLayoutManager(getContext()));
-//        fabProgressCircle.setVisibility(View.GONE);
         noCommentsView.setVisibility(View.GONE);
         commentsList.setVisibility(View.GONE);
         loadingComments.setVisibility(View.VISIBLE);
         jiraConnector.getIssueComments(issue.getId(), new Callback<Comments>() {
             @Override
             public void success(Comments comments, Response response) {
-//                fabProgressCircle.setVisibility(View.VISIBLE);
                 final List<Comment> commentList = comments.getComments();
                 loadingComments.setVisibility(View.GONE);
                 if (commentList.isEmpty()) {
@@ -70,7 +71,6 @@ public class CommentsFragment extends Fragment implements IssueDetailFragment.De
                 } else {
                     adapter.addItems(commentList);
                     commentsList.setVisibility(View.VISIBLE);
-                    commentsList.setAdapter(adapter);
                 }
             }
 
@@ -109,25 +109,25 @@ public class CommentsFragment extends Fragment implements IssueDetailFragment.De
         fabProgressCircle.show();
         final Comment comment = new Comment();
         comment.setBody(bodyEditText.getText().toString());
-        jiraConnector.postIssueComment(issue.getId(), comment, new Callback<Comment>() {
-            @Override
-            public void success(Comment comment, Response response) {
-                fabProgressCircle.beginFinalAnimation();
-                Snackbar.make(fabProgressCircle, R.string.commentAdded, Snackbar.LENGTH_LONG).show();
-                adapter.addItem(comment);
-                noCommentsView.setVisibility(View.GONE);
-                commentsList.setVisibility(View.VISIBLE);
-                commentsList.requestLayout();
-                commentsList.invalidate();
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                fabProgressCircle.hide();
-                Snackbar.make(fabProgressCircle, R.string.failedToAddComment, Snackbar.LENGTH_LONG).show();
-            }
-        });
+        jiraConnector.postIssueComment(issue.getId(), comment).
+                subscribeOn(Schedulers.io()).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribe(this::onCommentAdded, throwable -> onCommentAddFailed());
         alertDialog.dismiss();
+    }
+
+    private void onCommentAdded(Comment comment) {
+        Logger.d(comment.toString());
+        fabProgressCircle.beginFinalAnimation();
+        Snackbar.make(fabProgressCircle, R.string.commentAdded, Snackbar.LENGTH_LONG).show();
+        noCommentsView.setVisibility(View.GONE);
+        commentsList.setVisibility(View.VISIBLE);
+        adapter.addItem(comment);
+    }
+
+    private void onCommentAddFailed() {
+        fabProgressCircle.hide();
+        Snackbar.make(fabProgressCircle, R.string.failedToAddComment, Snackbar.LENGTH_LONG).show();
     }
 
     @Override

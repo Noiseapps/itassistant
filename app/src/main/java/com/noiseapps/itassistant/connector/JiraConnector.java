@@ -118,11 +118,8 @@ public class JiraConnector {
         apiService.getIssueComments(issueId, callback);
     }
 
-    public void postIssueComment(String issueId, Comment comment, Callback<Comment> callback){
-        if(apiService == null) {
-            return;
-        }
-        apiService.addIssueComment(issueId, comment, callback);
+    public Observable<Comment> postIssueComment(String issueId, Comment comment){
+        return apiService.addIssueComment(issueId, comment);
     }
 
     @NonNull
@@ -158,6 +155,13 @@ public class JiraConnector {
             return null;
         }
         return apiService.getProjectDetails(projectId);
+    }
+
+    public Observable<Issue> getIssueDetails(@NonNull String issueId) {
+        if(apiService == null) {
+            return null;
+        }
+        return apiService.getIssueDetails(issueId);
     }
 
     public void getProjectStatuses(@NonNull String issueId, Callback<List<IssueStatus>> callback) {

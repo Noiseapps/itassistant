@@ -152,6 +152,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     }
 
     public void setProject(JiraProject jiraProject, BaseAccount baseAccount) {
+        setHasOptionsMenu(false);
         if (projectDownloadSubscriber != null) {
             projectDownloadSubscriber.unsubscribe();
         }
@@ -191,7 +192,11 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
                     isEmpty = true;
                     noProject.setVisibility(View.GONE);
                     hideProgress(false, false);
-                }, () -> projectDownloadSubscriber = null);
+                    setHasOptionsMenu(true);
+                }, () -> {
+                    projectDownloadSubscriber = null;
+                    setHasOptionsMenu(true);
+                });
     }
 
     private void onProjectsDownloaded(boolean assignedToMe) {
@@ -206,6 +211,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         hideProgress(false, assignedToMe);
         setHasOptionsMenu(true);
         handleFilterSelected();
+        setHasOptionsMenu(true);
     }
 
     private PagerAdapter fillAdapter(List<Issue> jiraIssueList, boolean assignedToMe) {

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
+import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.issues.JiraIssueList;
 import com.noiseapps.itassistant.model.jira.issues.TransitionRequest;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
@@ -53,11 +54,14 @@ public interface JiraAPI {
     @GET("/rest/api/2/search?maxResults=150&expand=transitions")
     JiraIssueList getProjectIssues(@Query("jql") String query, @Query("startAt") long startAt);
 
+    @GET("/rest/api/2/issue/{issueIdOrKey}")
+    Observable<Issue> getIssueDetails(@Path("issueIdOrKey") String issueId);
+
     @GET("/rest/api/2/issue/{issueIdOrKey}/comment")
     void getIssueComments(@Path("issueIdOrKey") String issueId, @NonNull Callback<Comments> callback);
 
     @POST("/rest/api/2/issue/{issueIdOrKey}/comment")
-    void addIssueComment(@Path("issueIdOrKey") String issueId, @Body Comment comment, @NonNull Callback<Comment> callback);
+    Observable<Comment> addIssueComment(@Path("issueIdOrKey") String issueId, @Body Comment comment);
 
     @GET("/rest/api/2/issue/{issueIdOrKey}/worklog")
     WorkLogs getIssueWorkLog(@Path("issueIdOrKey") String issueId, @Query("startAt") long startAt);

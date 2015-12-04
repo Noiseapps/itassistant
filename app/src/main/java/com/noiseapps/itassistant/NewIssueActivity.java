@@ -1,5 +1,6 @@
 package com.noiseapps.itassistant;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -19,6 +20,7 @@ import org.androidannotations.annotations.ViewById;
 @EActivity(R.layout.activity_new_issue)
 public class NewIssueActivity extends AppCompatActivity implements NewIssueFragment.NewIssueCallbacks {
 
+    public static final String NEW_ISSUE_KEY = "issue";
     @ViewById
     Toolbar toolbar;
     @Extra
@@ -66,8 +68,10 @@ public class NewIssueActivity extends AppCompatActivity implements NewIssueFragm
     }
 
     @Override
-    public void onIssueCreated() {
-        setResult(RESULT_OK);
+    public void onIssueCreated(Issue issue) {
+        final Intent intent = new Intent();
+        intent.putExtra(NEW_ISSUE_KEY, issue);
+        setResult(RESULT_OK, intent);
         finish();
     }
 }

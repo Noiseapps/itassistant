@@ -1,28 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    android:id="@+id/issue_detail_container"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/tabView"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:orientation="vertical">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:layout_height="match_parent">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/app_bar"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/detail_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
-            android:elevation="4dp"
-            app:layout_collapseMode="pin"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+        android:layout_height="match_parent">
 
         <android.support.design.widget.TabLayout
             android:id="@+id/detailTabLayout"
@@ -32,22 +21,21 @@
             android:layout_gravity="center_horizontal"
             android:elevation="2dp"
             app:tabMode="scrollable"
-            app:tabTextAppearance="?android:attr/textAppearanceLarge" />
-    </android.support.design.widget.AppBarLayout>
+            app:tabTextAppearance="?android:attr/textAppearanceLarge"/>
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/detailViewPager"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        <android.support.v4.view.ViewPager
+            android:id="@+id/detailViewPager"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"/>
+    </LinearLayout>
 
 
     <com.noiseapps.itassistant.utils.views.MyFabProgressCircle
         android:id="@+id/fabProgressCircle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
+        android:layout_gravity="end|bottom"
         app:arcColor="@color/colorPrimary"
         app:arcWidth="4dp"
         app:finalIcon="@drawable/ic_done"
@@ -62,6 +50,6 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fabMargin"
             android:elevation="6dp"
-            android:src="@drawable/ic_add_white_24px" />
+            android:src="@drawable/ic_add_white_24px"/>
     </com.noiseapps.itassistant.utils.views.MyFabProgressCircle>
-</android.support.design.widget.CoordinatorLayout>
+</FrameLayout>
