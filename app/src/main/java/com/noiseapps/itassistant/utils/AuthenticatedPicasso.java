@@ -1,7 +1,6 @@
 package com.noiseapps.itassistant.utils;
 
 import android.content.Context;
-import android.util.Base64;
 
 import com.noiseapps.itassistant.BuildConfig;
 import com.noiseapps.itassistant.connector.Consts;
@@ -35,7 +34,7 @@ public class AuthenticatedPicasso {
         final Cache cache = new Cache(context.getCacheDir(), CACHE_SIZE);
         picassoClient.setCache(cache);
         picassoClient.interceptors().add(chain -> {
-            String basicAuthEncoded = getBasicAuth(config);
+            String basicAuthEncoded = config.getToken();
             basicAuthEncoded = basicAuthEncoded.replaceAll("\n", "");
             Request newRequest = chain.request().newBuilder()
                     .addHeader(Consts.AUTH_HEADER, String.format(Consts.AUTH_HEADER_VALUE, basicAuthEncoded))
@@ -51,10 +50,5 @@ public class AuthenticatedPicasso {
         }
         builder.downloader(new OkHttpDownloader(picassoClient));
         INSTANCE = builder.build();
-    }
-
-    private static String getBasicAuth(BaseAccount currentConfig) {
-        final String usernameString = currentConfig.getUsername() + ":" + currentConfig.getPassword();
-        return Base64.encodeToString(usernameString.getBytes(), Base64.DEFAULT);
     }
 }

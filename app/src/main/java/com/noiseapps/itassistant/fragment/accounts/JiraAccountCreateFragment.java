@@ -1,6 +1,5 @@
 package com.noiseapps.itassistant.fragment.accounts;
 
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -12,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -109,7 +109,7 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
             accountName.setText(editAccount.getName());
             host.setText(editAccount.getUrl());
             username.setText(editAccount.getUsername());
-            password.setText(editAccount.getPassword());
+
             return;
         }
         if (BuildConfig.DEBUG) {
@@ -205,9 +205,10 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
         final String accountName = this.accountName.getText().toString().trim();
         final String username = this.username.getText().toString().trim();
         final String password = this.password.getText().toString().trim();
+        final String authToken = getAuthToken(username, password);
         progressDialog.setTitle(getString(R.string.loggingIn));
         int id = getAccountId();
-        currentConfig = new BaseAccount(id, username, accountName, password, host, "", AccountTypes.ACC_JIRA);
+        currentConfig = new BaseAccount(id, username, accountName, authToken, host, "", AccountTypes.ACC_JIRA);
         if (editAccount == null && existsInDb()) {
             Snackbar.make(saveFab, R.string.configExists, Snackbar.LENGTH_LONG).show();
             hideProgress();
@@ -216,6 +217,11 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
         connector.setCurrentConfig(currentConfig);
         AuthenticatedPicasso.setConfig(getActivity(), currentConfig);
         getUserData();
+    }
+
+    private String getAuthToken(String username, String password) {
+        String usernameString = username + ":" + password;
+        return Base64.encodeToString(usernameString.getBytes(), Base64.DEFAULT).replaceAll("\n", "");
     }
 
     private int getAccountId() {

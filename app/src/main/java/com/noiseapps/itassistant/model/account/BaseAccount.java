@@ -16,16 +16,16 @@ public class BaseAccount implements Parcelable {
     private final int id;
     private final String username;
     private final String name;
-    private final String password;
+    private final String token;
     private final String url;
     @AccountTypes.AccountType
     private final int accountType;
     private String avatarPath;
-    public BaseAccount(int id, String username, String name, String password, String url, String avatarPath, @AccountTypes.AccountType int accountType) {
+    public BaseAccount(int id, String username, String name, String token, String url, String avatarPath, @AccountTypes.AccountType int accountType) {
         this.id = id;
         this.username = username;
         this.name = name;
-        this.password = password;
+        this.token = token;
         this.url = url;
         this.avatarPath = avatarPath;
         this.accountType = accountType;
@@ -34,7 +34,7 @@ public class BaseAccount implements Parcelable {
         this.id = in.readInt();
         this.username = in.readString();
         this.name = in.readString();
-        this.password = in.readString();
+        this.token = in.readString();
         this.url = in.readString();
         this.avatarPath = in.readString();
         this.accountType = in.readInt();
@@ -46,7 +46,7 @@ public class BaseAccount implements Parcelable {
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", name='" + name + '\'' +
-                ", password='" + password + '\'' +
+                ", token='" + token + '\'' +
                 ", url='" + url + '\'' +
                 ", avatarPath='" + avatarPath + '\'' +
                 ", accountType=" + accountType +
@@ -65,7 +65,7 @@ public class BaseAccount implements Parcelable {
         if (username != null ? !username.equals(that.username) : that.username != null)
             return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (password != null ? !password.equals(that.password) : that.password != null)
+        if (token != null ? !token.equals(that.token) : that.token != null)
             return false;
         if (url != null ? !url.equals(that.url) : that.url != null) return false;
         return !(avatarPath != null ? !avatarPath.equals(that.avatarPath) : that.avatarPath != null);
@@ -77,7 +77,7 @@ public class BaseAccount implements Parcelable {
         int result = id;
         result = 31 * result + (username != null ? username.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
+        result = 31 * result + (token != null ? token.hashCode() : 0);
         result = 31 * result + (url != null ? url.hashCode() : 0);
         result = 31 * result + (avatarPath != null ? avatarPath.hashCode() : 0);
         result = 31 * result + accountType;
@@ -102,8 +102,8 @@ public class BaseAccount implements Parcelable {
         return username;
     }
 
-    public String getPassword() {
-        return password;
+    public String getToken() {
+        return token;
     }
 
     public String getUrl() {
@@ -128,7 +128,7 @@ public class BaseAccount implements Parcelable {
         dest.writeInt(this.id);
         dest.writeString(this.username);
         dest.writeString(this.name);
-        dest.writeString(this.password);
+        dest.writeString(this.token);
         dest.writeString(this.url);
         dest.writeString(this.avatarPath);
         dest.writeInt(this.accountType);

@@ -97,7 +97,7 @@ public class StashAccountCreateFragment extends Fragment implements Validator.Va
         int id = accountsDao.getNextId();
         final String avatarFilename = AccountTypes.getAccountName(AccountTypes.ACC_STASH) + SEPARATOR + id + SEPARATOR + currentConfig.getUsername() + "_avatar.png";
         final String path = imageUtils.saveAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.stash), avatarFilename);
-        accountsDao.add(new BaseAccount(id, currentConfig.getUsername(), "Stash", currentConfig.getPassword(), currentConfig.getUrl(), path, AccountTypes.ACC_STASH));
+//        accountsDao.add(new BaseAccount(id, currentConfig.getUsername(), "Stash", currentConfig.getPassword(), currentConfig.getUrl(), path, AccountTypes.ACC_STASH));
         handler.removeCallbacksAndMessages(null);
         callbacks.onAccountSaved();
     }

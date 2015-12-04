@@ -1,7 +1,6 @@
 package com.noiseapps.itassistant.connector;
 
 import android.support.annotation.NonNull;
-import android.util.Base64;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -249,11 +248,6 @@ public class JiraConnector {
         initApiService();
     }
 
-    private String getBasicAuth() {
-        String usernameString = currentConfig.getUsername() + ":" + currentConfig.getPassword();
-        return Base64.encodeToString(usernameString.getBytes(), Base64.DEFAULT).replaceAll("\n", "");
-    }
-
     private class JiraErrorHandler implements ErrorHandler {
 
         @Override
@@ -283,7 +277,7 @@ public class JiraConnector {
         }
 
         private void addAuthenticationHeader(RequestFacade request) {
-            final String basicAuthEncoded = getBasicAuth();
+            final String basicAuthEncoded = currentConfig.getToken();
             request.addHeader(Consts.AUTH_HEADER, String.format(Consts.AUTH_HEADER_VALUE, basicAuthEncoded));
         }
     }
