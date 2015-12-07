@@ -10,12 +10,12 @@ import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 
-import retrofit.Callback;
 import retrofit.ErrorHandler;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import rx.Observable;
 
 @EBean
 public class StashConnector {
@@ -26,11 +26,8 @@ public class StashConnector {
     private BaseAccount currentConfig;
     private StashAPI apiService;
 
-    public void getProjects(Callback<UserProjects> callback) {
-        if(apiService == null) {
-            return;
-        }
-        apiService.getProjects(callback);
+    public Observable<UserProjects> getProjects() {
+        return apiService.getProjects();
     }
 
     @AfterInject

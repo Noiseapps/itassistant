@@ -178,15 +178,6 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
                 cancelable(true).
                 cancelListener(this).
                 show();
-
-
-//        progressDialog = new ProgressDialog(getContext());
-//        progressDialog.setIndeterminate(true);
-//        progressDialog.setCancelable(true);
-//        progressDialog.setCanceledOnTouchOutside(true);
-//        progressDialog.setOnCancelListener(this);
-//        progressDialog.setTitle(getString(R.string.validatingForm));
-//        progressDialog.show();
     }
 
     @EditorAction(R.id.password)

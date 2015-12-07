@@ -1,23 +1,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:baselineAligned="false"
-    android:divider="?android:attr/dividerHorizontal"
-    android:orientation="horizontal"
-    android:showDividers="middle"
-    tools:context=".IssueListActivity">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:baselineAligned="false"
+              android:divider="?android:attr/dividerHorizontal"
+              android:orientation="horizontal"
+              android:showDividers="middle"
+              tools:context=".IssueListActivity">
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    <FrameLayout
+        android:id="@+id/listContainer"
+        xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/issue_list"
-        android:name="com.noiseapps.itassistant.fragment.IssueListFragment_"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="2"
-        tools:context=".IssueListActivity"
-        tools:layout="@android:layout/list_content" />
-
+        tools:context=".IssueListActivity"/>
 
     <FrameLayout
         android:id="@+id/issue_detail_container"
@@ -34,7 +32,7 @@
             android:drawableTop="@drawable/ic_warning_24dp"
             android:gravity="center"
             android:text="@string/nothingSelected"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
 
     </FrameLayout>
 

@@ -1,8 +1,8 @@
 package com.noiseapps.itassistant.fragment.accounts;
 
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.graphics.BitmapFactory;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -18,17 +19,23 @@ import android.widget.RelativeLayout;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
+import com.noiseapps.itassistant.BuildConfig;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.connector.StashConnector;
 import com.noiseapps.itassistant.database.dao.AccountsDao;
 import com.noiseapps.itassistant.model.account.AccountTypes;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.stash.projects.UserProjects;
+import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 import com.noiseapps.itassistant.utils.ImageUtils;
+import com.noiseapps.itassistant.utils.StringUtils;
 import com.orhanobut.logger.Logger;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -39,9 +46,8 @@ import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.ViewById;
 
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 @EFragment(R.layout.fragment_account_atlassian)
 public class StashAccountCreateFragment extends Fragment implements Validator.ValidationListener, DialogInterface.OnCancelListener {
@@ -49,7 +55,7 @@ public class StashAccountCreateFragment extends Fragment implements Validator.Va
     public static final String SEPARATOR = "_";
     public static final int TIMEOUT_DURATION = 45;
     @FragmentArg
-    int editId = -1;
+    BaseAccount editAccount;
     @Bean
     StashConnector connector;
     @Bean
@@ -72,14 +78,19 @@ public class StashAccountCreateFragment extends Fragment implements Validator.Va
     @ViewById
     EditText password;
 
+    @NotEmpty
+    @ViewById
+    EditText accountName;
+
     @ViewById
     RelativeLayout rootView;
     @ViewById
     FloatingActionButton saveFab;
     private Validator validator;
-    private ProgressDialog progressDialog;
+    private MaterialDialog progressDialog;
     private boolean requestCanceled;
     private BaseAccount currentConfig;
+    private Bitmap avatarBitmap;
     private AccountsActivityCallbacks callbacks;
     private Handler handler;
 
@@ -89,15 +100,37 @@ public class StashAccountCreateFragment extends Fragment implements Validator.Va
         handler = new Handler();
         callbacks = (AccountsActivityCallbacks) getActivity();
         initToolbar();
+        initData();
         validator = new Validator(this);
         validator.setValidationListener(this);
     }
 
+    private void initData() {
+        if(editAccount != null) {
+            accountName.setText(editAccount.getName());
+            host.setText(editAccount.getUrl());
+            username.setText(editAccount.getUsername());
+
+            return;
+        }
+        if (BuildConfig.DEBUG) {
+//            accountName.setText("Local");
+            accountName.setText("Exaco");
+//            host.setText("10.1.221.123:8080");
+            host.setText("jira.exaco.pl:7990");
+//            username.setText("noiseapps@gmail.com");
+            username.setText("tomasz.scibiorek");
+//            password.setText("test123");
+            password.setText("kotek77@");
+        }
+    }
+
     void saveAccount() {
-        int id = accountsDao.getNextId();
-        final String avatarFilename = AccountTypes.getAccountName(AccountTypes.ACC_STASH) + SEPARATOR + id + SEPARATOR + currentConfig.getUsername() + "_avatar.png";
-        final String path = imageUtils.saveAvatar(BitmapFactory.decodeResource(getResources(), R.drawable.stash), avatarFilename);
-//        accountsDao.add(new BaseAccount(id, currentConfig.getUsername(), "Stash", currentConfig.getPassword(), currentConfig.getUrl(), path, AccountTypes.ACC_STASH));
+        int id = getAccountId();
+        final String avatarFilename = AccountTypes.getAccountName(AccountTypes.ACC_JIRA) + SEPARATOR + id + SEPARATOR + currentConfig.getUsername() + "_avatar.png";
+        final String path = imageUtils.saveAvatar(avatarBitmap, avatarFilename);
+        currentConfig.setAvatarPath(path);
+        accountsDao.addOrUpdate(currentConfig);
         handler.removeCallbacksAndMessages(null);
         callbacks.onAccountSaved();
     }
@@ -112,15 +145,18 @@ public class StashAccountCreateFragment extends Fragment implements Validator.Va
         toolbar.setTitleTextColor(ContextCompat.getColor(getContext(), R.color.white));
         final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
-
             actionBar.setTitle(R.string.addStashAccount);
+            if(editAccount != null) {
+                actionBar.setTitle(R.string.editStashAccount);
+            }
+
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
         }
     }
 
     @Click(R.id.saveFab)
-    void onVerify() {
+    void onSaveClicked() {
         requestCanceled = false;
         handler.removeCallbacksAndMessages(null);
         startTimeout();
@@ -129,46 +165,86 @@ public class StashAccountCreateFragment extends Fragment implements Validator.Va
     }
 
     private void startTimeout() {
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                requestCanceled = true;
-                hideProgress();
-                Snackbar.make(saveFab, R.string.requestTimedOut, Snackbar.LENGTH_LONG).show();
-            }
+        handler.postDelayed(() -> {
+            requestCanceled = true;
+            hideProgress();
+            Snackbar.make(saveFab, R.string.requestTimedOut, Snackbar.LENGTH_LONG).show();
         }, TimeUnit.SECONDS.toMillis(TIMEOUT_DURATION));
     }
 
     private void showProgress() {
-        progressDialog = new ProgressDialog(getContext());
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(true);
-        progressDialog.setCanceledOnTouchOutside(true);
-        progressDialog.setOnCancelListener(this);
-        progressDialog.setTitle(getString(R.string.validatingForm));
-        progressDialog.show();
+        progressDialog = new MaterialDialog.Builder(getActivity()).
+                title(R.string.validatingForm).
+                progress(true, 0).
+                cancelable(true).
+                cancelListener(this).
+                show();
     }
 
     @EditorAction(R.id.password)
     void onEditorActionsOnSomeTextViews(int actionId) {
         if (actionId == EditorInfo.IME_ACTION_GO) {
-            onVerify();
+            onSaveClicked();
         }
     }
 
     @Override
     public void onValidationSucceeded() {
-        final String host = this.host.getText().toString();
-        final String username = this.username.getText().toString();
-        final String password = this.password.getText().toString();
+        String host = this.host.getText().toString().trim();
+        if (!StringUtils.validUrl(host)) {
+            host = "http://" + host;
+        }
+        final String accountName = this.accountName.getText().toString().trim();
+        final String username = this.username.getText().toString().trim();
+        final String password = this.password.getText().toString().trim();
+        final String authToken = getAuthToken(username, password);
         progressDialog.setTitle(getString(R.string.loggingIn));
-        currentConfig = new BaseAccount(accountsDao.getNextId(), username, "Stash", password, host, "", AccountTypes.ACC_STASH);
-        if (existsInDb()) {
+        int id = getAccountId();
+        currentConfig = new BaseAccount(id, username, accountName, authToken, host, "", AccountTypes.ACC_STASH);
+        if (editAccount == null && existsInDb()) {
             Snackbar.make(saveFab, R.string.configExists, Snackbar.LENGTH_LONG).show();
+            hideProgress();
             return;
         }
         connector.setCurrentConfig(currentConfig);
-        connector.getProjects(new ProjectsCallback());
+        AuthenticatedPicasso.setConfig(getActivity(), currentConfig);
+        getUserData();
+    }
+
+    private String getAuthToken(String username, String password) {
+        String usernameString = username + ":" + password;
+        return Base64.encodeToString(usernameString.getBytes(), Base64.DEFAULT).replaceAll("\n", "");
+    }
+
+    private int getAccountId() {
+        int id;
+        if(editAccount == null) {
+            id = accountsDao.getNextId();
+        } else {
+            id = editAccount.getId();
+        }
+        return id;
+    }
+
+    void getUserData() {
+        connector.getProjects().subscribeOn(Schedulers.io()).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribe(this::onDataLoaded, throwable -> {
+                    Logger.e(throwable, throwable.getMessage());
+                    onDataLoaded(null);
+                });
+    }
+
+    void onDataLoaded(UserProjects userData) {
+        Logger.d(String.valueOf(userData));
+        if (userData != null & !requestCanceled) {
+            final Picasso authPicasso = AuthenticatedPicasso.getAuthPicasso(getContext(), currentConfig);
+            final String avatarPath = String.format("%s/users/%s/avatar.png", currentConfig.getUrl(), currentConfig.getUsername());
+            authPicasso.load(avatarPath).placeholder(R.drawable.ic_action_account_circle).into(new LoadTarget());
+        } else {
+            hideProgress();
+            Snackbar.make(saveFab, R.string.couldNotFetchUserData, Snackbar.LENGTH_LONG).show();
+        }
     }
 
     private boolean existsInDb() {
@@ -200,18 +276,21 @@ public class StashAccountCreateFragment extends Fragment implements Validator.Va
         Snackbar.make(saveFab, R.string.userCanceledRequest, Snackbar.LENGTH_LONG).show();
     }
 
-    private class ProjectsCallback implements Callback<UserProjects> {
+    class LoadTarget implements Target {
         @Override
-        public void success(UserProjects userProjects, Response response) {
-            Logger.w(userProjects.toString());
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            avatarBitmap = bitmap;
             hideProgress();
             saveAccount();
         }
 
         @Override
-        public void failure(RetrofitError error) {
+        public void onBitmapFailed(Drawable errorDrawable) {
             hideProgress();
-            Snackbar.make(saveFab, R.string.invalidCredentials, Snackbar.LENGTH_LONG).show();
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
         }
     }
 }

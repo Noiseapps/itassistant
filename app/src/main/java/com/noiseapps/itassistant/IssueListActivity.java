@@ -8,6 +8,7 @@ import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -28,16 +29,22 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
 import com.noiseapps.itassistant.adapters.NavigationMenuAdapter;
 import com.noiseapps.itassistant.connector.JiraConnector;
+import com.noiseapps.itassistant.connector.StashConnector;
 import com.noiseapps.itassistant.database.dao.AccountsDao;
 import com.noiseapps.itassistant.fragment.IssueDetailFragment;
 import com.noiseapps.itassistant.fragment.IssueDetailFragment_;
 import com.noiseapps.itassistant.fragment.IssueListFragment;
+import com.noiseapps.itassistant.fragment.IssueListFragment_;
 import com.noiseapps.itassistant.fragment.NewIssueFragment;
 import com.noiseapps.itassistant.fragment.NewIssueFragment_;
+import com.noiseapps.itassistant.fragment.StashProjectFragment;
+import com.noiseapps.itassistant.fragment.StashProjectFragment_;
 import com.noiseapps.itassistant.model.NavigationModel;
+import com.noiseapps.itassistant.model.account.AccountTypes;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
+import com.noiseapps.itassistant.model.stash.projects.StashProject;
 import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 import com.noiseapps.itassistant.utils.Consts;
 import com.noiseapps.itassistant.utils.DividerItemDecoration;
@@ -52,7 +59,6 @@ import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.FragmentById;
 import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
@@ -60,6 +66,7 @@ import org.joda.time.DateTime;
 
 import de.greenrobot.event.EventBus;
 import jonathanfinerty.once.Once;
+import rx.schedulers.Schedulers;
 
 @EActivity(R.layout.activity_issue_app_bar)
 public class IssueListActivity extends AppCompatActivity
@@ -78,12 +85,15 @@ public class IssueListActivity extends AppCompatActivity
     View mainLayout, nothingSelectedInfo;
     @ViewById
     DrawerLayout drawerLayout;
-    @FragmentById(R.id.issue_list)
-    IssueListFragment listFragment;
+
+    private IssueListFragment listFragment;
+    private StashProjectFragment stashFragment;
     @Bean
     AccountsDao accountsDao;
     @Bean
     JiraConnector jiraConnector;
+    @Bean
+    StashConnector stashConnector;
     ArrayList<NavigationModel> navigationModels;
     private boolean mTwoPane;
     private MaterialDialog progressDialog;
@@ -156,6 +166,8 @@ public class IssueListActivity extends AppCompatActivity
 
     @AfterViews
     void init() {
+        listFragment = IssueListFragment_.builder().build();
+        stashFragment = StashProjectFragment_.builder().build();
         handler = new Handler();
         setTablet();
         if (accountsDao.getAll().isEmpty()) {
@@ -238,19 +250,10 @@ public class IssueListActivity extends AppCompatActivity
         myIssues = new ArrayList<>();
         int failedAccounts = 0;
         for (final BaseAccount baseAccount : accountsDao.getAll()) {
-            try {
-                jiraConnector.setCurrentConfig(baseAccount);
-                AuthenticatedPicasso.setConfig(this, baseAccount);
-                final List<JiraProject> jiraProjects = jiraConnector.getUserProjects();
-                if (jiraProjects != null) {
-                    navigationModels.add(new NavigationModel(baseAccount, jiraProjects));
-                } else {
-                    failedAccounts++;
-                }
-                final List<Issue> myProjectIssues = jiraConnector.getAssignedToMe();
-                myIssues.addAll(myProjectIssues);
-            } catch (Exception e) {
-                Logger.e(e, e.getMessage());
+            if(baseAccount.getAccountType() == AccountTypes.ACC_JIRA) {
+                failedAccounts = fetchJiraAccountInfo(failedAccounts, baseAccount);
+            } else {
+                failedAccounts = fetchStashAccountInfo(failedAccounts, baseAccount);
             }
         }
         hideProgress();
@@ -259,8 +262,45 @@ public class IssueListActivity extends AppCompatActivity
         initNavigation(navigationModels);
     }
 
+    private int fetchStashAccountInfo(int failedAccounts, BaseAccount baseAccount) {
+        try {
+            jiraConnector.setCurrentConfig(baseAccount);
+            AuthenticatedPicasso.setConfig(this, baseAccount);
+            stashConnector.getProjects().subscribeOn(Schedulers.immediate()).subscribe(userProjects -> {
+                for (StashProject stashProject : userProjects.getStashProjects()) {
+
+                }
+            });
+            final List<Issue> myProjectIssues = jiraConnector.getAssignedToMe();
+            myIssues.addAll(myProjectIssues);
+        } catch (Exception e) {
+            Logger.e(e, e.getMessage());
+        }
+        return failedAccounts;
+    }
+
+    private int fetchJiraAccountInfo(int failedAccounts, BaseAccount baseAccount) {
+        try {
+            jiraConnector.setCurrentConfig(baseAccount);
+            AuthenticatedPicasso.setConfig(this, baseAccount);
+            final List<JiraProject> jiraProjects = jiraConnector.getUserProjects();
+            if (jiraProjects != null) {
+                navigationModels.add(new NavigationModel(baseAccount, jiraProjects));
+            } else {
+                failedAccounts++;
+            }
+            final List<Issue> myProjectIssues = jiraConnector.getAssignedToMe();
+            myIssues.addAll(myProjectIssues);
+        } catch (Exception e) {
+            Logger.e(e, e.getMessage());
+        }
+        return failedAccounts;
+    }
+
     @UiThread
     void initMyIssues(List<Issue> myIssues) {
+        getSupportFragmentManager().beginTransaction().replace(R.id.listContainer, listFragment).commit();
+        getSupportFragmentManager().executePendingTransactions();
         listFragment.setIssues(myIssues);
     }
 
@@ -291,6 +331,12 @@ public class IssueListActivity extends AppCompatActivity
         final NavigationMenuAdapter adapter = new NavigationMenuAdapter(this, navigationModels, (jiraProject, baseAccount) -> {
             mainLayout.setVisibility(View.VISIBLE);
             drawerLayout.closeDrawer(GravityCompat.START);
+
+            final FragmentManager supportFragmentManager = getSupportFragmentManager();
+            if (!(supportFragmentManager.findFragmentById(R.id.container) instanceof IssueListFragment)) {
+                supportFragmentManager.beginTransaction().replace(R.id.listContainer, listFragment).commit();
+                getSupportFragmentManager().executePendingTransactions();
+            }
             listFragment.setProject(jiraProject, baseAccount);
         });
         final RecyclerView.Adapter wrappedAdapter = manager.createWrappedAdapter(adapter);

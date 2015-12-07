@@ -27,7 +27,7 @@
 }
 
 -keepclassmembers enum * {
-    public static **[] values();
+    public static **[] stashProjects();
     public static ** valueOf(java.lang.String);
 }
 

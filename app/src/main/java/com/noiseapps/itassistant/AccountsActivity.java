@@ -10,6 +10,7 @@ import java.util.Map;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
+import com.noiseapps.itassistant.fragment.accounts.AccountTypeSelectFragment_;
 import com.noiseapps.itassistant.fragment.accounts.AccountsActivityCallbacks;
 import com.noiseapps.itassistant.fragment.accounts.AccountsListFragment_;
 import com.noiseapps.itassistant.fragment.accounts.JiraAccountCreateFragment;
@@ -46,8 +47,8 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
 
     @Override
     public void onAddAccount() {
-        onAccountTypeSelected(AccountTypes.ACC_JIRA);
-//        getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.container, AccountTypeSelectFragment_.builder().build()).commit();
+//        onAccountTypeSelected(AccountTypes.ACC_JIRA);
+        getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.container, AccountTypeSelectFragment_.builder().build()).commit();
     }
 
     @Override

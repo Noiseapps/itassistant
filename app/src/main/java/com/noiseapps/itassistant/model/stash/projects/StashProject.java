@@ -8,7 +8,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class Value {
+public class StashProject {
 
     @Expose
     private String key;
@@ -187,10 +187,10 @@ public class Value {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof Value)) {
+        if (!(other instanceof StashProject)) {
             return false;
         }
-        Value rhs = ((Value) other);
+        StashProject rhs = ((StashProject) other);
         return new EqualsBuilder().append(key, rhs.key).append(id, rhs.id).append(name, rhs.name).append(_public, rhs._public).append(type, rhs.type).append(link, rhs.link).append(links, rhs.links).append(description, rhs.description).isEquals();
     }
 
