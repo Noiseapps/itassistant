@@ -25,8 +25,6 @@ import java.util.List;
 
 import com.afollestad.materialdialogs.AlertDialogWrapper;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
 import com.noiseapps.itassistant.adapters.NavigationMenuAdapter;
 import com.noiseapps.itassistant.connector.JiraConnector;
@@ -143,9 +141,9 @@ public class IssueListActivity extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final Tracker tracker = AnalyticsTrackers.getTracker();
-        tracker.setScreenName(getClass().getSimpleName());
-        tracker.send(new HitBuilders.ScreenViewBuilder().build());
+//        final Tracker tracker = AnalyticsTrackers.getTracker();
+//        tracker.setScreenName(getClass().getSimpleName());
+//        tracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override

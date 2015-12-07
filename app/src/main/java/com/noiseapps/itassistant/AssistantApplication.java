@@ -4,7 +4,6 @@ import android.support.multidex.MultiDexApplication;
 
 import java.util.Map;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.noiseapps.itassistant.utils.Analytics;
 
@@ -33,7 +32,7 @@ public class AssistantApplication extends MultiDexApplication {
         Once.initialise(this);
         ACRA.init(this);
         final Map<String, String> event = new HitBuilders.EventBuilder(Analytics.CATEGORIES.APP, Analytics.ACTIONS.OPEN).build();
-        AnalyticsTrackers.getTracker().send(event);
-        GoogleAnalytics.getInstance(this).dispatchLocalHits();
+//        AnalyticsTrackers.getTracker().send(event);
+//        GoogleAnalytics.getInstance(this).dispatchLocalHits();
     }
 }

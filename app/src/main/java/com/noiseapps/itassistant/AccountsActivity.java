@@ -6,9 +6,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.FrameLayout;
 
+import java.util.Map;
+
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.noiseapps.itassistant.fragment.accounts.AccountsActivityCallbacks;
 import com.noiseapps.itassistant.fragment.accounts.AccountsListFragment_;
 import com.noiseapps.itassistant.fragment.accounts.JiraAccountCreateFragment;
@@ -21,8 +22,6 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.ViewById;
-
-import java.util.Map;
 
 @EActivity(R.layout.activity_accounts)
 public class AccountsActivity extends AppCompatActivity implements AccountsActivityCallbacks {
@@ -67,7 +66,7 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
                 setAction("ADD").
                 setLabel("ADDED").
                 setValue(100).build();
-        AnalyticsTrackers.getTracker().send(build);
+//        AnalyticsTrackers.getTracker().send(build);
         clearBackstack();
         init();
         setResult(RESULT_OK);
