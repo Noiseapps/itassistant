@@ -143,7 +143,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         setHasOptionsMenu(issues != null);
         mCallbacks = (Callbacks) getActivity();
         final ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (supportActionBar != null) {
+        if (supportActionBar != null && jiraProject != null) {
             supportActionBar.setTitle(jiraProject.getName());
         }
         if (issues != null) {

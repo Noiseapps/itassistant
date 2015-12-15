@@ -8,6 +8,9 @@ import rx.Observable;
 public interface StashAPI {
 
     @GET("/rest/api/1.0/projects")
-    Observable<UserProjects> getProjects();
+    UserProjects getProjects();
+
+    @GET("/rest/api/1.0/projects")
+    Observable<UserProjects> reactiveGetProjects();
 
 }

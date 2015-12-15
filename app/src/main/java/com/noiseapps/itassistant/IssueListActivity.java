@@ -42,9 +42,11 @@ import com.noiseapps.itassistant.fragment.StashProjectFragment_;
 import com.noiseapps.itassistant.model.NavigationModel;
 import com.noiseapps.itassistant.model.account.AccountTypes;
 import com.noiseapps.itassistant.model.account.BaseAccount;
+import com.noiseapps.itassistant.model.atlassian.AbstractBaseProject;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 import com.noiseapps.itassistant.model.stash.projects.StashProject;
+import com.noiseapps.itassistant.model.stash.projects.UserProjects;
 import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 import com.noiseapps.itassistant.utils.Consts;
 import com.noiseapps.itassistant.utils.DividerItemDecoration;
@@ -66,7 +68,6 @@ import org.joda.time.DateTime;
 
 import de.greenrobot.event.EventBus;
 import jonathanfinerty.once.Once;
-import rx.schedulers.Schedulers;
 
 @EActivity(R.layout.activity_issue_app_bar)
 public class IssueListActivity extends AppCompatActivity
@@ -264,15 +265,16 @@ public class IssueListActivity extends AppCompatActivity
 
     private int fetchStashAccountInfo(int failedAccounts, BaseAccount baseAccount) {
         try {
-            jiraConnector.setCurrentConfig(baseAccount);
+            stashConnector.setCurrentConfig(baseAccount);
             AuthenticatedPicasso.setConfig(this, baseAccount);
-            stashConnector.getProjects().subscribeOn(Schedulers.immediate()).subscribe(userProjects -> {
-                for (StashProject stashProject : userProjects.getStashProjects()) {
-
-                }
-            });
-            final List<Issue> myProjectIssues = jiraConnector.getAssignedToMe();
-            myIssues.addAll(myProjectIssues);
+            final UserProjects projects = stashConnector.getProjects();
+            if (projects != null) {
+                AbstractBaseProject[] baseProjects = new AbstractBaseProject[projects.getStashProjects().size()];
+                baseProjects = projects.getStashProjects().toArray(baseProjects);
+                navigationModels.add(new NavigationModel(baseAccount, baseProjects));
+            } else {
+                failedAccounts++;
+            }
         } catch (Exception e) {
             Logger.e(e, e.getMessage());
         }
@@ -285,7 +287,9 @@ public class IssueListActivity extends AppCompatActivity
             AuthenticatedPicasso.setConfig(this, baseAccount);
             final List<JiraProject> jiraProjects = jiraConnector.getUserProjects();
             if (jiraProjects != null) {
-                navigationModels.add(new NavigationModel(baseAccount, jiraProjects));
+                AbstractBaseProject[] baseProjects = new AbstractBaseProject[jiraProjects.size()];
+                baseProjects = jiraProjects.toArray(baseProjects);
+                navigationModels.add(new NavigationModel(baseAccount, baseProjects));
             } else {
                 failedAccounts++;
             }
@@ -299,7 +303,7 @@ public class IssueListActivity extends AppCompatActivity
 
     @UiThread
     void initMyIssues(List<Issue> myIssues) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.listContainer, listFragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, listFragment).commit();
         getSupportFragmentManager().executePendingTransactions();
         listFragment.setIssues(myIssues);
     }
@@ -329,15 +333,27 @@ public class IssueListActivity extends AppCompatActivity
     void initNavigation(List<NavigationModel> navigationModels) {
         final RecyclerViewExpandableItemManager manager = new RecyclerViewExpandableItemManager(null);
         final NavigationMenuAdapter adapter = new NavigationMenuAdapter(this, navigationModels, (jiraProject, baseAccount) -> {
-            mainLayout.setVisibility(View.VISIBLE);
-            drawerLayout.closeDrawer(GravityCompat.START);
+            if(jiraProject.getAccountType() == AccountTypes.ACC_JIRA) {
+                mainLayout.setVisibility(View.VISIBLE);
+                drawerLayout.closeDrawer(GravityCompat.START);
 
-            final FragmentManager supportFragmentManager = getSupportFragmentManager();
-            if (!(supportFragmentManager.findFragmentById(R.id.container) instanceof IssueListFragment)) {
-                supportFragmentManager.beginTransaction().replace(R.id.listContainer, listFragment).commit();
-                getSupportFragmentManager().executePendingTransactions();
+                final FragmentManager supportFragmentManager = getSupportFragmentManager();
+                if (!(supportFragmentManager.findFragmentById(R.id.container) instanceof IssueListFragment)) {
+                    supportFragmentManager.beginTransaction().replace(R.id.mainLayout, listFragment).commit();
+                    getSupportFragmentManager().executePendingTransactions();
+                }
+                listFragment.setProject((JiraProject) jiraProject, baseAccount);
+            } else {
+                mainLayout.setVisibility(View.VISIBLE);
+                drawerLayout.closeDrawer(GravityCompat.START);
+                final FragmentManager supportFragmentManager = getSupportFragmentManager();
+                if (!(supportFragmentManager.findFragmentById(R.id.container) instanceof IssueListFragment)) {
+                    supportFragmentManager.beginTransaction().replace(R.id.mainLayout, stashFragment).commit();
+                    getSupportFragmentManager().executePendingTransactions();
+                }
+                stashFragment.setProject((StashProject) jiraProject, baseAccount);
+                // show stash fragment
             }
-            listFragment.setProject(jiraProject, baseAccount);
         });
         final RecyclerView.Adapter wrappedAdapter = manager.createWrappedAdapter(adapter);
         navigationRecycler.setLayoutManager(new LinearLayoutManager(this));

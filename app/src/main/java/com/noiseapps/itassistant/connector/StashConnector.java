@@ -26,8 +26,16 @@ public class StashConnector {
     private BaseAccount currentConfig;
     private StashAPI apiService;
 
-    public Observable<UserProjects> getProjects() {
-        return apiService.getProjects();
+    public UserProjects getProjects() {
+        try {
+            return apiService.getProjects();
+        } catch (RetrofitError error) {
+            return null;
+        }
+    }
+
+    public Observable<UserProjects> reactiveGetProjects() {
+        return apiService.reactiveGetProjects();
     }
 
     @AfterInject

@@ -127,7 +127,7 @@ public class StashAccountCreateFragment extends Fragment implements Validator.Va
 
     void saveAccount() {
         int id = getAccountId();
-        final String avatarFilename = AccountTypes.getAccountName(AccountTypes.ACC_JIRA) + SEPARATOR + id + SEPARATOR + currentConfig.getUsername() + "_avatar.png";
+        final String avatarFilename = AccountTypes.getAccountName(AccountTypes.ACC_STASH) + SEPARATOR + id + SEPARATOR + currentConfig.getUsername() + "_avatar.png";
         final String path = imageUtils.saveAvatar(avatarBitmap, avatarFilename);
         currentConfig.setAvatarPath(path);
         accountsDao.addOrUpdate(currentConfig);
@@ -227,7 +227,7 @@ public class StashAccountCreateFragment extends Fragment implements Validator.Va
     }
 
     void getUserData() {
-        connector.getProjects().subscribeOn(Schedulers.io()).
+        connector.reactiveGetProjects().subscribeOn(Schedulers.io()).
                 observeOn(AndroidSchedulers.mainThread()).
                 subscribe(this::onDataLoaded, throwable -> {
                     Logger.e(throwable, throwable.getMessage());

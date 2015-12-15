@@ -6,15 +6,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.FrameLayout;
 
-import java.util.Map;
-
 import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.HitBuilders;
 import com.noiseapps.itassistant.fragment.accounts.AccountTypeSelectFragment_;
 import com.noiseapps.itassistant.fragment.accounts.AccountsActivityCallbacks;
 import com.noiseapps.itassistant.fragment.accounts.AccountsListFragment_;
 import com.noiseapps.itassistant.fragment.accounts.JiraAccountCreateFragment;
 import com.noiseapps.itassistant.fragment.accounts.JiraAccountCreateFragment_;
+import com.noiseapps.itassistant.fragment.accounts.StashAccountCreateFragment;
 import com.noiseapps.itassistant.fragment.accounts.StashAccountCreateFragment_;
 import com.noiseapps.itassistant.model.account.AccountTypes;
 import com.noiseapps.itassistant.model.account.BaseAccount;
@@ -47,7 +45,6 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
 
     @Override
     public void onAddAccount() {
-//        onAccountTypeSelected(AccountTypes.ACC_JIRA);
         getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.container, AccountTypeSelectFragment_.builder().build()).commit();
     }
 
@@ -62,12 +59,6 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
 
     @Override
     public void onAccountSaved() {
-        final Map<String, String> build = new HitBuilders.EventBuilder().
-                setCategory("ACCOUNTS").
-                setAction("ADD").
-                setLabel("ADDED").
-                setValue(100).build();
-//        AnalyticsTrackers.getTracker().send(build);
         clearBackstack();
         init();
         setResult(RESULT_OK);
@@ -76,8 +67,13 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
 
     @Override
     public void onEditAccount(BaseAccount account) {
-        final JiraAccountCreateFragment fragment = JiraAccountCreateFragment_.builder().editAccount(account).build();
-        getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.container, fragment).commit();
+        if (account.getAccountType() == AccountTypes.ACC_JIRA) {
+            final JiraAccountCreateFragment fragment = JiraAccountCreateFragment_.builder().editAccount(account).build();
+            getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.container, fragment).commit();
+        } else if (account.getAccountType() == AccountTypes.ACC_STASH) {
+            final StashAccountCreateFragment fragment = StashAccountCreateFragment_.builder().editAccount(account).build();
+            getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.container, fragment).commit();
+        }
     }
 
 

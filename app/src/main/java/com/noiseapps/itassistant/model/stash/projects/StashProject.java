@@ -1,197 +1,108 @@
-
 package com.noiseapps.itassistant.model.stash.projects;
 
-import com.google.gson.annotations.Expose;
+import android.os.Parcel;
+
 import com.google.gson.annotations.SerializedName;
+import com.noiseapps.itassistant.model.account.AccountTypes;
+import com.noiseapps.itassistant.model.atlassian.AbstractBaseProject;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
+public class StashProject extends AbstractBaseProject {
 
-public class StashProject {
+    public static final Creator<StashProject> CREATOR = new Creator<StashProject>() {
+        public StashProject createFromParcel(Parcel source) {
+            return new StashProject(source);
+        }
 
-    @Expose
-    private String key;
-    @Expose
-    private int id;
-    @Expose
-    private String name;
+        public StashProject[] newArray(int size) {
+            return new StashProject[size];
+        }
+    };
     @SerializedName("public")
-    @Expose
     private boolean _public;
-    @Expose
     private String type;
-    @Expose
-    private Link link;
-    @Expose
-    private Links links;
-    @Expose
     private String description;
 
-    /**
-     * 
-     * @return
-     *     The key
-     */
-    public String getKey() {
-        return key;
+    public StashProject() {
     }
 
-    /**
-     * 
-     * @param key
-     *     The key
-     */
-    public void setKey(String key) {
-        this.key = key;
+    protected StashProject(Parcel in) {
+        super(in);
+        this._public = in.readByte() != 0;
+        this.type = in.readString();
+        this.description = in.readString();
     }
 
-    /**
-     * 
-     * @return
-     *     The id
-     */
-    public int getId() {
-        return id;
-    }
-
-    /**
-     * 
-     * @param id
-     *     The id
-     */
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    /**
-     * 
-     * @return
-     *     The name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * 
-     * @param name
-     *     The name
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * 
-     * @return
-     *     The _public
-     */
     public boolean isPublic() {
         return _public;
     }
 
-    /**
-     * 
-     * @param _public
-     *     The public
-     */
     public void setPublic(boolean _public) {
         this._public = _public;
     }
 
-    /**
-     * 
-     * @return
-     *     The type
-     */
     public String getType() {
         return type;
     }
 
-    /**
-     * 
-     * @param type
-     *     The type
-     */
     public void setType(String type) {
         this.type = type;
     }
 
-    /**
-     * 
-     * @return
-     *     The link
-     */
-    public Link getLink() {
-        return link;
-    }
-
-    /**
-     * 
-     * @param link
-     *     The link
-     */
-    public void setLink(Link link) {
-        this.link = link;
-    }
-
-    /**
-     * 
-     * @return
-     *     The links
-     */
-    public Links getLinks() {
-        return links;
-    }
-
-    /**
-     * 
-     * @param links
-     *     The links
-     */
-    public void setLinks(Links links) {
-        this.links = links;
-    }
-
-    /**
-     * 
-     * @return
-     *     The description
-     */
     public String getDescription() {
         return description;
     }
 
-    /**
-     * 
-     * @param description
-     *     The description
-     */
     public void setDescription(String description) {
         this.description = description;
     }
 
     @Override
+    public int getAccountType() {
+        return AccountTypes.ACC_STASH;
+    }
+
+    @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return "StashProject{" +
+                "_public=" + _public +
+                ", type='" + type + '\'' +
+                ", description='" + description + '\'' +
+                "} " + super.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        StashProject that = (StashProject) o;
+
+        if (_public != that._public) return false;
+        if (type != null ? !type.equals(that.type) : that.type != null) return false;
+        return !(description != null ? !description.equals(that.description) : that.description != null);
+
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(key).append(id).append(name).append(_public).append(type).append(link).append(links).append(description).toHashCode();
+        int result = super.hashCode();
+        result = 31 * result + (_public ? 1 : 0);
+        result = 31 * result + (type != null ? type.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        return result;
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (other == this) {
-            return true;
-        }
-        if (!(other instanceof StashProject)) {
-            return false;
-        }
-        StashProject rhs = ((StashProject) other);
-        return new EqualsBuilder().append(key, rhs.key).append(id, rhs.id).append(name, rhs.name).append(_public, rhs._public).append(type, rhs.type).append(link, rhs.link).append(links, rhs.links).append(description, rhs.description).isEquals();
+    public int describeContents() {
+        return 0;
     }
 
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeByte(_public ? (byte) 1 : (byte) 0);
+        dest.writeString(this.type);
+        dest.writeString(this.description);
+    }
 }
