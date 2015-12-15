@@ -6,10 +6,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 import com.noiseapps.itassistant.R;
+import com.noiseapps.itassistant.connector.StashConnector;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.stash.projects.StashProject;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 
@@ -21,6 +23,9 @@ public class StashProjectFragment extends Fragment {
 
     StashProject stashProject;
     private BaseAccount baseAccount;
+
+    @Bean
+    StashConnector stashConnector;
 
     @AfterViews
     void init() {
