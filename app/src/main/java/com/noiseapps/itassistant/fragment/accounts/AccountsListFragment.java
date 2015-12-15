@@ -24,6 +24,7 @@ import com.noiseapps.itassistant.adapters.AccountListAdapter;
 import com.noiseapps.itassistant.database.dao.AccountsDao;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.utils.DividerItemDecoration;
+import com.orhanobut.tracklytics.TrackEvent;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -153,14 +154,24 @@ public class AccountsListFragment extends Fragment {
 
         @Override
         public void onItemRemoved(final BaseAccount account) {
-            accountsDao.delete(account);
-            readAllAccounts();
-            listAdapter.notifyDataSetChanged();
-            getActivity().setResult(Activity.RESULT_OK);
-            Snackbar.make(recyclerView, R.string.removed, Snackbar.LENGTH_LONG).setAction(R.string.undo, v -> {
-                accountsDao.add(account);
-                readAllAccounts();
-            }).show();
+            removeAccount(account);
         }
+    }
+
+    @TrackEvent("accountRemoved")
+    private void removeAccount(BaseAccount account) {
+        accountsDao.delete(account);
+        readAllAccounts();
+        listAdapter.notifyDataSetChanged();
+        getActivity().setResult(Activity.RESULT_OK);
+        Snackbar.make(recyclerView, R.string.removed, Snackbar.LENGTH_LONG).setAction(R.string.undo, v -> {
+            restoreAccount(account);
+        }).show();
+    }
+
+    @TrackEvent("accountRestored")
+    private void restoreAccount(BaseAccount account) {
+        accountsDao.add(account);
+        readAllAccounts();
     }
 }

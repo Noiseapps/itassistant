@@ -43,7 +43,6 @@ public class IssueDetailActivity extends AppCompatActivity implements IssueDetai
                 .commit();
     }
 
-
     private void setTablet() {
         if (getResources().getBoolean(R.bool.tabletSize)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);

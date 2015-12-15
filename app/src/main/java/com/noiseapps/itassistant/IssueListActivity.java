@@ -2,7 +2,6 @@ package com.noiseapps.itassistant;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
@@ -44,6 +43,8 @@ import com.noiseapps.itassistant.utils.DividerItemDecoration;
 import com.noiseapps.itassistant.utils.events.EventBusAction;
 import com.noiseapps.itassistant.utils.events.OpenDrawerEvent;
 import com.orhanobut.logger.Logger;
+import com.orhanobut.tracklytics.TrackEvent;
+import com.orhanobut.tracklytics.TrackValue;
 import com.suredigit.inappfeedback.FeedbackDialog;
 import com.suredigit.inappfeedback.FeedbackSettings;
 
@@ -93,6 +94,7 @@ public class IssueListActivity extends AppCompatActivity
     private Handler handler;
 
     @Override
+    @TrackEvent("viewIssueDetails")
     public void onItemSelected(Issue issue) {
         if (mTwoPane) {
             nothingSelectedInfo.setVisibility(View.GONE);
@@ -106,6 +108,7 @@ public class IssueListActivity extends AppCompatActivity
     }
 
     @Override
+    @TrackEvent("addNewIssue")
     public void onAddNewIssue(JiraProject jiraProject) {
         final String key = jiraProject.getKey();
         if (mTwoPane) {
@@ -120,6 +123,7 @@ public class IssueListActivity extends AppCompatActivity
     }
 
     @Override
+    @TrackEvent("editIssue")
     public void onEditIssue(Issue issue) {
         final String key = issue.getFields().getProject().getKey();
         if (mTwoPane) {
@@ -136,14 +140,6 @@ public class IssueListActivity extends AppCompatActivity
     @EventBusAction
     public void onEvent(@Nullable OpenDrawerEvent event) {
         drawerLayout.openDrawer(GravityCompat.START);
-    }
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-//        final Tracker tracker = AnalyticsTrackers.getTracker();
-//        tracker.setScreenName(getClass().getSimpleName());
-//        tracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override
@@ -171,6 +167,7 @@ public class IssueListActivity extends AppCompatActivity
         isTwoPane();
 
         feedbackDialog = new FeedbackDialog(this, "AF-EBD0453F2EC0-CF");
+        AnalyticsTrackers.getInstance().sendScreenVisit("IssueListActivity");
     }
 
     private void setTablet() {
@@ -306,10 +303,13 @@ public class IssueListActivity extends AppCompatActivity
         }
     }
 
-    private void isTwoPane() {
+    @TrackEvent("checkScreenSize")
+    @TrackValue("isTwoPaneView")
+    private boolean isTwoPane() {
         if (findViewById(R.id.issue_detail_container) != null) {
             mTwoPane = true;
         }
+        return mTwoPane;
     }
 
     @UiThread
@@ -339,6 +339,7 @@ public class IssueListActivity extends AppCompatActivity
     }
 
     @Click(R.id.actionAssignedToMe)
+    @TrackEvent("viewAssignedToMe")
     void onAssignedToMeAction() {
         drawerLayout.closeDrawer(GravityCompat.START);
         initMyIssues(myIssues);
@@ -351,6 +352,7 @@ public class IssueListActivity extends AppCompatActivity
     }
 
     @Click(R.id.actionAbout)
+    @TrackEvent("viewAboutScreen")
     void onAboutAction() {
         drawerLayout.closeDrawer(GravityCompat.START);
         showAboutDialog();
