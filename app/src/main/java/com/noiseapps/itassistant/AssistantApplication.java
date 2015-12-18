@@ -2,11 +2,6 @@ package com.noiseapps.itassistant;
 
 import android.support.multidex.MultiDexApplication;
 
-import com.orhanobut.tracklytics.Tracker;
-import com.orhanobut.tracklytics.TrackerAction;
-import com.orhanobut.tracklytics.Tracklytics;
-import com.orhanobut.tracklytics.trackers.GoogleAnalyticsTrackingAdapter;
-
 import net.danlew.android.joda.JodaTimeAndroid;
 
 import org.acra.ACRA;
@@ -31,12 +26,5 @@ public class AssistantApplication extends MultiDexApplication {
         JodaTimeAndroid.init(this);
         Once.initialise(this);
         ACRA.init(this);
-    }
-
-    @Tracklytics(TrackerAction.INIT)
-    public Tracker init() {
-        return Tracker.init(
-                new GoogleAnalyticsTrackingAdapter(this, "GTM-MHBPCZ", R.raw.container)
-        );
     }
 }
