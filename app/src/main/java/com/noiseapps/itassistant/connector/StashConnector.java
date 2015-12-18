@@ -38,6 +38,14 @@ public class StashConnector {
         return apiService.reactiveGetProjects();
     }
 
+    public Observable<Object> getProjectRepos(String projectKey) {
+        return apiService.getProjectRepos(projectKey);
+    }
+
+    public Observable<Object> getRepoDetails(String projectKey, String repoSlug) {
+        return apiService.getRepoDetails(projectKey, repoSlug);
+    }
+
     @AfterInject
     void init() {
         initApiService();
