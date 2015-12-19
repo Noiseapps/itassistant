@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
+import com.noiseapps.itassistant.AnalyticsTrackers;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.connector.JiraConnector;
 import com.noiseapps.itassistant.database.PreferencesDAO;
@@ -59,11 +60,16 @@ public class IssueDetailFragment extends Fragment implements FragmentCallbacks {
     private DetailFragmentCallbacks childFragmentReceiver;
     private PagerAdapter pagerAdapter;
 
+    @Bean
+    AnalyticsTrackers tracker;
+
     public void setTimetrackingStarted() {
+        tracker.sendEvent(AnalyticsTrackers.SCREEN_ISSUE_DETAILS, AnalyticsTrackers.CATEGORY_TIME_TRACKER, "started");
         setFabIcon(0);
         Snackbar.make(fabProgressCircle, getString(R.string.progressStarted, issue.getKey()), Snackbar.LENGTH_LONG).show();
     }
     public void setTimetrackingStopped() {
+        tracker.sendEvent(AnalyticsTrackers.SCREEN_ISSUE_DETAILS, AnalyticsTrackers.CATEGORY_TIME_TRACKER, "cleared");
         setFabIcon(0);
         Snackbar.make(fabProgressCircle, getString(R.string.progressCleared, issue.getKey()), Snackbar.LENGTH_LONG).show();
     }
@@ -73,12 +79,14 @@ public class IssueDetailFragment extends Fragment implements FragmentCallbacks {
         jiraConnector.postIssueWorkLog(issue.getId(), getString(R.string.emptyTime), logItem, new Callback<WorkLogItem>() {
             @Override
             public void success(WorkLogItem logItem, Response response) {
+                tracker.sendEvent(AnalyticsTrackers.SCREEN_ISSUE_DETAILS, AnalyticsTrackers.CATEGORY_TIME_TRACKER, "timeTrackingDataSaved");
                 fabProgressCircle.beginFinalAnimation();
                 Snackbar.make(fabProgressCircle, R.string.workLogAdded, Snackbar.LENGTH_LONG).show();
             }
 
             @Override
             public void failure(RetrofitError error) {
+                tracker.sendEvent(AnalyticsTrackers.SCREEN_ISSUE_DETAILS, AnalyticsTrackers.CATEGORY_TIME_TRACKER, "timeTrackingDataNotSaved");
                 fabProgressCircle.hide();
                 Snackbar.make(fabProgressCircle, R.string.failedToLogWork, Snackbar.LENGTH_LONG).show();
             }

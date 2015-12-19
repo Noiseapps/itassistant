@@ -13,7 +13,6 @@ import com.noiseapps.itassistant.fragment.accounts.JiraAccountCreateFragment_;
 import com.noiseapps.itassistant.fragment.accounts.StashAccountCreateFragment_;
 import com.noiseapps.itassistant.model.account.AccountTypes;
 import com.noiseapps.itassistant.model.account.BaseAccount;
-import com.orhanobut.tracklytics.TrackEvent;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -21,7 +20,9 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.ViewById;
 
-import static com.noiseapps.itassistant.AnalyticsTrackers.*;
+import static com.noiseapps.itassistant.AnalyticsTrackers.CATEGORY_ACCOUNTS;
+import static com.noiseapps.itassistant.AnalyticsTrackers.CATEGORY_APP;
+import static com.noiseapps.itassistant.AnalyticsTrackers.SCREEN_ACCOUNTS;
 
 @EActivity(R.layout.activity_accounts)
 public class AccountsActivity extends AppCompatActivity implements AccountsActivityCallbacks {
@@ -35,11 +36,12 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
     @Override
     public void onAddAccount() {
         onAccountTypeSelected(AccountTypes.ACC_JIRA);
-        tracker.sendEvent(SCREEN_ACCOUNTS, CATEGORY_ACCOUNTS, "added");
+        tracker.sendEvent(SCREEN_ACCOUNTS, CATEGORY_ACCOUNTS, "onAdd");
     }
 
     @Override
     public void onAccountTypeSelected(@AccountTypes.AccountType int accountType) {
+        tracker.sendEvent(AnalyticsTrackers.SCREEN_ACCOUNTS, AnalyticsTrackers.CATEGORY_ACCOUNTS, "accountTypeSelected", String.valueOf(accountType));
         if (accountType == AccountTypes.ACC_JIRA) {
             getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.container, JiraAccountCreateFragment_.builder().build()).commit();
         } else if (accountType == AccountTypes.ACC_STASH) {
@@ -60,7 +62,7 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
     public void onEditAccount(BaseAccount account) {
         final JiraAccountCreateFragment fragment = JiraAccountCreateFragment_.builder().editAccount(account).build();
         getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.container, fragment).commit();
-        tracker.sendEvent(SCREEN_ACCOUNTS, CATEGORY_ACCOUNTS, "edit");
+        tracker.sendEvent(SCREEN_ACCOUNTS, CATEGORY_ACCOUNTS, "onEdit");
     }
 
 
@@ -89,7 +91,9 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
     }
 
     private void setTablet() {
-        if (getResources().getBoolean(R.bool.tabletSize)) {
+        final boolean isTabletScreenSize = getResources().getBoolean(R.bool.tabletSize);
+        tracker.sendEvent(SCREEN_ACCOUNTS, CATEGORY_APP, "isTablet", String.valueOf(isTabletScreenSize));
+        if (isTabletScreenSize) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);

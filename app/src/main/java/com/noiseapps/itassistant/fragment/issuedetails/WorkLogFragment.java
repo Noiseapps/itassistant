@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
+import com.noiseapps.itassistant.AnalyticsTrackers;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.WorkLogAdapter;
 import com.noiseapps.itassistant.connector.JiraConnector;
@@ -144,11 +145,15 @@ public class WorkLogFragment extends Fragment implements IssueDetailFragment.Det
         return !workLog.isEmpty() && Consts.PATTERN.matcher(workLog).matches();
     }
 
+    @Bean
+    AnalyticsTrackers tracker;
+
     private void onPositiveButtonClicked(WorkLogItem logItem, String newEstimate, final AlertDialog alertDialog) {
         fabProgressCircle.show();
         jiraConnector.postIssueWorkLog(issue.getId(), newEstimate, logItem, new Callback<WorkLogItem>() {
             @Override
             public void success(WorkLogItem logItem, Response response) {
+                tracker.sendEvent(AnalyticsTrackers.SCREEN_ISSUE_DETAILS, AnalyticsTrackers.CATEGORY_ISSUES, "worklogAdded");
                 fabProgressCircle.beginFinalAnimation();
                 Snackbar.make(fabProgressCircle, R.string.workLogAdded, Snackbar.LENGTH_LONG).show();
                 adapter.addItem(logItem);
@@ -158,6 +163,7 @@ public class WorkLogFragment extends Fragment implements IssueDetailFragment.Det
 
             @Override
             public void failure(RetrofitError error) {
+                tracker.sendEvent(AnalyticsTrackers.SCREEN_ISSUE_DETAILS, AnalyticsTrackers.CATEGORY_ISSUES, "worklogAddingFailed");
                 fabProgressCircle.hide();
                 Snackbar.make(fabProgressCircle, R.string.failedToLogWork, Snackbar.LENGTH_LONG).show();
             }

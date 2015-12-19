@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Logger;
 import com.google.android.gms.analytics.Tracker;
 
 import org.androidannotations.annotations.AfterInject;
@@ -29,6 +30,10 @@ public class AnalyticsTrackers {
     public static final String SCREEN_ISSUE_EDIT = "IssueForm";
 
     public static final String CATEGORY_ACCOUNTS = "Accounts";
+    public static final String CATEGORY_APP = "App";
+    public static final String CATEGORY_MENU = "Menu";
+    public static final String CATEGORY_ISSUES = "Issues";
+    public static final String CATEGORY_TIME_TRACKER = "TimeTracking";
 
     @RootContext
     Context context;
@@ -40,7 +45,7 @@ public class AnalyticsTrackers {
     @StringDef({SCREEN_ACCOUNTS, SCREEN_ACCOUNT_EDIT, SCREEN_ISSUE_LIST, SCREEN_ISSUE_DETAILS, SCREEN_ISSUE_EDIT})
     public @interface ScreenNames {}
 
-    @StringDef({CATEGORY_ACCOUNTS})
+    @StringDef({CATEGORY_ACCOUNTS, CATEGORY_APP, CATEGORY_MENU, CATEGORY_ISSUES, CATEGORY_TIME_TRACKER})
     public @interface Categories {}
 
     private final SparseArray<Tracker> mTrackers = new SparseArray<>();
@@ -48,6 +53,8 @@ public class AnalyticsTrackers {
     @AfterInject
     void init() {
         googleAnalytics = GoogleAnalytics.getInstance(context);
+//        googleAnalytics.setDryRun(BuildConfig.DEBUG);
+        googleAnalytics.getLogger().setLogLevel(Logger.LogLevel.VERBOSE);
     }
 
     public synchronized Tracker get(@TargetTypes int targetType) {
@@ -77,6 +84,14 @@ public class AnalyticsTrackers {
         final Tracker tracker = getDefault();
         tracker.setScreenName(screenName);
         HitBuilders.EventBuilder eventBuilder = new HitBuilders.EventBuilder(category, action);
+        tracker.send(eventBuilder.build());
+    }
+
+    public void sendEvent(@ScreenNames String screenName, @Categories  String category, String action, String label) {
+        final Tracker tracker = getDefault();
+        tracker.setScreenName(screenName);
+        HitBuilders.EventBuilder eventBuilder = new HitBuilders.EventBuilder(category, action);
+        eventBuilder.setLabel(label);
         tracker.send(eventBuilder.build());
     }
 

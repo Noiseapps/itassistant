@@ -19,9 +19,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.afollestad.materialdialogs.AlertDialogWrapper;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
@@ -43,8 +40,6 @@ import com.noiseapps.itassistant.utils.DividerItemDecoration;
 import com.noiseapps.itassistant.utils.events.EventBusAction;
 import com.noiseapps.itassistant.utils.events.OpenDrawerEvent;
 import com.orhanobut.logger.Logger;
-import com.orhanobut.tracklytics.TrackEvent;
-import com.orhanobut.tracklytics.TrackValue;
 import com.suredigit.inappfeedback.FeedbackDialog;
 import com.suredigit.inappfeedback.FeedbackSettings;
 
@@ -59,8 +54,16 @@ import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.greenrobot.event.EventBus;
 import jonathanfinerty.once.Once;
+
+import static com.noiseapps.itassistant.AnalyticsTrackers.CATEGORY_APP;
+import static com.noiseapps.itassistant.AnalyticsTrackers.CATEGORY_ISSUES;
+import static com.noiseapps.itassistant.AnalyticsTrackers.CATEGORY_MENU;
+import static com.noiseapps.itassistant.AnalyticsTrackers.SCREEN_ISSUE_LIST;
 
 @EActivity(R.layout.activity_issue_app_bar)
 public class IssueListActivity extends AppCompatActivity
@@ -94,8 +97,8 @@ public class IssueListActivity extends AppCompatActivity
     private Handler handler;
 
     @Override
-    @TrackEvent("viewIssueDetails")
     public void onItemSelected(Issue issue) {
+        tracker.sendEvent(SCREEN_ISSUE_LIST, CATEGORY_ISSUES, "viewDetails");
         if (mTwoPane) {
             nothingSelectedInfo.setVisibility(View.GONE);
             final IssueDetailFragment fragment = IssueDetailFragment_.builder().issue(issue).build();
@@ -108,8 +111,8 @@ public class IssueListActivity extends AppCompatActivity
     }
 
     @Override
-    @TrackEvent("addNewIssue")
     public void onAddNewIssue(JiraProject jiraProject) {
+        tracker.sendEvent(SCREEN_ISSUE_LIST, CATEGORY_ISSUES, "addNewIssue");
         final String key = jiraProject.getKey();
         if (mTwoPane) {
             nothingSelectedInfo.setVisibility(View.GONE);
@@ -123,8 +126,8 @@ public class IssueListActivity extends AppCompatActivity
     }
 
     @Override
-    @TrackEvent("editIssue")
     public void onEditIssue(Issue issue) {
+        tracker.sendEvent(SCREEN_ISSUE_LIST, CATEGORY_ISSUES, "editIssue");
         final String key = issue.getFields().getProject().getKey();
         if (mTwoPane) {
             nothingSelectedInfo.setVisibility(View.GONE);
@@ -167,7 +170,7 @@ public class IssueListActivity extends AppCompatActivity
         isTwoPane();
 
         feedbackDialog = new FeedbackDialog(this, "AF-EBD0453F2EC0-CF");
-        AnalyticsTrackers_.getInstance_(this).sendScreenVisit("IssueListActivity");
+        AnalyticsTrackers_.getInstance_(this).sendScreenVisit(SCREEN_ISSUE_LIST);
     }
 
     private void setTablet() {
@@ -303,12 +306,11 @@ public class IssueListActivity extends AppCompatActivity
         }
     }
 
-    @TrackEvent("checkScreenSize")
-    @TrackValue("isTwoPaneView")
     private boolean isTwoPane() {
         if (findViewById(R.id.issue_detail_container) != null) {
             mTwoPane = true;
         }
+        tracker.sendEvent(SCREEN_ISSUE_LIST, CATEGORY_APP, "isTablet", String.valueOf(mTwoPane));
         return mTwoPane;
     }
 
@@ -339,8 +341,8 @@ public class IssueListActivity extends AppCompatActivity
     }
 
     @Click(R.id.actionAssignedToMe)
-    @TrackEvent("viewAssignedToMe")
     void onAssignedToMeAction() {
+        tracker.sendEvent(SCREEN_ISSUE_LIST, CATEGORY_MENU, "viewAssignedToMe");
         drawerLayout.closeDrawer(GravityCompat.START);
         initMyIssues(myIssues);
     }
@@ -352,11 +354,14 @@ public class IssueListActivity extends AppCompatActivity
     }
 
     @Click(R.id.actionAbout)
-    @TrackEvent("viewAboutScreen")
     void onAboutAction() {
+        tracker.sendEvent(SCREEN_ISSUE_LIST, CATEGORY_MENU, "viewAbout");
         drawerLayout.closeDrawer(GravityCompat.START);
         showAboutDialog();
     }
+
+    @Bean
+    AnalyticsTrackers tracker;
 
     private void showAboutDialog() {
         final MaterialDialog.Builder dialog = new MaterialDialog.Builder(this);
