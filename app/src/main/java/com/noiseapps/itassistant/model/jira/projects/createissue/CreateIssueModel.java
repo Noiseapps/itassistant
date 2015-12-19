@@ -22,6 +22,8 @@ public class CreateIssueModel {
         private String environment;
         private String duedate;
         private List<IdField> versions;
+        private List<IdField> fixVersions;
+        private Timetracking timetracking;
 
         public void setFixVersions(List<IdField> fixVersions) {
             this.fixVersions = fixVersions;
@@ -30,9 +32,6 @@ public class CreateIssueModel {
         public void setVersions(List<IdField> versions) {
             this.versions = versions;
         }
-
-        private List<IdField> fixVersions;
-        private Timetracking timetracking;
 
         public void setTimetracking(Timetracking timetracking) {
             this.timetracking = timetracking;
@@ -77,6 +76,7 @@ public class CreateIssueModel {
                 this.id = id;
             }
         }
+
         public static class KeyField {
             private final String key;
 

@@ -15,11 +15,8 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
-
 import com.github.jorgecastilloprz.FABProgressCircle;
+import com.noiseapps.itassistant.AnalyticsTrackers;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.newissue.AllowedValuesAdapter;
 import com.noiseapps.itassistant.adapters.newissue.AssigneeSpinnerAdapter;
@@ -58,6 +55,10 @@ import org.androidannotations.annotations.ViewById;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.MutableDateTime;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -92,6 +93,8 @@ public class NewIssueFragment extends Fragment {
     FABProgressCircle fabProgressCircle;
     @Bean
     JiraConnector jiraConnector;
+    @Bean
+    AnalyticsTrackers trackers;
     private BaseAccount currentConfig;
     private NewIssueCallbacks callbacks;
     private IssueType selectedIssueType;
@@ -101,13 +104,14 @@ public class NewIssueFragment extends Fragment {
 
     @AfterViews
     void init() {
+        trackers.sendScreenVisit(AnalyticsTrackers.SCREEN_ISSUE_EDIT);
         newIssueForm.setVisibility(View.GONE);
         callbacks = (NewIssueCallbacks) getActivity();
         currentConfig = jiraConnector.getCurrentConfig();
 
         final ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (supportActionBar != null) {
-            if(issue == null) {
+            if (issue == null) {
                 supportActionBar.setTitle(getString(R.string.newIssueForProject, projectKey));
             } else {
                 supportActionBar.setTitle(getString(R.string.editIssue, issue.getKey()));

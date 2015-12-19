@@ -7,12 +7,26 @@ import java.util.Arrays;
 
 public class Groups implements Parcelable {
 
+    public static final Parcelable.Creator<Groups> CREATOR = new Parcelable.Creator<Groups>() {
+        public Groups createFromParcel(Parcel source) {
+            return new Groups(source);
+        }
+
+        public Groups[] newArray(int size) {
+            return new Groups[size];
+        }
+    };
     private final Items[] items;
     private final String size;
 
     public Groups(Items[] items, String size) {
         this.items = items;
         this.size = size;
+    }
+
+    protected Groups(Parcel in) {
+        this.items = (Items[]) in.readParcelableArray(Items.class.getClassLoader());
+        this.size = in.readString();
     }
 
     public Items[] getItems() {
@@ -61,19 +75,4 @@ public class Groups implements Parcelable {
         dest.writeParcelableArray(this.items, 0);
         dest.writeString(this.size);
     }
-
-    protected Groups(Parcel in) {
-        this.items = (Items[]) in.readParcelableArray(Items.class.getClassLoader());
-        this.size = in.readString();
-    }
-
-    public static final Parcelable.Creator<Groups> CREATOR = new Parcelable.Creator<Groups>() {
-        public Groups createFromParcel(Parcel source) {
-            return new Groups(source);
-        }
-
-        public Groups[] newArray(int size) {
-            return new Groups[size];
-        }
-    };
 }

@@ -1,4 +1,3 @@
-
 package com.noiseapps.itassistant.model.stash.projects;
 
 import com.google.gson.annotations.Expose;
@@ -16,18 +15,14 @@ public class Links {
     private List<Self> self = new ArrayList<Self>();
 
     /**
-     * 
-     * @return
-     *     The self
+     * @return The self
      */
     public List<Self> getSelf() {
         return self;
     }
 
     /**
-     * 
-     * @param self
-     *     The self
+     * @param self The self
      */
     public void setSelf(List<Self> self) {
         this.self = self;

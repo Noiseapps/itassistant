@@ -2,11 +2,6 @@ package com.noiseapps.itassistant;
 
 import android.support.multidex.MultiDexApplication;
 
-import java.util.Map;
-
-import com.google.android.gms.analytics.HitBuilders;
-import com.noiseapps.itassistant.utils.Analytics;
-
 import net.danlew.android.joda.JodaTimeAndroid;
 
 import org.acra.ACRA;
@@ -27,12 +22,9 @@ public class AssistantApplication extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-        AnalyticsTrackers.initialize(this);
+        AnalyticsTrackers_.getInstance_(this);
         JodaTimeAndroid.init(this);
         Once.initialise(this);
         ACRA.init(this);
-        final Map<String, String> event = new HitBuilders.EventBuilder(Analytics.CATEGORIES.APP, Analytics.ACTIONS.OPEN).build();
-//        AnalyticsTrackers.getTracker().send(event);
-//        GoogleAnalytics.getInstance(this).dispatchLocalHits();
     }
 }

@@ -1,4 +1,3 @@
-
 package com.noiseapps.itassistant.model.jira.issues;
 
 import android.os.Parcel;
@@ -14,6 +13,15 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class Project implements Parcelable {
 
+    public static final Parcelable.Creator<Project> CREATOR = new Parcelable.Creator<Project>() {
+        public Project createFromParcel(Parcel source) {
+            return new Project(source);
+        }
+
+        public Project[] newArray(int size) {
+            return new Project[size];
+        }
+    };
     @SerializedName("self")
     @Expose
     private String self;
@@ -32,13 +40,11 @@ public class Project implements Parcelable {
 
     /**
      * No args constructor for use in serialization
-     * 
      */
     public Project() {
     }
 
     /**
-     * 
      * @param id
      * @param name
      * @param self
@@ -53,91 +59,79 @@ public class Project implements Parcelable {
         this.avatarUrls = avatarUrls;
     }
 
+    protected Project(Parcel in) {
+        this.self = in.readString();
+        this.id = in.readString();
+        this.key = in.readString();
+        this.name = in.readString();
+        this.avatarUrls = in.readParcelable(AvatarUrls.class.getClassLoader());
+    }
+
     /**
-     * 
-     * @return
-     *     The self
+     * @return The self
      */
     public String getSelf() {
         return self;
     }
 
     /**
-     * 
-     * @param self
-     *     The self
+     * @param self The self
      */
     public void setSelf(String self) {
         this.self = self;
     }
 
     /**
-     * 
-     * @return
-     *     The id
+     * @return The id
      */
     public String getId() {
         return id;
     }
 
     /**
-     * 
-     * @param id
-     *     The id
+     * @param id The id
      */
     public void setId(String id) {
         this.id = id;
     }
 
     /**
-     * 
-     * @return
-     *     The key
+     * @return The key
      */
     public String getKey() {
         return key;
     }
 
     /**
-     * 
-     * @param key
-     *     The key
+     * @param key The key
      */
     public void setKey(String key) {
         this.key = key;
     }
 
     /**
-     * 
-     * @return
-     *     The name
+     * @return The name
      */
     public String getName() {
         return name;
     }
 
     /**
-     * 
-     * @param name
-     *     The name
+     * @param name The name
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * 
-     * @return
-     *     The avatarUrls
+     * @return The avatarUrls
      */
     public AvatarUrls getAvatarUrls() {
         return avatarUrls;
     }
 
     /**
-     * 
-     * @param avatarUrls
-     *     The avatarUrls
+     * @param avatarUrls The avatarUrls
      */
     public void setAvatarUrls(AvatarUrls avatarUrls) {
         this.avatarUrls = avatarUrls;
@@ -178,22 +172,4 @@ public class Project implements Parcelable {
         dest.writeString(this.name);
         dest.writeParcelable(this.avatarUrls, 0);
     }
-
-    protected Project(Parcel in) {
-        this.self = in.readString();
-        this.id = in.readString();
-        this.key = in.readString();
-        this.name = in.readString();
-        this.avatarUrls = in.readParcelable(AvatarUrls.class.getClassLoader());
-    }
-
-    public static final Parcelable.Creator<Project> CREATOR = new Parcelable.Creator<Project>() {
-        public Project createFromParcel(Parcel source) {
-            return new Project(source);
-        }
-
-        public Project[] newArray(int size) {
-            return new Project[size];
-        }
-    };
 }

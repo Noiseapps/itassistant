@@ -19,13 +19,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.afollestad.materialdialogs.AlertDialogWrapper;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -58,6 +51,13 @@ import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import rx.Observable;
 import rx.Subscription;
@@ -200,7 +200,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     }
 
     private void onProjectsDownloaded(boolean assignedToMe) {
-        if(assignedToMe) {
+        if (assignedToMe) {
             fabProgressCircle.setVisibility(View.GONE);
         }
         noProject.setVisibility(View.GONE);
@@ -248,7 +248,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     }
 
     private void setFabVisibility(boolean hideActionButton, boolean assignedToMe) {
-        if(assignedToMe || hideActionButton) {
+        if (assignedToMe || hideActionButton) {
             fabProgressCircle.collapse();
             fabProgressCircle.setVisibility(View.GONE);
         } else {
@@ -497,7 +497,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
 
         @Override
         public boolean apply(Issue input) {
-            if(!active) {
+            if (!active) {
                 return true;
             }
             final String username = baseAccount.getUsername();

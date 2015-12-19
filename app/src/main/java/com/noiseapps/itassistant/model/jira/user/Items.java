@@ -4,13 +4,26 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Items implements Parcelable {
-    private final String name;
+    public static final Parcelable.Creator<Items> CREATOR = new Parcelable.Creator<Items>() {
+        public Items createFromParcel(Parcel source) {
+            return new Items(source);
+        }
 
+        public Items[] newArray(int size) {
+            return new Items[size];
+        }
+    };
+    private final String name;
     private final String self;
 
     public Items(String name, String self) {
         this.name = name;
         this.self = self;
+    }
+
+    protected Items(Parcel in) {
+        this.name = in.readString();
+        this.self = in.readString();
     }
 
     public String getName() {
@@ -58,19 +71,4 @@ public class Items implements Parcelable {
         dest.writeString(this.name);
         dest.writeString(this.self);
     }
-
-    protected Items(Parcel in) {
-        this.name = in.readString();
-        this.self = in.readString();
-    }
-
-    public static final Parcelable.Creator<Items> CREATOR = new Parcelable.Creator<Items>() {
-        public Items createFromParcel(Parcel source) {
-            return new Items(source);
-        }
-
-        public Items[] newArray(int size) {
-            return new Items[size];
-        }
-    };
 }

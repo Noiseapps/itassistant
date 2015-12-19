@@ -12,10 +12,6 @@ import java.lang.annotation.RetentionPolicy;
 
 public class AccountTypes {
 
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({ACC_JIRA, ACC_STASH, ACC_JENKINS})
-    public @interface AccountType{}
-
     public static final int ACC_JIRA = 1;
     public static final int ACC_STASH = 2;
     public static final int ACC_JENKINS = 3;
@@ -52,6 +48,11 @@ public class AccountTypes {
                 final String format = "Typ konta : %1$d nie może zostać zmapowany";
                 throw new TypeNotFoundException(String.format(format, type));
         }
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({ACC_JIRA, ACC_STASH, ACC_JENKINS})
+    public @interface AccountType {
     }
 
     public static class TypeNotFoundException extends RuntimeException {

@@ -4,13 +4,10 @@ import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.github.jorgecastilloprz.FABProgressCircle;
-
-public class FabHideBehavior extends CoordinatorLayout.Behavior<FloatingActionButton>  {
+public class FabHideBehavior extends CoordinatorLayout.Behavior<FloatingActionButton> {
     public FabHideBehavior(Context context, AttributeSet attrs) {
         super();
     }

@@ -16,10 +16,6 @@ public class AccountTypeListAdapter extends ArrayAdapter<String> {
     private final Context context;
     private final AccountTypeListener callbacks;
 
-    public interface AccountTypeListener {
-        void onAccountTypeSelected(@AccountTypes.AccountType int accountType);
-    }
-
     public AccountTypeListAdapter(Context context, String[] values, AccountTypeListener callbacks) {
         super(context, R.layout.account_type_list_item, R.id.accountType, values);
         this.context = context;
@@ -35,5 +31,9 @@ public class AccountTypeListAdapter extends ArrayAdapter<String> {
         Picasso.with(context).load(AccountTypes.getAccountImageDrawable(accountType)).noFade().into(imageView);
         root.setOnClickListener(v -> callbacks.onAccountTypeSelected(accountType));
         return root;
+    }
+
+    public interface AccountTypeListener {
+        void onAccountTypeSelected(@AccountTypes.AccountType int accountType);
     }
 }

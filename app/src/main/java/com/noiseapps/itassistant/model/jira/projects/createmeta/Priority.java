@@ -1,4 +1,3 @@
-
 package com.noiseapps.itassistant.model.jira.projects.createmeta;
 
 import com.google.gson.annotations.Expose;
@@ -22,6 +21,9 @@ public class Priority {
     @SerializedName("operations")
     @Expose
     private List<String> operations = new ArrayList<String>();
+    @SerializedName("allowedValues")
+    @Expose
+    private List<AllowedValue> allowedValues = new ArrayList<AllowedValue>();
 
     public List<AllowedValue> getAllowedValues() {
         return allowedValues;
@@ -62,9 +64,5 @@ public class Priority {
     public void setOperations(List<String> operations) {
         this.operations = operations;
     }
-
-    @SerializedName("allowedValues")
-    @Expose
-    private List<AllowedValue> allowedValues = new ArrayList<AllowedValue>();
 
 }

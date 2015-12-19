@@ -1,4 +1,3 @@
-
 package com.noiseapps.itassistant.model.stash.projects;
 
 import com.google.gson.annotations.Expose;
@@ -29,144 +28,112 @@ public class Value {
     private String description;
 
     /**
-     * 
-     * @return
-     *     The key
+     * @return The key
      */
     public String getKey() {
         return key;
     }
 
     /**
-     * 
-     * @param key
-     *     The key
+     * @param key The key
      */
     public void setKey(String key) {
         this.key = key;
     }
 
     /**
-     * 
-     * @return
-     *     The id
+     * @return The id
      */
     public int getId() {
         return id;
     }
 
     /**
-     * 
-     * @param id
-     *     The id
+     * @param id The id
      */
     public void setId(int id) {
         this.id = id;
     }
 
     /**
-     * 
-     * @return
-     *     The name
+     * @return The name
      */
     public String getName() {
         return name;
     }
 
     /**
-     * 
-     * @param name
-     *     The name
+     * @param name The name
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * 
-     * @return
-     *     The _public
+     * @return The _public
      */
     public boolean isPublic() {
         return _public;
     }
 
     /**
-     * 
-     * @param _public
-     *     The public
+     * @param _public The public
      */
     public void setPublic(boolean _public) {
         this._public = _public;
     }
 
     /**
-     * 
-     * @return
-     *     The type
+     * @return The type
      */
     public String getType() {
         return type;
     }
 
     /**
-     * 
-     * @param type
-     *     The type
+     * @param type The type
      */
     public void setType(String type) {
         this.type = type;
     }
 
     /**
-     * 
-     * @return
-     *     The link
+     * @return The link
      */
     public Link getLink() {
         return link;
     }
 
     /**
-     * 
-     * @param link
-     *     The link
+     * @param link The link
      */
     public void setLink(Link link) {
         this.link = link;
     }
 
     /**
-     * 
-     * @return
-     *     The links
+     * @return The links
      */
     public Links getLinks() {
         return links;
     }
 
     /**
-     * 
-     * @param links
-     *     The links
+     * @param links The links
      */
     public void setLinks(Links links) {
         this.links = links;
     }
 
     /**
-     * 
-     * @return
-     *     The description
+     * @return The description
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * 
-     * @param description
-     *     The description
+     * @param description The description
      */
     public void setDescription(String description) {
         this.description = description;

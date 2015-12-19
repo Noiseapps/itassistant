@@ -5,9 +5,27 @@ import android.os.Parcelable;
 
 public class Component implements Parcelable {
 
+    public static final Parcelable.Creator<Component> CREATOR = new Parcelable.Creator<Component>() {
+        public Component createFromParcel(Parcel source) {
+            return new Component(source);
+        }
+
+        public Component[] newArray(int size) {
+            return new Component[size];
+        }
+    };
     private String self;
     private String id;
     private String name;
+
+    public Component() {
+    }
+
+    protected Component(Parcel in) {
+        this.self = in.readString();
+        this.id = in.readString();
+        this.name = in.readString();
+    }
 
     @Override
     public String toString() {
@@ -74,23 +92,4 @@ public class Component implements Parcelable {
         dest.writeString(this.id);
         dest.writeString(this.name);
     }
-
-    public Component() {
-    }
-
-    protected Component(Parcel in) {
-        this.self = in.readString();
-        this.id = in.readString();
-        this.name = in.readString();
-    }
-
-    public static final Parcelable.Creator<Component> CREATOR = new Parcelable.Creator<Component>() {
-        public Component createFromParcel(Parcel source) {
-            return new Component(source);
-        }
-
-        public Component[] newArray(int size) {
-            return new Component[size];
-        }
-    };
 }

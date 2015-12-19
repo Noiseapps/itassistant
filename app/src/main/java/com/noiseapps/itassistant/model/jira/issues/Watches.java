@@ -1,4 +1,3 @@
-
 package com.noiseapps.itassistant.model.jira.issues;
 
 import android.os.Parcel;
@@ -14,6 +13,15 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class Watches implements Parcelable {
 
+    public static final Parcelable.Creator<Watches> CREATOR = new Parcelable.Creator<Watches>() {
+        public Watches createFromParcel(Parcel source) {
+            return new Watches(source);
+        }
+
+        public Watches[] newArray(int size) {
+            return new Watches[size];
+        }
+    };
     @SerializedName("self")
     @Expose
     private String self;
@@ -26,13 +34,11 @@ public class Watches implements Parcelable {
 
     /**
      * No args constructor for use in serialization
-     * 
      */
     public Watches() {
     }
 
     /**
-     * 
      * @param watchCount
      * @param isWatching
      * @param self
@@ -43,55 +49,49 @@ public class Watches implements Parcelable {
         this.isWatching = isWatching;
     }
 
+    protected Watches(Parcel in) {
+        this.self = in.readString();
+        this.watchCount = in.readLong();
+        this.isWatching = in.readByte() != 0;
+    }
+
     /**
-     * 
-     * @return
-     *     The self
+     * @return The self
      */
     public String getSelf() {
         return self;
     }
 
     /**
-     * 
-     * @param self
-     *     The self
+     * @param self The self
      */
     public void setSelf(String self) {
         this.self = self;
     }
 
     /**
-     * 
-     * @return
-     *     The watchCount
+     * @return The watchCount
      */
     public long getWatchCount() {
         return watchCount;
     }
 
     /**
-     * 
-     * @param watchCount
-     *     The watchCount
+     * @param watchCount The watchCount
      */
     public void setWatchCount(long watchCount) {
         this.watchCount = watchCount;
     }
 
     /**
-     * 
-     * @return
-     *     The isWatching
+     * @return The isWatching
      */
     public boolean isIsWatching() {
         return isWatching;
     }
 
     /**
-     * 
-     * @param isWatching
-     *     The isWatching
+     * @param isWatching The isWatching
      */
     public void setIsWatching(boolean isWatching) {
         this.isWatching = isWatching;
@@ -130,20 +130,4 @@ public class Watches implements Parcelable {
         dest.writeLong(this.watchCount);
         dest.writeByte(isWatching ? (byte) 1 : (byte) 0);
     }
-
-    protected Watches(Parcel in) {
-        this.self = in.readString();
-        this.watchCount = in.readLong();
-        this.isWatching = in.readByte() != 0;
-    }
-
-    public static final Parcelable.Creator<Watches> CREATOR = new Parcelable.Creator<Watches>() {
-        public Watches createFromParcel(Parcel source) {
-            return new Watches(source);
-        }
-
-        public Watches[] newArray(int size) {
-            return new Watches[size];
-        }
-    };
 }

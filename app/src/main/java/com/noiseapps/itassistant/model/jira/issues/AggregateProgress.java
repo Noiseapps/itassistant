@@ -1,4 +1,3 @@
-
 package com.noiseapps.itassistant.model.jira.issues;
 
 import android.os.Parcel;
@@ -14,6 +13,15 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class AggregateProgress implements Parcelable {
 
+    public static final Parcelable.Creator<AggregateProgress> CREATOR = new Parcelable.Creator<AggregateProgress>() {
+        public AggregateProgress createFromParcel(Parcel source) {
+            return new AggregateProgress(source);
+        }
+
+        public AggregateProgress[] newArray(int size) {
+            return new AggregateProgress[size];
+        }
+    };
     @SerializedName("progress")
     @Expose
     private long progress;
@@ -26,13 +34,11 @@ public class AggregateProgress implements Parcelable {
 
     /**
      * No args constructor for use in serialization
-     * 
      */
     public AggregateProgress() {
     }
 
     /**
-     * 
      * @param total
      * @param progress
      * @param percent
@@ -43,55 +49,49 @@ public class AggregateProgress implements Parcelable {
         this.percent = percent;
     }
 
+    protected AggregateProgress(Parcel in) {
+        this.progress = in.readLong();
+        this.total = in.readLong();
+        this.percent = in.readLong();
+    }
+
     /**
-     * 
-     * @return
-     *     The progress
+     * @return The progress
      */
     public long getProgress() {
         return progress;
     }
 
     /**
-     * 
-     * @param progress
-     *     The progress
+     * @param progress The progress
      */
     public void setProgress(long progress) {
         this.progress = progress;
     }
 
     /**
-     * 
-     * @return
-     *     The total
+     * @return The total
      */
     public long getTotal() {
         return total;
     }
 
     /**
-     * 
-     * @param total
-     *     The total
+     * @param total The total
      */
     public void setTotal(long total) {
         this.total = total;
     }
 
     /**
-     * 
-     * @return
-     *     The percent
+     * @return The percent
      */
     public long getPercent() {
         return percent;
     }
 
     /**
-     * 
-     * @param percent
-     *     The percent
+     * @param percent The percent
      */
     public void setPercent(long percent) {
         this.percent = percent;
@@ -119,7 +119,6 @@ public class AggregateProgress implements Parcelable {
         return new EqualsBuilder().append(progress, rhs.progress).append(total, rhs.total).append(percent, rhs.percent).isEquals();
     }
 
-
     @Override
     public int describeContents() {
         return 0;
@@ -131,20 +130,4 @@ public class AggregateProgress implements Parcelable {
         dest.writeLong(this.total);
         dest.writeLong(this.percent);
     }
-
-    protected AggregateProgress(Parcel in) {
-        this.progress = in.readLong();
-        this.total = in.readLong();
-        this.percent = in.readLong();
-    }
-
-    public static final Parcelable.Creator<AggregateProgress> CREATOR = new Parcelable.Creator<AggregateProgress>() {
-        public AggregateProgress createFromParcel(Parcel source) {
-            return new AggregateProgress(source);
-        }
-
-        public AggregateProgress[] newArray(int size) {
-            return new AggregateProgress[size];
-        }
-    };
 }

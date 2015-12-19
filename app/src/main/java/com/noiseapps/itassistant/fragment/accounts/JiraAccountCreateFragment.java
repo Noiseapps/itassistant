@@ -16,9 +16,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
@@ -44,6 +41,9 @@ import org.androidannotations.annotations.EditorAction;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.ViewById;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -105,7 +105,7 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
     }
 
     private void initData() {
-        if(editAccount != null) {
+        if (editAccount != null) {
             accountName.setText(editAccount.getName());
             host.setText(editAccount.getUrl());
             username.setText(editAccount.getUsername());
@@ -145,7 +145,7 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
         final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(R.string.addJiraAccount);
-            if(editAccount != null) {
+            if (editAccount != null) {
                 actionBar.setTitle(R.string.editJiraAccount);
             }
 
@@ -226,7 +226,7 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
 
     private int getAccountId() {
         int id;
-        if(editAccount == null) {
+        if (editAccount == null) {
             id = accountsDao.getNextId();
         } else {
             id = editAccount.getId();

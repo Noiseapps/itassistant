@@ -12,10 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.github.jorgecastilloprz.FABProgressCircle;
+import com.noiseapps.itassistant.AnalyticsTrackers;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.WorkLogAdapter;
 import com.noiseapps.itassistant.connector.JiraConnector;
@@ -32,6 +30,9 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 import org.joda.time.MutableDateTime;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -51,6 +52,8 @@ public class WorkLogFragment extends Fragment implements IssueDetailFragment.Det
     FABProgressCircle fabProgressCircle;
     @ViewById
     View noWorkLogsView, loadingWorkLogs, errorView;
+    @Bean
+    AnalyticsTrackers tracker;
     private WorkLogAdapter adapter;
 
     @AfterViews
@@ -149,6 +152,7 @@ public class WorkLogFragment extends Fragment implements IssueDetailFragment.Det
         jiraConnector.postIssueWorkLog(issue.getId(), newEstimate, logItem, new Callback<WorkLogItem>() {
             @Override
             public void success(WorkLogItem logItem, Response response) {
+                tracker.sendEvent(AnalyticsTrackers.SCREEN_ISSUE_DETAILS, AnalyticsTrackers.CATEGORY_ISSUES, "worklogAdded");
                 fabProgressCircle.beginFinalAnimation();
                 Snackbar.make(fabProgressCircle, R.string.workLogAdded, Snackbar.LENGTH_LONG).show();
                 adapter.addItem(logItem);
@@ -158,6 +162,7 @@ public class WorkLogFragment extends Fragment implements IssueDetailFragment.Det
 
             @Override
             public void failure(RetrofitError error) {
+                tracker.sendEvent(AnalyticsTrackers.SCREEN_ISSUE_DETAILS, AnalyticsTrackers.CATEGORY_ISSUES, "worklogAddingFailed");
                 fabProgressCircle.hide();
                 Snackbar.make(fabProgressCircle, R.string.failedToLogWork, Snackbar.LENGTH_LONG).show();
             }

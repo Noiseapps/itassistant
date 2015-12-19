@@ -27,7 +27,7 @@ public class StashConnector {
     private StashAPI apiService;
 
     public void getProjects(Callback<UserProjects> callback) {
-        if(apiService == null) {
+        if (apiService == null) {
             return;
         }
         apiService.getProjects(callback);
@@ -39,7 +39,7 @@ public class StashConnector {
     }
 
     private void initApiService() {
-        if(currentConfig == null) {
+        if (currentConfig == null) {
             return;
         }
         final RestAdapter adapter = new RestAdapter.Builder().

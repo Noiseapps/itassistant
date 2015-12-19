@@ -11,6 +11,15 @@ import com.google.gson.annotations.SerializedName;
  */
 public class TransitionTo implements Parcelable {
 
+    public static final Parcelable.Creator<TransitionTo> CREATOR = new Parcelable.Creator<TransitionTo>() {
+        public TransitionTo createFromParcel(Parcel source) {
+            return new TransitionTo(source);
+        }
+
+        public TransitionTo[] newArray(int size) {
+            return new TransitionTo[size];
+        }
+    };
     @SerializedName("self")
     @Expose
     public String self;
@@ -36,6 +45,14 @@ public class TransitionTo implements Parcelable {
         this.iconUrl = iconUrl;
         this.name = name;
         this.id = id;
+    }
+
+    protected TransitionTo(Parcel in) {
+        this.self = in.readString();
+        this.description = in.readString();
+        this.iconUrl = in.readString();
+        this.name = in.readString();
+        this.id = in.readString();
     }
 
     @Override
@@ -128,22 +145,4 @@ public class TransitionTo implements Parcelable {
         dest.writeString(this.name);
         dest.writeString(this.id);
     }
-
-    protected TransitionTo(Parcel in) {
-        this.self = in.readString();
-        this.description = in.readString();
-        this.iconUrl = in.readString();
-        this.name = in.readString();
-        this.id = in.readString();
-    }
-
-    public static final Parcelable.Creator<TransitionTo> CREATOR = new Parcelable.Creator<TransitionTo>() {
-        public TransitionTo createFromParcel(Parcel source) {
-            return new TransitionTo(source);
-        }
-
-        public TransitionTo[] newArray(int size) {
-            return new TransitionTo[size];
-        }
-    };
 }

@@ -12,13 +12,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.RecyclerViewSwipeManager;
 import com.h6ah4i.android.widget.advrecyclerview.touchguard.RecyclerViewTouchActionGuardManager;
 import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
+import com.noiseapps.itassistant.AnalyticsTrackers;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.AccountListAdapter;
 import com.noiseapps.itassistant.database.dao.AccountsDao;
@@ -32,9 +29,14 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.ViewById;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 
 @EFragment(R.layout.fragment_accounts)
 public class AccountsListFragment extends Fragment {
+    private final List<BaseAccount> accounts = new ArrayList<>();
     @ViewById
     Toolbar toolbar;
     @ViewById
@@ -43,7 +45,8 @@ public class AccountsListFragment extends Fragment {
     AccountsDao accountsDao;
     @ViewById(R.id.list)
     RecyclerView recyclerView;
-    private final List<BaseAccount> accounts = new ArrayList<>();
+    @Bean
+    AnalyticsTrackers tracker;
     private AccountsActivityCallbacks callbacks;
     private RecyclerViewTouchActionGuardManager recyclerViewTouchActionGuardManager;
     private RecyclerViewSwipeManager recyclerViewSwipeManager;
@@ -145,6 +148,23 @@ public class AccountsListFragment extends Fragment {
         return lhs.getAccountType() - rhs.getAccountType();
     }
 
+    private void removeAccount(BaseAccount account) {
+        tracker.sendEvent(AnalyticsTrackers.SCREEN_ACCOUNTS, AnalyticsTrackers.CATEGORY_ACCOUNTS, "accountRemoved");
+        accountsDao.delete(account);
+        readAllAccounts();
+        listAdapter.notifyDataSetChanged();
+        getActivity().setResult(Activity.RESULT_OK);
+        Snackbar.make(recyclerView, R.string.removed, Snackbar.LENGTH_LONG).setAction(R.string.undo, v -> {
+            restoreAccount(account);
+        }).show();
+    }
+
+    private void restoreAccount(BaseAccount account) {
+        tracker.sendEvent(AnalyticsTrackers.SCREEN_ACCOUNTS, AnalyticsTrackers.CATEGORY_ACCOUNTS, "accountRestored");
+        accountsDao.add(account);
+        readAllAccounts();
+    }
+
     private class AdapterCallbacks implements AccountListAdapter.AccountListCallbacks {
         @Override
         public void onItemSelected(BaseAccount account) {
@@ -153,14 +173,7 @@ public class AccountsListFragment extends Fragment {
 
         @Override
         public void onItemRemoved(final BaseAccount account) {
-            accountsDao.delete(account);
-            readAllAccounts();
-            listAdapter.notifyDataSetChanged();
-            getActivity().setResult(Activity.RESULT_OK);
-            Snackbar.make(recyclerView, R.string.removed, Snackbar.LENGTH_LONG).setAction(R.string.undo, v -> {
-                accountsDao.add(account);
-                readAllAccounts();
-            }).show();
+            removeAccount(account);
         }
     }
 }

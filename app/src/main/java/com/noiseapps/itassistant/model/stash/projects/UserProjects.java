@@ -1,4 +1,3 @@
-
 package com.noiseapps.itassistant.model.stash.projects;
 
 import com.google.gson.annotations.Expose;
@@ -24,90 +23,70 @@ public class UserProjects {
     private int start;
 
     /**
-     * 
-     * @return
-     *     The size
+     * @return The size
      */
     public int getSize() {
         return size;
     }
 
     /**
-     * 
-     * @param size
-     *     The size
+     * @param size The size
      */
     public void setSize(int size) {
         this.size = size;
     }
 
     /**
-     * 
-     * @return
-     *     The limit
+     * @return The limit
      */
     public int getLimit() {
         return limit;
     }
 
     /**
-     * 
-     * @param limit
-     *     The limit
+     * @param limit The limit
      */
     public void setLimit(int limit) {
         this.limit = limit;
     }
 
     /**
-     * 
-     * @return
-     *     The isLastPage
+     * @return The isLastPage
      */
     public boolean isIsLastPage() {
         return isLastPage;
     }
 
     /**
-     * 
-     * @param isLastPage
-     *     The isLastPage
+     * @param isLastPage The isLastPage
      */
     public void setIsLastPage(boolean isLastPage) {
         this.isLastPage = isLastPage;
     }
 
     /**
-     * 
-     * @return
-     *     The values
+     * @return The values
      */
     public List<Value> getValues() {
         return values;
     }
 
     /**
-     * 
-     * @param values
-     *     The values
+     * @param values The values
      */
     public void setValues(List<Value> values) {
         this.values = values;
     }
 
     /**
-     * 
-     * @return
-     *     The start
+     * @return The start
      */
     public int getStart() {
         return start;
     }
 
     /**
-     * 
-     * @param start
-     *     The start
+     * @param start The start
      */
     public void setStart(int start) {
         this.start = start;

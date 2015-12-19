@@ -2,10 +2,6 @@ package com.noiseapps.itassistant.connector;
 
 import android.support.annotation.NonNull;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import com.noiseapps.itassistant.api.JiraAPI;
 import com.noiseapps.itassistant.database.PreferencesDAO;
 import com.noiseapps.itassistant.model.account.BaseAccount;
@@ -31,6 +27,10 @@ import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import retrofit.Callback;
 import retrofit.ErrorHandler;
 import retrofit.RequestInterceptor;
@@ -49,7 +49,7 @@ public class JiraConnector {
     private JiraAPI apiService;
 
     public Observable<JiraUser> getUserData() {
-        if(apiService == null) {
+        if (apiService == null) {
             return null;
         }
         return apiService.getUserData(currentConfig.getUsername());
@@ -89,7 +89,7 @@ public class JiraConnector {
     }
 
     public Observable<JiraIssueList> getProjectIssues(@NonNull String projectKey) {
-        if(apiService == null) {
+        if (apiService == null) {
             return null;
         }
         final List<Issue> issues = new ArrayList<>();
@@ -111,19 +111,19 @@ public class JiraConnector {
     }
 
     public void getIssueComments(@NonNull String issueId, Callback<Comments> callback) {
-        if(apiService == null) {
+        if (apiService == null) {
             return;
         }
         apiService.getIssueComments(issueId, callback);
     }
 
-    public Observable<Comment> postIssueComment(String issueId, Comment comment){
+    public Observable<Comment> postIssueComment(String issueId, Comment comment) {
         return apiService.addIssueComment(issueId, comment);
     }
 
     @NonNull
     public Observable<List<WorkLogItem>> getIssueWorkLog(@NonNull String issueId) {
-        if(apiService == null) {
+        if (apiService == null) {
             return Observable.just(new ArrayList<>());
         }
         final List<WorkLogItem> workLogItems = new ArrayList<>();
@@ -142,64 +142,64 @@ public class JiraConnector {
         return Observable.just(workLogItems);
     }
 
-    public void postIssueWorkLog(String issueId, String newEstimate, WorkLogItem workLog, Callback<WorkLogItem> callback){
-        if(apiService == null) {
+    public void postIssueWorkLog(String issueId, String newEstimate, WorkLogItem workLog, Callback<WorkLogItem> callback) {
+        if (apiService == null) {
             return;
         }
         apiService.postIssueWorkLog(issueId, newEstimate, workLog, callback);
     }
 
     public Observable<JiraProjectDetails> getProjectDetails(@NonNull String projectId) {
-        if(apiService == null) {
+        if (apiService == null) {
             return null;
         }
         return apiService.getProjectDetails(projectId);
     }
 
     public Observable<Issue> getIssueDetails(@NonNull String issueId) {
-        if(apiService == null) {
+        if (apiService == null) {
             return null;
         }
         return apiService.getIssueDetails(issueId);
     }
 
     public void getProjectStatuses(@NonNull String issueId, Callback<List<IssueStatus>> callback) {
-        if(apiService == null) {
+        if (apiService == null) {
             return;
         }
         apiService.getProjectStatuses(issueId, callback);
     }
 
     public Observable<List<Assignee>> getProjectMembers(@NonNull String projectKey) {
-        if(apiService == null) {
+        if (apiService == null) {
             return null;
         }
         return apiService.getProjectMembers(projectKey);
     }
 
     public Observable<CreateMetaModel> getCreateMeta(@NonNull String projectKey) {
-        if(apiService == null) {
+        if (apiService == null) {
             return null;
         }
         return apiService.getCreateMeta(projectKey);
     }
 
     public void postNewIssue(@NonNull CreateIssueModel issueModel, Callback<CreateIssueResponse> callback) {
-        if(apiService == null) {
+        if (apiService == null) {
             return;
         }
         apiService.postNewIssue(issueModel, callback);
     }
 
     public void updateIssue(@NonNull String issueId, @NonNull CreateIssueModel issueModel, Callback<CreateIssueResponse> callback) {
-        if(apiService == null) {
+        if (apiService == null) {
             return;
         }
         apiService.updateIssue(issueId, issueModel, callback);
     }
 
     public Response changeAssignee(@NonNull String projectKey, String username) {
-        if(apiService == null) {
+        if (apiService == null) {
             return null;
         }
         try {
@@ -211,7 +211,7 @@ public class JiraConnector {
     }
 
     public Response transitionTo(Issue issue, Transition transition) {
-        if(apiService == null) {
+        if (apiService == null) {
             return null;
         }
         try {
@@ -228,7 +228,7 @@ public class JiraConnector {
     }
 
     private void initApiService() {
-        if(currentConfig == null) {
+        if (currentConfig == null) {
             return;
         }
         final RestAdapter adapter = new RestAdapter.Builder().

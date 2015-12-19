@@ -1,4 +1,3 @@
-
 package com.noiseapps.itassistant.model.jira.issues;
 
 import android.os.Parcel;
@@ -14,6 +13,15 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class Votes implements Parcelable {
 
+    public static final Parcelable.Creator<Votes> CREATOR = new Parcelable.Creator<Votes>() {
+        public Votes createFromParcel(Parcel source) {
+            return new Votes(source);
+        }
+
+        public Votes[] newArray(int size) {
+            return new Votes[size];
+        }
+    };
     @SerializedName("self")
     @Expose
     private String self;
@@ -26,13 +34,11 @@ public class Votes implements Parcelable {
 
     /**
      * No args constructor for use in serialization
-     * 
      */
     public Votes() {
     }
 
     /**
-     * 
      * @param hasVoted
      * @param votes
      * @param self
@@ -43,55 +49,49 @@ public class Votes implements Parcelable {
         this.hasVoted = hasVoted;
     }
 
+    protected Votes(Parcel in) {
+        this.self = in.readString();
+        this.votes = in.readLong();
+        this.hasVoted = in.readByte() != 0;
+    }
+
     /**
-     * 
-     * @return
-     *     The self
+     * @return The self
      */
     public String getSelf() {
         return self;
     }
 
     /**
-     * 
-     * @param self
-     *     The self
+     * @param self The self
      */
     public void setSelf(String self) {
         this.self = self;
     }
 
     /**
-     * 
-     * @return
-     *     The votes
+     * @return The votes
      */
     public long getVotes() {
         return votes;
     }
 
     /**
-     * 
-     * @param votes
-     *     The votes
+     * @param votes The votes
      */
     public void setVotes(long votes) {
         this.votes = votes;
     }
 
     /**
-     * 
-     * @return
-     *     The hasVoted
+     * @return The hasVoted
      */
     public boolean isHasVoted() {
         return hasVoted;
     }
 
     /**
-     * 
-     * @param hasVoted
-     *     The hasVoted
+     * @param hasVoted The hasVoted
      */
     public void setHasVoted(boolean hasVoted) {
         this.hasVoted = hasVoted;
@@ -130,20 +130,4 @@ public class Votes implements Parcelable {
         dest.writeLong(this.votes);
         dest.writeByte(hasVoted ? (byte) 1 : (byte) 0);
     }
-
-    protected Votes(Parcel in) {
-        this.self = in.readString();
-        this.votes = in.readLong();
-        this.hasVoted = in.readByte() != 0;
-    }
-
-    public static final Parcelable.Creator<Votes> CREATOR = new Parcelable.Creator<Votes>() {
-        public Votes createFromParcel(Parcel source) {
-            return new Votes(source);
-        }
-
-        public Votes[] newArray(int size) {
-            return new Votes[size];
-        }
-    };
 }

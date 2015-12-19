@@ -1,4 +1,3 @@
-
 package com.noiseapps.itassistant.model.stash.projects;
 
 public class Link {

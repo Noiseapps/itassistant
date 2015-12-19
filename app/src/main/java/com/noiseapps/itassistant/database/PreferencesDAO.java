@@ -10,10 +10,9 @@ import org.androidannotations.annotations.sharedpreferences.Pref;
 @EBean
 public class PreferencesDAO {
 
+    private final Gson GSON = new Gson();
     @Pref
     Preferences_ preferences;
-
-    private final Gson GSON = new Gson();
 
     public BaseAccount getJiraConfig() {
         final String configJson = preferences.jiraConfig().get();

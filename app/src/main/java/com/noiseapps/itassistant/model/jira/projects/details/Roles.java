@@ -1,4 +1,3 @@
-
 package com.noiseapps.itassistant.model.jira.projects.details;
 
 import com.google.gson.annotations.Expose;
@@ -29,126 +28,98 @@ public class Roles {
     private String ServiceDeskCustomers;
 
     /**
-     * 
-     * @return
-     *     The Users
+     * @return The Users
      */
     public String getUsers() {
         return Users;
     }
 
     /**
-     * 
-     * @param Users
-     *     The Users
+     * @param Users The Users
      */
     public void setUsers(String Users) {
         this.Users = Users;
     }
 
     /**
-     * 
-     * @return
-     *     The ServiceDeskTeam
+     * @return The ServiceDeskTeam
      */
     public String getServiceDeskTeam() {
         return ServiceDeskTeam;
     }
 
     /**
-     * 
-     * @param ServiceDeskTeam
-     *     The Service Desk Team
+     * @param ServiceDeskTeam The Service Desk Team
      */
     public void setServiceDeskTeam(String ServiceDeskTeam) {
         this.ServiceDeskTeam = ServiceDeskTeam;
     }
 
     /**
-     * 
-     * @return
-     *     The Administrators
+     * @return The Administrators
      */
     public String getAdministrators() {
         return Administrators;
     }
 
     /**
-     * 
-     * @param Administrators
-     *     The Administrators
+     * @param Administrators The Administrators
      */
     public void setAdministrators(String Administrators) {
         this.Administrators = Administrators;
     }
 
     /**
-     * 
-     * @return
-     *     The Reviewers
+     * @return The Reviewers
      */
     public String getReviewers() {
         return Reviewers;
     }
 
     /**
-     * 
-     * @param Reviewers
-     *     The Reviewers
+     * @param Reviewers The Reviewers
      */
     public void setReviewers(String Reviewers) {
         this.Reviewers = Reviewers;
     }
 
     /**
-     * 
-     * @return
-     *     The TempoProjectManagers
+     * @return The TempoProjectManagers
      */
     public String getTempoProjectManagers() {
         return TempoProjectManagers;
     }
 
     /**
-     * 
-     * @param TempoProjectManagers
-     *     The Tempo Project Managers
+     * @param TempoProjectManagers The Tempo Project Managers
      */
     public void setTempoProjectManagers(String TempoProjectManagers) {
         this.TempoProjectManagers = TempoProjectManagers;
     }
 
     /**
-     * 
-     * @return
-     *     The Developers
+     * @return The Developers
      */
     public String getDevelopers() {
         return Developers;
     }
 
     /**
-     * 
-     * @param Developers
-     *     The Developers
+     * @param Developers The Developers
      */
     public void setDevelopers(String Developers) {
         this.Developers = Developers;
     }
 
     /**
-     * 
-     * @return
-     *     The ServiceDeskCustomers
+     * @return The ServiceDeskCustomers
      */
     public String getServiceDeskCustomers() {
         return ServiceDeskCustomers;
     }
 
     /**
-     * 
-     * @param ServiceDeskCustomers
-     *     The Service Desk Customers
+     * @param ServiceDeskCustomers The Service Desk Customers
      */
     public void setServiceDeskCustomers(String ServiceDeskCustomers) {
         this.ServiceDeskCustomers = ServiceDeskCustomers;

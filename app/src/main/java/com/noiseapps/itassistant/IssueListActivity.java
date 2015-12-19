@@ -2,7 +2,6 @@ package com.noiseapps.itassistant;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
@@ -19,9 +18,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import com.afollestad.materialdialogs.AlertDialogWrapper;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -58,8 +54,16 @@ import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.greenrobot.event.EventBus;
 import jonathanfinerty.once.Once;
+
+import static com.noiseapps.itassistant.AnalyticsTrackers.CATEGORY_APP;
+import static com.noiseapps.itassistant.AnalyticsTrackers.CATEGORY_ISSUES;
+import static com.noiseapps.itassistant.AnalyticsTrackers.CATEGORY_MENU;
+import static com.noiseapps.itassistant.AnalyticsTrackers.SCREEN_ISSUE_LIST;
 
 @EActivity(R.layout.activity_issue_app_bar)
 public class IssueListActivity extends AppCompatActivity
@@ -85,6 +89,8 @@ public class IssueListActivity extends AppCompatActivity
     @Bean
     JiraConnector jiraConnector;
     ArrayList<NavigationModel> navigationModels;
+    @Bean
+    AnalyticsTrackers tracker;
     private boolean mTwoPane;
     private MaterialDialog progressDialog;
     private ArrayList<Issue> myIssues;
@@ -94,6 +100,7 @@ public class IssueListActivity extends AppCompatActivity
 
     @Override
     public void onItemSelected(Issue issue) {
+        tracker.sendEvent(SCREEN_ISSUE_LIST, CATEGORY_ISSUES, "viewDetails");
         if (mTwoPane) {
             nothingSelectedInfo.setVisibility(View.GONE);
             final IssueDetailFragment fragment = IssueDetailFragment_.builder().issue(issue).build();
@@ -107,6 +114,7 @@ public class IssueListActivity extends AppCompatActivity
 
     @Override
     public void onAddNewIssue(JiraProject jiraProject) {
+        tracker.sendEvent(SCREEN_ISSUE_LIST, CATEGORY_ISSUES, "addNewIssue");
         final String key = jiraProject.getKey();
         if (mTwoPane) {
             nothingSelectedInfo.setVisibility(View.GONE);
@@ -121,6 +129,7 @@ public class IssueListActivity extends AppCompatActivity
 
     @Override
     public void onEditIssue(Issue issue) {
+        tracker.sendEvent(SCREEN_ISSUE_LIST, CATEGORY_ISSUES, "editIssue");
         final String key = issue.getFields().getProject().getKey();
         if (mTwoPane) {
             nothingSelectedInfo.setVisibility(View.GONE);
@@ -139,17 +148,9 @@ public class IssueListActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-//        final Tracker tracker = AnalyticsTrackers.getTracker();
-//        tracker.setScreenName(getClass().getSimpleName());
-//        tracker.send(new HitBuilders.ScreenViewBuilder().build());
-    }
-
-    @Override
     public void onIssueCreated(Issue issue) {
         listFragment.reload();
-        if(mTwoPane) {
+        if (mTwoPane) {
             onItemSelected(issue);
         }
     }
@@ -171,6 +172,7 @@ public class IssueListActivity extends AppCompatActivity
         isTwoPane();
 
         feedbackDialog = new FeedbackDialog(this, "AF-EBD0453F2EC0-CF");
+        AnalyticsTrackers_.getInstance_(this).sendScreenVisit(SCREEN_ISSUE_LIST);
     }
 
     private void setTablet() {
@@ -200,14 +202,14 @@ public class IssueListActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        if(drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
             return;
         }
         final boolean isSearchOpen = listFragment.isSearchViewOpen();
-        if(isSearchOpen) {
+        if (isSearchOpen) {
             listFragment.closeSearchView();
-        } else if(!doubleClicked) {
+        } else if (!doubleClicked) {
             Snackbar.make(mainLayout, R.string.tapAgainToExit, Snackbar.LENGTH_LONG).show();
             doubleClicked = true;
             handler.postDelayed(() -> doubleClicked = false, DELAY_MILLIS);
@@ -273,8 +275,8 @@ public class IssueListActivity extends AppCompatActivity
     @UiThread
     void showProgress() {
         progressDialog = new MaterialDialog.Builder(this).
-        content(R.string.fetchingData).
-        progress(true, 0).cancelable(false).show();
+                content(R.string.fetchingData).
+                progress(true, 0).cancelable(false).show();
     }
 
     @UiThread
@@ -306,10 +308,12 @@ public class IssueListActivity extends AppCompatActivity
         }
     }
 
-    private void isTwoPane() {
+    private boolean isTwoPane() {
         if (findViewById(R.id.issue_detail_container) != null) {
             mTwoPane = true;
         }
+        tracker.sendEvent(SCREEN_ISSUE_LIST, CATEGORY_APP, "isTablet", String.valueOf(mTwoPane));
+        return mTwoPane;
     }
 
     @UiThread
@@ -340,6 +344,7 @@ public class IssueListActivity extends AppCompatActivity
 
     @Click(R.id.actionAssignedToMe)
     void onAssignedToMeAction() {
+        tracker.sendEvent(SCREEN_ISSUE_LIST, CATEGORY_MENU, "viewAssignedToMe");
         drawerLayout.closeDrawer(GravityCompat.START);
         initMyIssues(myIssues);
     }
@@ -352,6 +357,7 @@ public class IssueListActivity extends AppCompatActivity
 
     @Click(R.id.actionAbout)
     void onAboutAction() {
+        tracker.sendEvent(SCREEN_ISSUE_LIST, CATEGORY_MENU, "viewAbout");
         drawerLayout.closeDrawer(GravityCompat.START);
         showAboutDialog();
     }
@@ -399,7 +405,7 @@ public class IssueListActivity extends AppCompatActivity
     @OnActivityResult(NEW_ISSUE_REQUEST)
     void onIssueAdded(int resultCode) {
         Logger.w("" + resultCode);
-        AnalyticsTrackers.getInstance().get(AnalyticsTrackers.Target.APP);
+
         if (resultCode == RESULT_OK) {
             listFragment.reload();
         }
@@ -408,7 +414,7 @@ public class IssueListActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         EventBus.getDefault().unregister(this);
-        if(feedbackDialog != null) {
+        if (feedbackDialog != null) {
             feedbackDialog.dismiss();
         }
         super.onPause();

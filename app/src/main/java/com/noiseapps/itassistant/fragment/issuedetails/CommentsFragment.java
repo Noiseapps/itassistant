@@ -10,10 +10,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.github.jorgecastilloprz.FABProgressCircle;
+import com.noiseapps.itassistant.AnalyticsTrackers;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.CommentsAdapter;
 import com.noiseapps.itassistant.connector.JiraConnector;
@@ -21,13 +19,15 @@ import com.noiseapps.itassistant.fragment.IssueDetailFragment;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comments;
-import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -47,6 +47,8 @@ public class CommentsFragment extends Fragment implements IssueDetailFragment.De
     Issue issue;
     @ViewById
     View noCommentsView, loadingComments, errorView;
+    @Bean
+    AnalyticsTrackers tracker;
     private CommentsAdapter adapter;
 
     @AfterViews
@@ -117,7 +119,7 @@ public class CommentsFragment extends Fragment implements IssueDetailFragment.De
     }
 
     private void onCommentAdded(Comment comment) {
-        Logger.d(comment.toString());
+        tracker.sendEvent(AnalyticsTrackers.SCREEN_ISSUE_DETAILS, AnalyticsTrackers.CATEGORY_ISSUES, "commentAdded");
         fabProgressCircle.beginFinalAnimation();
         Snackbar.make(fabProgressCircle, R.string.commentAdded, Snackbar.LENGTH_LONG).show();
         noCommentsView.setVisibility(View.GONE);
@@ -126,6 +128,7 @@ public class CommentsFragment extends Fragment implements IssueDetailFragment.De
     }
 
     private void onCommentAddFailed() {
+        tracker.sendEvent(AnalyticsTrackers.SCREEN_ISSUE_DETAILS, AnalyticsTrackers.CATEGORY_ISSUES, "commentAddingFailed");
         fabProgressCircle.hide();
         Snackbar.make(fabProgressCircle, R.string.failedToAddComment, Snackbar.LENGTH_LONG).show();
     }

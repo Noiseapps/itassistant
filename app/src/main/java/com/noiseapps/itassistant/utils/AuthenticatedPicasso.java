@@ -18,12 +18,12 @@ public class AuthenticatedPicasso {
 
     private static Picasso INSTANCE;
 
-    public static void setConfig(Context context, final BaseAccount config){
+    public static void setConfig(Context context, final BaseAccount config) {
         getPicasso(context, config);
     }
 
     public static Picasso getAuthPicasso(Context context, final BaseAccount config) {
-        if(INSTANCE == null) {
+        if (INSTANCE == null) {
             getPicasso(context, config);
         }
         return INSTANCE;
@@ -43,7 +43,7 @@ public class AuthenticatedPicasso {
         });
 
         final Picasso.Builder builder = new Picasso.Builder(context);
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             builder.indicatorsEnabled(true);
             builder.loggingEnabled(true);
             builder.listener((picasso, uri, exception) -> Logger.e(exception, exception.getMessage()));

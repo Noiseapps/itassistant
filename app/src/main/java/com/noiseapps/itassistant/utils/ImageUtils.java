@@ -17,10 +17,9 @@ import java.io.IOException;
 @EBean
 public class ImageUtils {
 
+    private final static String AVATARS = "/avatars/";
     @RootContext
     Context context;
-
-    private final static String AVATARS = "/avatars/";
 
     public String saveAvatar(Bitmap avatarBitmap, String avatarFilename) {
         try {

@@ -43,7 +43,6 @@ public class IssueDetailActivity extends AppCompatActivity implements IssueDetai
                 .commit();
     }
 
-
     private void setTablet() {
         if (getResources().getBoolean(R.bool.tabletSize)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
@@ -54,7 +53,7 @@ public class IssueDetailActivity extends AppCompatActivity implements IssueDetai
 
     @OnActivityResult(REQUEST_CODE)
     void onIssueFinished(int resultCode, Intent data) {
-        if(resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK) {
             issue = data.getParcelableExtra(NewIssueActivity.NEW_ISSUE_KEY);
             setIssueFragment();
         }

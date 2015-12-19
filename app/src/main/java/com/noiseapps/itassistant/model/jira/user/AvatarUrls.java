@@ -7,15 +7,21 @@ import com.google.gson.annotations.SerializedName;
 
 public class AvatarUrls implements Parcelable {
 
+    public static final Parcelable.Creator<AvatarUrls> CREATOR = new Parcelable.Creator<AvatarUrls>() {
+        public AvatarUrls createFromParcel(Parcel source) {
+            return new AvatarUrls(source);
+        }
+
+        public AvatarUrls[] newArray(int size) {
+            return new AvatarUrls[size];
+        }
+    };
     @SerializedName("16x16")
     private final String avatar16;
-
     @SerializedName("24x24")
     private final String avatar24;
-
     @SerializedName("32x32")
     private final String avatar32;
-
     @SerializedName("48x48")
     private final String avatar48;
 
@@ -24,6 +30,13 @@ public class AvatarUrls implements Parcelable {
         this.avatar24 = avatar24;
         this.avatar32 = avatar32;
         this.avatar48 = avatar48;
+    }
+
+    protected AvatarUrls(Parcel in) {
+        this.avatar16 = in.readString();
+        this.avatar24 = in.readString();
+        this.avatar32 = in.readString();
+        this.avatar48 = in.readString();
     }
 
     public String getAvatar48() {
@@ -90,21 +103,4 @@ public class AvatarUrls implements Parcelable {
         dest.writeString(this.avatar32);
         dest.writeString(this.avatar48);
     }
-
-    protected AvatarUrls(Parcel in) {
-        this.avatar16 = in.readString();
-        this.avatar24 = in.readString();
-        this.avatar32 = in.readString();
-        this.avatar48 = in.readString();
-    }
-
-    public static final Parcelable.Creator<AvatarUrls> CREATOR = new Parcelable.Creator<AvatarUrls>() {
-        public AvatarUrls createFromParcel(Parcel source) {
-            return new AvatarUrls(source);
-        }
-
-        public AvatarUrls[] newArray(int size) {
-            return new AvatarUrls[size];
-        }
-    };
 }

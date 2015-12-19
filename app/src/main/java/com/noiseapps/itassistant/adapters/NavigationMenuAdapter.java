@@ -8,8 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.List;
-
 import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractExpandableItemAdapter;
 import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractExpandableItemViewHolder;
 import com.noiseapps.itassistant.R;
@@ -20,14 +18,16 @@ import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.util.List;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class NavigationMenuAdapter extends AbstractExpandableItemAdapter<NavigationMenuAdapter.ParentViewHolder, NavigationMenuAdapter.ChildViewHolder> {
 
     private final Context context;
-    private List<NavigationModel> navigationModels;
     private final AdapterCallbacks callbacks;
     private final LayoutInflater layoutInflater;
+    private List<NavigationModel> navigationModels;
 
     public NavigationMenuAdapter(Context context, List<NavigationModel> navigationModels, AdapterCallbacks callbacks) {
         this.context = context;
@@ -123,11 +123,12 @@ public class NavigationMenuAdapter extends AbstractExpandableItemAdapter<Navigat
             avatarImage = (CircleImageView) itemView.findViewById(R.id.avatar);
             itemView.callOnClick();
         }
+
         public void bind(BaseAccount baseAccount) {
             Picasso.with(context).cancelRequest(avatarImage);
             accountName.setText(baseAccount.getName());
-            if(avatarBitmap == null) {
-                if(baseAccount.getAvatarPath().isEmpty()) {
+            if (avatarBitmap == null) {
+                if (baseAccount.getAvatarPath().isEmpty()) {
                     AuthenticatedPicasso.getAuthPicasso(context, baseAccount).
                             load(baseAccount.getAvatarPath()).
                             placeholder(R.drawable.ic_action_account_circle).
