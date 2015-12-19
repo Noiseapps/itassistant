@@ -22,7 +22,7 @@ public class AssistantApplication extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-        AnalyticsTrackers.initialize(this);
+        AnalyticsTrackers_.getInstance_(this);
         JodaTimeAndroid.init(this);
         Once.initialise(this);
         ACRA.init(this);

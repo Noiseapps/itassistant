@@ -167,7 +167,7 @@ public class IssueListActivity extends AppCompatActivity
         isTwoPane();
 
         feedbackDialog = new FeedbackDialog(this, "AF-EBD0453F2EC0-CF");
-        AnalyticsTrackers.getInstance().sendScreenVisit("IssueListActivity");
+        AnalyticsTrackers_.getInstance_(this).sendScreenVisit("IssueListActivity");
     }
 
     private void setTablet() {
@@ -401,7 +401,7 @@ public class IssueListActivity extends AppCompatActivity
     @OnActivityResult(NEW_ISSUE_REQUEST)
     void onIssueAdded(int resultCode) {
         Logger.w("" + resultCode);
-        AnalyticsTrackers.getInstance().get(AnalyticsTrackers.Target.APP);
+
         if (resultCode == RESULT_OK) {
             listFragment.reload();
         }

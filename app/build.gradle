@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'android-apt'
 apply plugin: 'me.tatarka.retrolambda'
-apply plugin: 'com.orhanobut.tracklytics'
 
 
 Properties properties = new Properties()
@@ -66,15 +65,6 @@ android {
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
-    tracklytics {
-        mixpanel = false
-        adjust = false
-        fabric = false
-        snowplow = false
-        googleAnalytics = true
-        crittercism = false
-    }
-    startTracklytics.execute()
 }
 
 dependencies {

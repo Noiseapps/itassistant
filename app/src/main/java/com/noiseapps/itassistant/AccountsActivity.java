@@ -16,9 +16,12 @@ import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.orhanobut.tracklytics.TrackEvent;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.ViewById;
+
+import static com.noiseapps.itassistant.AnalyticsTrackers.*;
 
 @EActivity(R.layout.activity_accounts)
 public class AccountsActivity extends AppCompatActivity implements AccountsActivityCallbacks {
@@ -30,10 +33,9 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
     boolean showAccountForm;
 
     @Override
-    @TrackEvent("onAddAccount")
     public void onAddAccount() {
         onAccountTypeSelected(AccountTypes.ACC_JIRA);
-//        getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.container, AccountTypeSelectFragment_.builder().build()).commit();
+        tracker.sendEvent(SCREEN_ACCOUNTS, CATEGORY_ACCOUNTS, "added");
     }
 
     @Override
@@ -46,19 +48,19 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
     }
 
     @Override
-    @TrackEvent("accountSaved")
     public void onAccountSaved() {
         clearBackstack();
         init();
         setResult(RESULT_OK);
         Snackbar.make(container, R.string.accountSaved, Snackbar.LENGTH_LONG).show();
+        tracker.sendEvent(SCREEN_ACCOUNTS, CATEGORY_ACCOUNTS, "saved");
     }
 
     @Override
-    @TrackEvent("onEditAccount")
     public void onEditAccount(BaseAccount account) {
         final JiraAccountCreateFragment fragment = JiraAccountCreateFragment_.builder().editAccount(account).build();
         getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.container, fragment).commit();
+        tracker.sendEvent(SCREEN_ACCOUNTS, CATEGORY_ACCOUNTS, "edit");
     }
 
 
@@ -70,9 +72,12 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
         }
     }
 
+    @Bean
+    AnalyticsTrackers tracker;
+
     @AfterViews
     void init() {
-        AnalyticsTrackers.getInstance().sendScreenVisit("Accounts");
+        tracker.sendScreenVisit(SCREEN_ACCOUNTS);
         setTablet();
         setResult(RESULT_CANCELED);
         getSupportFragmentManager().beginTransaction().replace(R.id.container, AccountsListFragment_.builder().build()).commit();
