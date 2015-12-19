@@ -4,10 +4,6 @@ import android.content.Context;
 import android.support.annotation.IntDef;
 import android.support.annotation.StringDef;
 import android.util.SparseArray;
-import android.util.SparseIntArray;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
@@ -24,7 +20,7 @@ public class AnalyticsTrackers {
     public static final int APP_TARGET = 0;
 
     public static final String SCREEN_ACCOUNTS = "Accounts";
-    public static final String SCREEN_ACCOUNT_EDIT= "AccountForm";
+    public static final String SCREEN_ACCOUNT_EDIT = "AccountForm";
     public static final String SCREEN_ISSUE_LIST = "IssueList";
     public static final String SCREEN_ISSUE_DETAILS = "IssueDetails";
     public static final String SCREEN_ISSUE_EDIT = "IssueForm";
@@ -34,21 +30,10 @@ public class AnalyticsTrackers {
     public static final String CATEGORY_MENU = "Menu";
     public static final String CATEGORY_ISSUES = "Issues";
     public static final String CATEGORY_TIME_TRACKER = "TimeTracking";
-
+    private final SparseArray<Tracker> mTrackers = new SparseArray<>();
     @RootContext
     Context context;
     private GoogleAnalytics googleAnalytics;
-
-    @IntDef({APP_TARGET})
-    public @interface TargetTypes {}
-
-    @StringDef({SCREEN_ACCOUNTS, SCREEN_ACCOUNT_EDIT, SCREEN_ISSUE_LIST, SCREEN_ISSUE_DETAILS, SCREEN_ISSUE_EDIT})
-    public @interface ScreenNames {}
-
-    @StringDef({CATEGORY_ACCOUNTS, CATEGORY_APP, CATEGORY_MENU, CATEGORY_ISSUES, CATEGORY_TIME_TRACKER})
-    public @interface Categories {}
-
-    private final SparseArray<Tracker> mTrackers = new SparseArray<>();
 
     @AfterInject
     void init() {
@@ -80,14 +65,14 @@ public class AnalyticsTrackers {
         tracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
-    public void sendEvent(@ScreenNames String screenName, @Categories  String category, String action) {
+    public void sendEvent(@ScreenNames String screenName, @Categories String category, String action) {
         final Tracker tracker = getDefault();
         tracker.setScreenName(screenName);
         HitBuilders.EventBuilder eventBuilder = new HitBuilders.EventBuilder(category, action);
         tracker.send(eventBuilder.build());
     }
 
-    public void sendEvent(@ScreenNames String screenName, @Categories  String category, String action, String label) {
+    public void sendEvent(@ScreenNames String screenName, @Categories String category, String action, String label) {
         final Tracker tracker = getDefault();
         tracker.setScreenName(screenName);
         HitBuilders.EventBuilder eventBuilder = new HitBuilders.EventBuilder(category, action);
@@ -97,5 +82,17 @@ public class AnalyticsTrackers {
 
     public synchronized Tracker getDefault() {
         return get(APP_TARGET);
+    }
+
+    @IntDef({APP_TARGET})
+    public @interface TargetTypes {
+    }
+
+    @StringDef({SCREEN_ACCOUNTS, SCREEN_ACCOUNT_EDIT, SCREEN_ISSUE_LIST, SCREEN_ISSUE_DETAILS, SCREEN_ISSUE_EDIT})
+    public @interface ScreenNames {
+    }
+
+    @StringDef({CATEGORY_ACCOUNTS, CATEGORY_APP, CATEGORY_MENU, CATEGORY_ISSUES, CATEGORY_TIME_TRACKER})
+    public @interface Categories {
     }
 }

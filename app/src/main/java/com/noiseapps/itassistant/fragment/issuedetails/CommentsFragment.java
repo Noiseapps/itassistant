@@ -10,9 +10,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.noiseapps.itassistant.AnalyticsTrackers;
 import com.noiseapps.itassistant.R;
@@ -22,13 +19,15 @@ import com.noiseapps.itassistant.fragment.IssueDetailFragment;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comments;
-import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;

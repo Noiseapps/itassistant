@@ -1,4 +1,3 @@
-
 package com.noiseapps.itassistant.model.jira.projects;
 
 import android.os.Parcel;
@@ -13,6 +12,15 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class AvatarUrls implements Parcelable {
 
+    public static final Parcelable.Creator<AvatarUrls> CREATOR = new Parcelable.Creator<AvatarUrls>() {
+        public AvatarUrls createFromParcel(Parcel source) {
+            return new AvatarUrls(source);
+        }
+
+        public AvatarUrls[] newArray(int size) {
+            return new AvatarUrls[size];
+        }
+    };
     @SerializedName("24x24")
     @Expose
     private String _24x24;
@@ -28,13 +36,11 @@ public class AvatarUrls implements Parcelable {
 
     /**
      * No args constructor for use in serialization
-     * 
      */
     public AvatarUrls() {
     }
 
     /**
-     * 
      * @param _24x24
      * @param _32x32
      * @param _48x48
@@ -47,73 +53,64 @@ public class AvatarUrls implements Parcelable {
         this._48x48 = _48x48;
     }
 
+    protected AvatarUrls(Parcel in) {
+        this._24x24 = in.readString();
+        this._16x16 = in.readString();
+        this._32x32 = in.readString();
+        this._48x48 = in.readString();
+    }
+
     /**
-     * 
-     * @return
-     *     The _24x24
+     * @return The _24x24
      */
     public String get24x24() {
         return _24x24;
     }
 
     /**
-     * 
-     * @param _24x24
-     *     The 24x24
+     * @param _24x24 The 24x24
      */
     public void set24x24(String _24x24) {
         this._24x24 = _24x24;
     }
 
     /**
-     * 
-     * @return
-     *     The _16x16
+     * @return The _16x16
      */
     public String get16x16() {
         return _16x16;
     }
 
     /**
-     * 
-     * @param _16x16
-     *     The 16x16
+     * @param _16x16 The 16x16
      */
     public void set16x16(String _16x16) {
         this._16x16 = _16x16;
     }
 
     /**
-     * 
-     * @return
-     *     The _32x32
+     * @return The _32x32
      */
     public String get32x32() {
         return _32x32;
     }
 
     /**
-     * 
-     * @param _32x32
-     *     The 32x32
+     * @param _32x32 The 32x32
      */
     public void set32x32(String _32x32) {
         this._32x32 = _32x32;
     }
 
     /**
-     * 
-     * @return
-     *     The _48x48
+     * @return The _48x48
      */
     public String get48x48() {
         return _48x48;
     }
 
     /**
-     * 
-     * @param _48x48
-     *     The 48x48
+     * @param _48x48 The 48x48
      */
     public void set48x48(String _48x48) {
         this._48x48 = _48x48;
@@ -153,21 +150,4 @@ public class AvatarUrls implements Parcelable {
         dest.writeString(this._32x32);
         dest.writeString(this._48x48);
     }
-
-    protected AvatarUrls(Parcel in) {
-        this._24x24 = in.readString();
-        this._16x16 = in.readString();
-        this._32x32 = in.readString();
-        this._48x48 = in.readString();
-    }
-
-    public static final Parcelable.Creator<AvatarUrls> CREATOR = new Parcelable.Creator<AvatarUrls>() {
-        public AvatarUrls createFromParcel(Parcel source) {
-            return new AvatarUrls(source);
-        }
-
-        public AvatarUrls[] newArray(int size) {
-            return new AvatarUrls[size];
-        }
-    };
 }

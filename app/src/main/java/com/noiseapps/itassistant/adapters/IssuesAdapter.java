@@ -8,15 +8,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
 import com.noiseapps.itassistant.utils.ToggleList;
 import com.orhanobut.logger.Logger;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -106,7 +106,7 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
             } else {
                 avatar.setVisibility(View.INVISIBLE);
             }
-            if(!assignedToMe) {
+            if (!assignedToMe) {
                 itemView.setOnLongClickListener(v -> {
                     onLongPressed(issue);
                     return true;
@@ -122,7 +122,7 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssueViewH
 
         @Override
         public void onClick(View v) {
-            if(issueToggleList.isEmpty()) {
+            if (issueToggleList.isEmpty()) {
                 issueToggleList.clear();
                 callback.onItemClicked(issue);
             } else {

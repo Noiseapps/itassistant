@@ -36,6 +36,7 @@ import java.util.List;
 
 @EFragment(R.layout.fragment_accounts)
 public class AccountsListFragment extends Fragment {
+    private final List<BaseAccount> accounts = new ArrayList<>();
     @ViewById
     Toolbar toolbar;
     @ViewById
@@ -44,7 +45,8 @@ public class AccountsListFragment extends Fragment {
     AccountsDao accountsDao;
     @ViewById(R.id.list)
     RecyclerView recyclerView;
-    private final List<BaseAccount> accounts = new ArrayList<>();
+    @Bean
+    AnalyticsTrackers tracker;
     private AccountsActivityCallbacks callbacks;
     private RecyclerViewTouchActionGuardManager recyclerViewTouchActionGuardManager;
     private RecyclerViewSwipeManager recyclerViewSwipeManager;
@@ -146,21 +148,6 @@ public class AccountsListFragment extends Fragment {
         return lhs.getAccountType() - rhs.getAccountType();
     }
 
-    private class AdapterCallbacks implements AccountListAdapter.AccountListCallbacks {
-        @Override
-        public void onItemSelected(BaseAccount account) {
-            callbacks.onEditAccount(account);
-        }
-
-        @Override
-        public void onItemRemoved(final BaseAccount account) {
-            removeAccount(account);
-        }
-    }
-
-    @Bean
-    AnalyticsTrackers tracker;
-
     private void removeAccount(BaseAccount account) {
         tracker.sendEvent(AnalyticsTrackers.SCREEN_ACCOUNTS, AnalyticsTrackers.CATEGORY_ACCOUNTS, "accountRemoved");
         accountsDao.delete(account);
@@ -176,5 +163,17 @@ public class AccountsListFragment extends Fragment {
         tracker.sendEvent(AnalyticsTrackers.SCREEN_ACCOUNTS, AnalyticsTrackers.CATEGORY_ACCOUNTS, "accountRestored");
         accountsDao.add(account);
         readAllAccounts();
+    }
+
+    private class AdapterCallbacks implements AccountListAdapter.AccountListCallbacks {
+        @Override
+        public void onItemSelected(BaseAccount account) {
+            callbacks.onEditAccount(account);
+        }
+
+        @Override
+        public void onItemRemoved(final BaseAccount account) {
+            removeAccount(account);
+        }
     }
 }

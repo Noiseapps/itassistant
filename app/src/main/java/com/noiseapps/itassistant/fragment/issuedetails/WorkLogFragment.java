@@ -12,9 +12,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.noiseapps.itassistant.AnalyticsTrackers;
 import com.noiseapps.itassistant.R;
@@ -34,6 +31,9 @@ import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 import org.joda.time.MutableDateTime;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -52,6 +52,8 @@ public class WorkLogFragment extends Fragment implements IssueDetailFragment.Det
     FABProgressCircle fabProgressCircle;
     @ViewById
     View noWorkLogsView, loadingWorkLogs, errorView;
+    @Bean
+    AnalyticsTrackers tracker;
     private WorkLogAdapter adapter;
 
     @AfterViews
@@ -144,9 +146,6 @@ public class WorkLogFragment extends Fragment implements IssueDetailFragment.Det
     public boolean validateWorkLog(String workLog) {
         return !workLog.isEmpty() && Consts.PATTERN.matcher(workLog).matches();
     }
-
-    @Bean
-    AnalyticsTrackers tracker;
 
     private void onPositiveButtonClicked(WorkLogItem logItem, String newEstimate, final AlertDialog alertDialog) {
         fabProgressCircle.show();

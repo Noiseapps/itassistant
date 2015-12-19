@@ -8,8 +8,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.concurrent.TimeUnit;
-
 import com.akexorcist.roundcornerprogressbar.TextRoundCornerProgressBar;
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.noiseapps.itassistant.BuildConfig;
@@ -33,6 +31,8 @@ import org.apache.commons.lang3.text.StrBuilder;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.joda.time.DateTime;
 import org.joda.time.MutableDateTime;
+
+import java.util.concurrent.TimeUnit;
 
 @EFragment(R.layout.fragment_general_info)
 public class GeneralInfoFragment extends Fragment implements IssueDetailFragment.DetailFragmentCallbacks {

@@ -1,12 +1,12 @@
 package com.noiseapps.itassistant.model.jira.projects.details;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.noiseapps.itassistant.model.jira.issues.common.IssueType;
 import com.noiseapps.itassistant.model.jira.projects.AvatarUrls;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class JiraProjectDetails {
 
@@ -51,234 +51,182 @@ public class JiraProjectDetails {
     private AvatarUrls avatarUrls;
 
     /**
-     * 
-     * @return
-     *     The expand
+     * @return The expand
      */
     public String getExpand() {
         return expand;
     }
 
     /**
-     * 
-     * @param expand
-     *     The expand
+     * @param expand The expand
      */
     public void setExpand(String expand) {
         this.expand = expand;
     }
 
     /**
-     * 
-     * @return
-     *     The self
+     * @return The self
      */
     public String getSelf() {
         return self;
     }
 
     /**
-     * 
-     * @param self
-     *     The self
+     * @param self The self
      */
     public void setSelf(String self) {
         this.self = self;
     }
 
     /**
-     * 
-     * @return
-     *     The id
+     * @return The id
      */
     public String getId() {
         return id;
     }
 
     /**
-     * 
-     * @param id
-     *     The id
+     * @param id The id
      */
     public void setId(String id) {
         this.id = id;
     }
 
     /**
-     * 
-     * @return
-     *     The key
+     * @return The key
      */
     public String getKey() {
         return key;
     }
 
     /**
-     * 
-     * @param key
-     *     The key
+     * @param key The key
      */
     public void setKey(String key) {
         this.key = key;
     }
 
     /**
-     * 
-     * @return
-     *     The description
+     * @return The description
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * 
-     * @param description
-     *     The description
+     * @param description The description
      */
     public void setDescription(String description) {
         this.description = description;
     }
 
     /**
-     * 
-     * @return
-     *     The lead
+     * @return The lead
      */
     public Lead getLead() {
         return lead;
     }
 
     /**
-     * 
-     * @param lead
-     *     The lead
+     * @param lead The lead
      */
     public void setLead(Lead lead) {
         this.lead = lead;
     }
 
     /**
-     * 
-     * @return
-     *     The components
+     * @return The components
      */
     public List<Object> getComponents() {
         return components;
     }
 
     /**
-     * 
-     * @param components
-     *     The components
+     * @param components The components
      */
     public void setComponents(List<Object> components) {
         this.components = components;
     }
 
     /**
-     * 
-     * @return
-     *     The issueTypes
+     * @return The issueTypes
      */
     public List<IssueType> getIssueTypes() {
         return issueTypes;
     }
 
     /**
-     * 
-     * @param issueTypes
-     *     The issueTypes
+     * @param issueTypes The issueTypes
      */
     public void setIssueTypes(List<IssueType> issueTypes) {
         this.issueTypes = issueTypes;
     }
 
     /**
-     * 
-     * @return
-     *     The assigneeType
+     * @return The assigneeType
      */
     public String getAssigneeType() {
         return assigneeType;
     }
 
     /**
-     * 
-     * @param assigneeType
-     *     The assigneeType
+     * @param assigneeType The assigneeType
      */
     public void setAssigneeType(String assigneeType) {
         this.assigneeType = assigneeType;
     }
 
     /**
-     * 
-     * @return
-     *     The versions
+     * @return The versions
      */
     public List<Version> getVersions() {
         return versions;
     }
 
     /**
-     * 
-     * @param versions
-     *     The versions
+     * @param versions The versions
      */
     public void setVersions(List<Version> versions) {
         this.versions = versions;
     }
 
     /**
-     * 
-     * @return
-     *     The name
+     * @return The name
      */
     public String getName() {
         return name;
     }
 
     /**
-     * 
-     * @param name
-     *     The name
+     * @param name The name
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * 
-     * @return
-     *     The roles
+     * @return The roles
      */
     public Roles getRoles() {
         return roles;
     }
 
     /**
-     * 
-     * @param roles
-     *     The roles
+     * @param roles The roles
      */
     public void setRoles(Roles roles) {
         this.roles = roles;
     }
 
     /**
-     * 
-     * @return
-     *     The avatarUrls
+     * @return The avatarUrls
      */
     public AvatarUrls getAvatarUrls() {
         return avatarUrls;
     }
 
     /**
-     * 
-     * @param avatarUrls
-     *     The avatarUrls
+     * @param avatarUrls The avatarUrls
      */
     public void setAvatarUrls(AvatarUrls avatarUrls) {
         this.avatarUrls = avatarUrls;

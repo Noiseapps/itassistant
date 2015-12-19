@@ -3,14 +3,23 @@ package com.noiseapps.itassistant.model.jira.issues.common;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.List;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 
 public class IssueType implements Parcelable {
 
+    public static final Creator<IssueType> CREATOR = new Creator<IssueType>() {
+        public IssueType createFromParcel(Parcel source) {
+            return new IssueType(source);
+        }
+
+        public IssueType[] newArray(int size) {
+            return new IssueType[size];
+        }
+    };
     @SerializedName("self")
     @Expose
     private String self;
@@ -32,6 +41,19 @@ public class IssueType implements Parcelable {
     @SerializedName("subtask")
     @Expose
     private boolean subtask;
+
+    public IssueType() {
+    }
+
+    protected IssueType(Parcel in) {
+        this.self = in.readString();
+        this.id = in.readString();
+        this.description = in.readString();
+        this.iconUrl = in.readString();
+        this.name = in.readString();
+        this.issueStatuses = in.createTypedArrayList(IssueStatus.CREATOR);
+        this.subtask = in.readByte() != 0;
+    }
 
     @Override
     public String toString() {
@@ -148,27 +170,4 @@ public class IssueType implements Parcelable {
         dest.writeTypedList(issueStatuses);
         dest.writeByte(subtask ? (byte) 1 : (byte) 0);
     }
-
-    public IssueType() {
-    }
-
-    protected IssueType(Parcel in) {
-        this.self = in.readString();
-        this.id = in.readString();
-        this.description = in.readString();
-        this.iconUrl = in.readString();
-        this.name = in.readString();
-        this.issueStatuses = in.createTypedArrayList(IssueStatus.CREATOR);
-        this.subtask = in.readByte() != 0;
-    }
-
-    public static final Creator<IssueType> CREATOR = new Creator<IssueType>() {
-        public IssueType createFromParcel(Parcel source) {
-            return new IssueType(source);
-        }
-
-        public IssueType[] newArray(int size) {
-            return new IssueType[size];
-        }
-    };
 }

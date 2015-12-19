@@ -9,8 +9,6 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.util.List;
-
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.RecyclerViewSwipeManager;
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.SwipeableItemAdapter;
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.SwipeableItemConstants;
@@ -25,6 +23,8 @@ import com.orhanobut.logger.Logger;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
+import java.util.List;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.ViewHolder> implements SwipeableItemAdapter<AccountListAdapter.ViewHolder> {
@@ -32,11 +32,6 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.
     private final List<BaseAccount> dataSet;
     private final Context context;
     private final AccountListCallbacks callbacks;
-
-    public interface AccountListCallbacks {
-        void onItemSelected(BaseAccount account);
-        void onItemRemoved(BaseAccount account);
-    }
 
     public AccountListAdapter(@NonNull Context context, @NonNull List<BaseAccount> dataSet, @NonNull AccountListCallbacks callbacks) {
         this.dataSet = dataSet;
@@ -69,11 +64,38 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.
 
     @Override
     public SwipeResultAction onSwipeItem(ViewHolder holder, int position, int result) {
-        if(result != RecyclerViewSwipeManager.RESULT_CANCELED) {
+        if (result != RecyclerViewSwipeManager.RESULT_CANCELED) {
             Logger.d(String.valueOf(position));
             return new SwipeAction(position);
         }
         return new DoNothingAction();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return dataSet.get(position).hashCode();
+    }
+
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        final View itemLayout = LayoutInflater.from(context).inflate(R.layout.account_list_item, parent, false);
+        return new ViewHolder(itemLayout);
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        holder.build(dataSet.get(position));
+    }
+
+    @Override
+    public int getItemCount() {
+        return dataSet.size();
+    }
+
+    public interface AccountListCallbacks {
+        void onItemSelected(BaseAccount account);
+
+        void onItemRemoved(BaseAccount account);
     }
 
     private class SwipeAction extends SwipeResultActionRemoveItem {
@@ -98,27 +120,6 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.
         }
     }
 
-    @Override
-    public long getItemId(int position) {
-        return dataSet.get(position).hashCode();
-    }
-
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View itemLayout = LayoutInflater.from(context).inflate(R.layout.account_list_item, parent, false);
-        return new ViewHolder(itemLayout);
-    }
-
-    @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.build(dataSet.get(position));
-    }
-
-    @Override
-    public int getItemCount() {
-        return dataSet.size();
-    }
-
     class ViewHolder extends AbstractSwipeableItemViewHolder {
         private final TextView username;
         private final TextView url;
@@ -141,7 +142,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.
             username.setText(item.getName());
             url.setText(item.getUrl());
             final RequestCreator picassoLoad;
-            if(item.getAccountType() == AccountTypes.ACC_JIRA || item.getAccountType() == AccountTypes.ACC_STASH) {
+            if (item.getAccountType() == AccountTypes.ACC_JIRA || item.getAccountType() == AccountTypes.ACC_STASH) {
                 picassoLoad = Picasso.with(context).load("file:" + item.getAvatarPath());
             } else {
                 picassoLoad = Picasso.with(context).load(R.drawable.jenkins);

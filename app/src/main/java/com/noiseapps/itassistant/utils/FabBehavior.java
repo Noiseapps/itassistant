@@ -7,7 +7,6 @@ import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.github.jorgecastilloprz.FABProgressCircle;
 import com.noiseapps.itassistant.utils.views.MyFabProgressCircle;
 
 public class FabBehavior extends CoordinatorLayout.Behavior<MyFabProgressCircle> {
@@ -47,7 +46,7 @@ public class FabBehavior extends CoordinatorLayout.Behavior<MyFabProgressCircle>
                                int dxUnconsumed,
                                int dyUnconsumed) {
         super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
-        if(child.getVisibility() != View.VISIBLE) {
+        if (child.getVisibility() != View.VISIBLE) {
             return;
         }
         if (dyConsumed > 0 && !child.isCollapsed()) {

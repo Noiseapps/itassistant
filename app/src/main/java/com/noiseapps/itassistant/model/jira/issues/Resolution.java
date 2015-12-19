@@ -1,4 +1,3 @@
-
 package com.noiseapps.itassistant.model.jira.issues;
 
 import android.os.Parcel;
@@ -14,6 +13,15 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class Resolution implements Parcelable {
 
+    public static final Parcelable.Creator<Resolution> CREATOR = new Parcelable.Creator<Resolution>() {
+        public Resolution createFromParcel(Parcel source) {
+            return new Resolution(source);
+        }
+
+        public Resolution[] newArray(int size) {
+            return new Resolution[size];
+        }
+    };
     @SerializedName("self")
     @Expose
     private String self;
@@ -29,13 +37,11 @@ public class Resolution implements Parcelable {
 
     /**
      * No args constructor for use in serialization
-     * 
      */
     public Resolution() {
     }
 
     /**
-     * 
      * @param id
      * @param description
      * @param name
@@ -48,73 +54,64 @@ public class Resolution implements Parcelable {
         this.name = name;
     }
 
+    protected Resolution(Parcel in) {
+        this.self = in.readString();
+        this.id = in.readString();
+        this.description = in.readString();
+        this.name = in.readString();
+    }
+
     /**
-     * 
-     * @return
-     *     The self
+     * @return The self
      */
     public String getSelf() {
         return self;
     }
 
     /**
-     * 
-     * @param self
-     *     The self
+     * @param self The self
      */
     public void setSelf(String self) {
         this.self = self;
     }
 
     /**
-     * 
-     * @return
-     *     The id
+     * @return The id
      */
     public String getId() {
         return id;
     }
 
     /**
-     * 
-     * @param id
-     *     The id
+     * @param id The id
      */
     public void setId(String id) {
         this.id = id;
     }
 
     /**
-     * 
-     * @return
-     *     The description
+     * @return The description
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * 
-     * @param description
-     *     The description
+     * @param description The description
      */
     public void setDescription(String description) {
         this.description = description;
     }
 
     /**
-     * 
-     * @return
-     *     The name
+     * @return The name
      */
     public String getName() {
         return name;
     }
 
     /**
-     * 
-     * @param name
-     *     The name
+     * @param name The name
      */
     public void setName(String name) {
         this.name = name;
@@ -154,21 +151,4 @@ public class Resolution implements Parcelable {
         dest.writeString(this.description);
         dest.writeString(this.name);
     }
-
-    protected Resolution(Parcel in) {
-        this.self = in.readString();
-        this.id = in.readString();
-        this.description = in.readString();
-        this.name = in.readString();
-    }
-
-    public static final Parcelable.Creator<Resolution> CREATOR = new Parcelable.Creator<Resolution>() {
-        public Resolution createFromParcel(Parcel source) {
-            return new Resolution(source);
-        }
-
-        public Resolution[] newArray(int size) {
-            return new Resolution[size];
-        }
-    };
 }

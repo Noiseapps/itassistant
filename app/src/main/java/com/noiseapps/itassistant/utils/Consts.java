@@ -1,9 +1,9 @@
 package com.noiseapps.itassistant.utils;
 
-import java.util.regex.Pattern;
-
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
+import java.util.regex.Pattern;
 
 public class Consts {
 

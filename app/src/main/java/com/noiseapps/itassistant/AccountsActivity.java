@@ -32,6 +32,8 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
 
     @Extra
     boolean showAccountForm;
+    @Bean
+    AnalyticsTrackers tracker;
 
     @Override
     public void onAddAccount() {
@@ -65,7 +67,6 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
         tracker.sendEvent(SCREEN_ACCOUNTS, CATEGORY_ACCOUNTS, "onEdit");
     }
 
-
     private void clearBackstack() {
         final FragmentManager supportFragmentManager = getSupportFragmentManager();
         int stackCount = supportFragmentManager.getBackStackEntryCount();
@@ -74,9 +75,6 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
         }
     }
 
-    @Bean
-    AnalyticsTrackers tracker;
-
     @AfterViews
     void init() {
         tracker.sendScreenVisit(SCREEN_ACCOUNTS);
@@ -84,7 +82,7 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
         setResult(RESULT_CANCELED);
         getSupportFragmentManager().beginTransaction().replace(R.id.container, AccountsListFragment_.builder().build()).commit();
 
-        if(showAccountForm) {
+        if (showAccountForm) {
             onAddAccount();
             showAccountForm = false;
         }

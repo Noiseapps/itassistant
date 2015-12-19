@@ -1,4 +1,3 @@
-
 package com.noiseapps.itassistant.model.jira.projects.createmeta;
 
 import com.google.gson.annotations.Expose;

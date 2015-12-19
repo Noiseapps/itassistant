@@ -89,6 +89,8 @@ public class IssueListActivity extends AppCompatActivity
     @Bean
     JiraConnector jiraConnector;
     ArrayList<NavigationModel> navigationModels;
+    @Bean
+    AnalyticsTrackers tracker;
     private boolean mTwoPane;
     private MaterialDialog progressDialog;
     private ArrayList<Issue> myIssues;
@@ -148,7 +150,7 @@ public class IssueListActivity extends AppCompatActivity
     @Override
     public void onIssueCreated(Issue issue) {
         listFragment.reload();
-        if(mTwoPane) {
+        if (mTwoPane) {
             onItemSelected(issue);
         }
     }
@@ -200,14 +202,14 @@ public class IssueListActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        if(drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
             return;
         }
         final boolean isSearchOpen = listFragment.isSearchViewOpen();
-        if(isSearchOpen) {
+        if (isSearchOpen) {
             listFragment.closeSearchView();
-        } else if(!doubleClicked) {
+        } else if (!doubleClicked) {
             Snackbar.make(mainLayout, R.string.tapAgainToExit, Snackbar.LENGTH_LONG).show();
             doubleClicked = true;
             handler.postDelayed(() -> doubleClicked = false, DELAY_MILLIS);
@@ -273,8 +275,8 @@ public class IssueListActivity extends AppCompatActivity
     @UiThread
     void showProgress() {
         progressDialog = new MaterialDialog.Builder(this).
-        content(R.string.fetchingData).
-        progress(true, 0).cancelable(false).show();
+                content(R.string.fetchingData).
+                progress(true, 0).cancelable(false).show();
     }
 
     @UiThread
@@ -360,9 +362,6 @@ public class IssueListActivity extends AppCompatActivity
         showAboutDialog();
     }
 
-    @Bean
-    AnalyticsTrackers tracker;
-
     private void showAboutDialog() {
         final MaterialDialog.Builder dialog = new MaterialDialog.Builder(this);
         dialog.customView(R.layout.dialog_about_app, true);
@@ -415,7 +414,7 @@ public class IssueListActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         EventBus.getDefault().unregister(this);
-        if(feedbackDialog != null) {
+        if (feedbackDialog != null) {
             feedbackDialog.dismiss();
         }
         super.onPause();

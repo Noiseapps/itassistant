@@ -1,4 +1,3 @@
-
 package com.noiseapps.itassistant.model.jira.issues;
 
 import android.os.Parcel;
@@ -14,6 +13,15 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class Status implements Parcelable {
 
+    public static final Parcelable.Creator<Status> CREATOR = new Parcelable.Creator<Status>() {
+        public Status createFromParcel(Parcel source) {
+            return new Status(source);
+        }
+
+        public Status[] newArray(int size) {
+            return new Status[size];
+        }
+    };
     @SerializedName("self")
     @Expose
     private String self;
@@ -32,13 +40,11 @@ public class Status implements Parcelable {
 
     /**
      * No args constructor for use in serialization
-     * 
      */
     public Status() {
     }
 
     /**
-     * 
      * @param id
      * @param description
      * @param name
@@ -53,91 +59,79 @@ public class Status implements Parcelable {
         this.id = id;
     }
 
+    protected Status(Parcel in) {
+        this.self = in.readString();
+        this.description = in.readString();
+        this.iconUrl = in.readString();
+        this.name = in.readString();
+        this.id = in.readString();
+    }
+
     /**
-     * 
-     * @return
-     *     The self
+     * @return The self
      */
     public String getSelf() {
         return self;
     }
 
     /**
-     * 
-     * @param self
-     *     The self
+     * @param self The self
      */
     public void setSelf(String self) {
         this.self = self;
     }
 
     /**
-     * 
-     * @return
-     *     The description
+     * @return The description
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * 
-     * @param description
-     *     The description
+     * @param description The description
      */
     public void setDescription(String description) {
         this.description = description;
     }
 
     /**
-     * 
-     * @return
-     *     The iconUrl
+     * @return The iconUrl
      */
     public String getIconUrl() {
         return iconUrl;
     }
 
     /**
-     * 
-     * @param iconUrl
-     *     The iconUrl
+     * @param iconUrl The iconUrl
      */
     public void setIconUrl(String iconUrl) {
         this.iconUrl = iconUrl;
     }
 
     /**
-     * 
-     * @return
-     *     The name
+     * @return The name
      */
     public String getName() {
         return name;
     }
 
     /**
-     * 
-     * @param name
-     *     The name
+     * @param name The name
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * 
-     * @return
-     *     The id
+     * @return The id
      */
     public String getId() {
         return id;
     }
 
     /**
-     * 
-     * @param id
-     *     The id
+     * @param id The id
      */
     public void setId(String id) {
         this.id = id;
@@ -178,22 +172,4 @@ public class Status implements Parcelable {
         dest.writeString(this.name);
         dest.writeString(this.id);
     }
-
-    protected Status(Parcel in) {
-        this.self = in.readString();
-        this.description = in.readString();
-        this.iconUrl = in.readString();
-        this.name = in.readString();
-        this.id = in.readString();
-    }
-
-    public static final Parcelable.Creator<Status> CREATOR = new Parcelable.Creator<Status>() {
-        public Status createFromParcel(Parcel source) {
-            return new Status(source);
-        }
-
-        public Status[] newArray(int size) {
-            return new Status[size];
-        }
-    };
 }

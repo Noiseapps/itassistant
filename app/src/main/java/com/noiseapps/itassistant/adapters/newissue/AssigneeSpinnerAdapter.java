@@ -8,12 +8,12 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -61,7 +61,7 @@ public class AssigneeSpinnerAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
-        if(convertView == null) {
+        if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.item_spinner_title, parent, false);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
@@ -75,7 +75,7 @@ public class AssigneeSpinnerAdapter extends BaseAdapter {
     public int getPositionForAssignee(@NonNull Assignee assignee) {
         for (int i = 0; i < assignees.size(); i++) {
             final Assignee item = assignees.get(i);
-            if(item.getName().equalsIgnoreCase(assignee.getName())) {
+            if (item.getName().equalsIgnoreCase(assignee.getName())) {
                 return i;
             }
         }
@@ -93,7 +93,7 @@ public class AssigneeSpinnerAdapter extends BaseAdapter {
 
         public void bind(Assignee item) {
             assignee.setText(item.getDisplayName());
-            if(item.getAvatarUrls() != null) {
+            if (item.getAvatarUrls() != null) {
                 authPicasso.load(item.getAvatarUrls().get48x48()).
                         placeholder(R.drawable.ic_action_account_circle).
                         error(R.drawable.ic_action_account_circle).into(avatar);

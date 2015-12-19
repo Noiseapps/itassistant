@@ -8,6 +8,15 @@ import com.google.gson.annotations.SerializedName;
 
 public class Transition implements Parcelable {
 
+    public static final Parcelable.Creator<Transition> CREATOR = new Parcelable.Creator<Transition>() {
+        public Transition createFromParcel(Parcel source) {
+            return new Transition(source);
+        }
+
+        public Transition[] newArray(int size) {
+            return new Transition[size];
+        }
+    };
     @SerializedName("id")
     @Expose
     public String id;
@@ -25,6 +34,12 @@ public class Transition implements Parcelable {
         this.id = id;
         this.name = name;
         this.to = to;
+    }
+
+    protected Transition(Parcel in) {
+        this.id = in.readString();
+        this.name = in.readString();
+        this.to = in.readParcelable(TransitionTo.class.getClassLoader());
     }
 
     public String getId() {
@@ -92,20 +107,4 @@ public class Transition implements Parcelable {
         dest.writeString(this.name);
         dest.writeParcelable(this.to, 0);
     }
-
-    protected Transition(Parcel in) {
-        this.id = in.readString();
-        this.name = in.readString();
-        this.to = in.readParcelable(TransitionTo.class.getClassLoader());
-    }
-
-    public static final Parcelable.Creator<Transition> CREATOR = new Parcelable.Creator<Transition>() {
-        public Transition createFromParcel(Parcel source) {
-            return new Transition(source);
-        }
-
-        public Transition[] newArray(int size) {
-            return new Transition[size];
-        }
-    };
 }

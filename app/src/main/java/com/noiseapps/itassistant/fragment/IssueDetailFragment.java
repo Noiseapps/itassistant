@@ -56,18 +56,18 @@ public class IssueDetailFragment extends Fragment implements FragmentCallbacks {
     FloatingActionButton addWorkLogFab;
     @Bean
     PreferencesDAO preferencesDAO;
+    @Bean
+    AnalyticsTrackers tracker;
     private IssueDetailCallbacks callbacks;
     private DetailFragmentCallbacks childFragmentReceiver;
     private PagerAdapter pagerAdapter;
-
-    @Bean
-    AnalyticsTrackers tracker;
 
     public void setTimetrackingStarted() {
         tracker.sendEvent(AnalyticsTrackers.SCREEN_ISSUE_DETAILS, AnalyticsTrackers.CATEGORY_TIME_TRACKER, "started");
         setFabIcon(0);
         Snackbar.make(fabProgressCircle, getString(R.string.progressStarted, issue.getKey()), Snackbar.LENGTH_LONG).show();
     }
+
     public void setTimetrackingStopped() {
         tracker.sendEvent(AnalyticsTrackers.SCREEN_ISSUE_DETAILS, AnalyticsTrackers.CATEGORY_TIME_TRACKER, "cleared");
         setFabIcon(0);
@@ -93,24 +93,19 @@ public class IssueDetailFragment extends Fragment implements FragmentCallbacks {
         });
     }
 
-
-    public interface DetailFragmentCallbacks {
-        void onFabClicked(FABProgressCircle circle);
-    }
-
     @Click(R.id.addWorkLogFab)
     void performFabAction() {
         childFragmentReceiver.onFabClicked(fabProgressCircle);
     }
 
     private void setFabIcon(int page) {
-        if(fabProgressCircle.isCollapsed()){
+        if (fabProgressCircle.isCollapsed()) {
             fabProgressCircle.expand();
         }
         switch (page) {
             case 0:
-                if(preferencesDAO.getTimeTrackingInfo() == null ||
-                        preferencesDAO.getTimeTrackingInfo().getIssue() == null){
+                if (preferencesDAO.getTimeTrackingInfo() == null ||
+                        preferencesDAO.getTimeTrackingInfo().getIssue() == null) {
                     addWorkLogFab.setImageResource(R.drawable.ic_timer_white_24dp);
                 } else {
                     addWorkLogFab.setImageResource(R.drawable.ic_timer_off_white_24dp);
@@ -123,10 +118,6 @@ public class IssueDetailFragment extends Fragment implements FragmentCallbacks {
                 addWorkLogFab.setImageResource(R.drawable.ic_save_white_24px);
                 break;
         }
-    }
-
-    public interface IssueDetailCallbacks {
-        void onEditIssue(Issue issue);
     }
 
     @AfterViews
@@ -160,6 +151,14 @@ public class IssueDetailFragment extends Fragment implements FragmentCallbacks {
     @OptionsItem(android.R.id.home)
     void onHome() {
         getActivity().finish();
+    }
+
+    public interface DetailFragmentCallbacks {
+        void onFabClicked(FABProgressCircle circle);
+    }
+
+    public interface IssueDetailCallbacks {
+        void onEditIssue(Issue issue);
     }
 
     final class PagerAdapter extends FragmentStatePagerAdapter {
@@ -215,9 +214,9 @@ public class IssueDetailFragment extends Fragment implements FragmentCallbacks {
 
         @Override
         public void onPageScrollStateChanged(int state) {
-            if(state == ViewPager.SCROLL_STATE_DRAGGING) {
+            if (state == ViewPager.SCROLL_STATE_DRAGGING) {
                 addWorkLogFab.setEnabled(false);
-            } else if(state == ViewPager.SCROLL_STATE_IDLE) {
+            } else if (state == ViewPager.SCROLL_STATE_IDLE) {
                 addWorkLogFab.setEnabled(true);
             }
         }

@@ -1,4 +1,3 @@
-
 package com.noiseapps.itassistant.model.jira.projects;
 
 import android.os.Parcel;
@@ -9,6 +8,15 @@ import com.google.gson.annotations.SerializedName;
 
 public class JiraProject implements Parcelable {
 
+    public static final Parcelable.Creator<JiraProject> CREATOR = new Parcelable.Creator<JiraProject>() {
+        public JiraProject createFromParcel(Parcel source) {
+            return new JiraProject(source);
+        }
+
+        public JiraProject[] newArray(int size) {
+            return new JiraProject[size];
+        }
+    };
     @SerializedName("self")
     @Expose
     private String self;
@@ -28,7 +36,6 @@ public class JiraProject implements Parcelable {
     @Expose
     private ProjectCategory projectCategory;
 
-    
     public JiraProject() {
     }
 
@@ -41,6 +48,15 @@ public class JiraProject implements Parcelable {
         this.projectCategory = projectCategory;
     }
 
+    protected JiraProject(Parcel in) {
+        this.self = in.readString();
+        this.id = in.readString();
+        this.key = in.readString();
+        this.name = in.readString();
+        this.avatarUrls = in.readParcelable(AvatarUrls.class.getClassLoader());
+        this.projectCategory = in.readParcelable(ProjectCategory.class.getClassLoader());
+    }
+
     public String getSelf() {
         return self;
     }
@@ -49,52 +65,42 @@ public class JiraProject implements Parcelable {
         this.self = self;
     }
 
-    
     public String getId() {
         return id;
     }
 
-    
     public void setId(String id) {
         this.id = id;
     }
 
-    
     public String getKey() {
         return key;
     }
 
-    
     public void setKey(String key) {
         this.key = key;
     }
 
-    
     public String getName() {
         return name;
     }
 
-    
     public void setName(String name) {
         this.name = name;
     }
 
-    
     public AvatarUrls getAvatarUrls() {
         return avatarUrls;
     }
 
-    
     public void setAvatarUrls(AvatarUrls avatarUrls) {
         this.avatarUrls = avatarUrls;
     }
 
-    
     public ProjectCategory getProjectCategory() {
         return projectCategory;
     }
 
-    
     public void setProjectCategory(ProjectCategory projectCategory) {
         this.projectCategory = projectCategory;
     }
@@ -153,23 +159,4 @@ public class JiraProject implements Parcelable {
         dest.writeParcelable(this.avatarUrls, 0);
         dest.writeParcelable(this.projectCategory, 0);
     }
-
-    protected JiraProject(Parcel in) {
-        this.self = in.readString();
-        this.id = in.readString();
-        this.key = in.readString();
-        this.name = in.readString();
-        this.avatarUrls = in.readParcelable(AvatarUrls.class.getClassLoader());
-        this.projectCategory = in.readParcelable(ProjectCategory.class.getClassLoader());
-    }
-
-    public static final Parcelable.Creator<JiraProject> CREATOR = new Parcelable.Creator<JiraProject>() {
-        public JiraProject createFromParcel(Parcel source) {
-            return new JiraProject(source);
-        }
-
-        public JiraProject[] newArray(int size) {
-            return new JiraProject[size];
-        }
-    };
 }

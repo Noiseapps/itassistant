@@ -4,6 +4,15 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class JiraUser implements Parcelable {
+    public static final Parcelable.Creator<JiraUser> CREATOR = new Parcelable.Creator<JiraUser>() {
+        public JiraUser createFromParcel(Parcel source) {
+            return new JiraUser(source);
+        }
+
+        public JiraUser[] newArray(int size) {
+            return new JiraUser[size];
+        }
+    };
     private final String name;
     private final String expand;
     private final String active;
@@ -24,6 +33,18 @@ public class JiraUser implements Parcelable {
         this.displayName = displayName;
         this.avatarUrls = avatarUrls;
         this.groups = groups;
+    }
+
+    protected JiraUser(Parcel in) {
+        this.name = in.readString();
+        this.expand = in.readString();
+        this.active = in.readString();
+        this.emailAddress = in.readString();
+        this.timeZone = in.readString();
+        this.self = in.readString();
+        this.displayName = in.readString();
+        this.avatarUrls = in.readParcelable(AvatarUrls.class.getClassLoader());
+        this.groups = in.readParcelable(Groups.class.getClassLoader());
     }
 
     public String getName() {
@@ -133,26 +154,4 @@ public class JiraUser implements Parcelable {
         dest.writeParcelable(this.avatarUrls, 0);
         dest.writeParcelable(this.groups, 0);
     }
-
-    protected JiraUser(Parcel in) {
-        this.name = in.readString();
-        this.expand = in.readString();
-        this.active = in.readString();
-        this.emailAddress = in.readString();
-        this.timeZone = in.readString();
-        this.self = in.readString();
-        this.displayName = in.readString();
-        this.avatarUrls = in.readParcelable(AvatarUrls.class.getClassLoader());
-        this.groups = in.readParcelable(Groups.class.getClassLoader());
-    }
-
-    public static final Parcelable.Creator<JiraUser> CREATOR = new Parcelable.Creator<JiraUser>() {
-        public JiraUser createFromParcel(Parcel source) {
-            return new JiraUser(source);
-        }
-
-        public JiraUser[] newArray(int size) {
-            return new JiraUser[size];
-        }
-    };
 }

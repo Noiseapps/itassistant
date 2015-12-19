@@ -1,4 +1,3 @@
-
 package com.noiseapps.itassistant.model.jira.projects.details;
 
 import com.google.gson.annotations.Expose;
@@ -27,108 +26,84 @@ public class Lead {
     private boolean active;
 
     /**
-     * 
-     * @return
-     *     The self
+     * @return The self
      */
     public String getSelf() {
         return self;
     }
 
     /**
-     * 
-     * @param self
-     *     The self
+     * @param self The self
      */
     public void setSelf(String self) {
         this.self = self;
     }
 
     /**
-     * 
-     * @return
-     *     The key
+     * @return The key
      */
     public String getKey() {
         return key;
     }
 
     /**
-     * 
-     * @param key
-     *     The key
+     * @param key The key
      */
     public void setKey(String key) {
         this.key = key;
     }
 
     /**
-     * 
-     * @return
-     *     The name
+     * @return The name
      */
     public String getName() {
         return name;
     }
 
     /**
-     * 
-     * @param name
-     *     The name
+     * @param name The name
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * 
-     * @return
-     *     The avatarUrls
+     * @return The avatarUrls
      */
     public AvatarUrls getAvatarUrls() {
         return avatarUrls;
     }
 
     /**
-     * 
-     * @param avatarUrls
-     *     The avatarUrls
+     * @param avatarUrls The avatarUrls
      */
     public void setAvatarUrls(AvatarUrls avatarUrls) {
         this.avatarUrls = avatarUrls;
     }
 
     /**
-     * 
-     * @return
-     *     The displayName
+     * @return The displayName
      */
     public String getDisplayName() {
         return displayName;
     }
 
     /**
-     * 
-     * @param displayName
-     *     The displayName
+     * @param displayName The displayName
      */
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
 
     /**
-     * 
-     * @return
-     *     The active
+     * @return The active
      */
     public Boolean getActive() {
         return active;
     }
 
     /**
-     * 
-     * @param active
-     *     The active
+     * @param active The active
      */
     public void setActive(Boolean active) {
         this.active = active;

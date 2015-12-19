@@ -1,9 +1,5 @@
 package com.noiseapps.itassistant.database.dao;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.gson.reflect.TypeToken;
 import com.noiseapps.itassistant.database.Preferences_;
 import com.noiseapps.itassistant.model.account.BaseAccount;
@@ -12,28 +8,30 @@ import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
 
 @EBean(scope = EBean.Scope.Singleton)
 public class AccountsDao extends BaseDao<BaseAccount> {
 
-    private List<BaseAccount> allItems = new ArrayList<>();
     public static final Type ACCOUNT_TYPE = new TypeToken<List<BaseAccount>>() {
     }.getType();
-
-
     @Pref
     Preferences_ preferences;
+    private List<BaseAccount> allItems = new ArrayList<>();
 
     public void addOrUpdate(BaseAccount currentConfig) {
         boolean updated = false;
         for (int i = 0; i < allItems.size(); i++) {
-            if(allItems.get(i).getId() == currentConfig.getId()) {
+            if (allItems.get(i).getId() == currentConfig.getId()) {
                 allItems.set(i, currentConfig);
                 updated = true;
                 break;
             }
         }
-        if(!updated) {
+        if (!updated) {
             add(currentConfig);
         }
         save(allItems);
@@ -60,7 +58,7 @@ public class AccountsDao extends BaseDao<BaseAccount> {
     @Override
     public void update(BaseAccount object) {
         for (int i = 0; i < allItems.size(); i++) {
-            if(allItems.get(i).getId() == object.getId()) {
+            if (allItems.get(i).getId() == object.getId()) {
                 allItems.set(i, object);
                 break;
             }
@@ -76,7 +74,7 @@ public class AccountsDao extends BaseDao<BaseAccount> {
 
     @Override
     public List<BaseAccount> getAll() {
-        if(allItems.isEmpty()) {
+        if (allItems.isEmpty()) {
             allItems = parseGetAll();
         }
         return allItems;
@@ -92,7 +90,7 @@ public class AccountsDao extends BaseDao<BaseAccount> {
         int maxId = 0;
         final List<BaseAccount> all = getAll();
         for (BaseAccount account : all) {
-            if(account.getId() > maxId) {
+            if (account.getId() > maxId) {
                 maxId = account.getId();
             }
         }

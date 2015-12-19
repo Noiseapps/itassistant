@@ -7,14 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.Collections;
-import java.util.List;
-
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.model.jira.issues.comments.Comment;
 import com.noiseapps.itassistant.utils.Consts;
 
 import org.joda.time.DateTime;
+
+import java.util.Collections;
+import java.util.List;
 
 public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHolder> {
     private final Context context;
@@ -68,7 +68,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         notifyDataSetChanged();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder{
+    class ViewHolder extends RecyclerView.ViewHolder {
         TextView body, creator, date;
 
         public ViewHolder(View root) {

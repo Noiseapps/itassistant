@@ -21,6 +21,7 @@ public class BaseAccount implements Parcelable {
     @AccountTypes.AccountType
     private final int accountType;
     private String avatarPath;
+
     public BaseAccount(int id, String username, String name, String token, String url, String avatarPath, @AccountTypes.AccountType int accountType) {
         this.id = id;
         this.username = username;
@@ -30,6 +31,7 @@ public class BaseAccount implements Parcelable {
         this.avatarPath = avatarPath;
         this.accountType = accountType;
     }
+
     protected BaseAccount(Parcel in) {
         this.id = in.readInt();
         this.username = in.readString();

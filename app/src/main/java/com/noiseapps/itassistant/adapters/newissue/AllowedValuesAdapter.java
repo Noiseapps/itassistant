@@ -7,12 +7,12 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.model.jira.projects.createmeta.AllowedValue;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -59,7 +59,7 @@ public class AllowedValuesAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
-        if(convertView == null) {
+        if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.item_spinner_title, parent, false);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);

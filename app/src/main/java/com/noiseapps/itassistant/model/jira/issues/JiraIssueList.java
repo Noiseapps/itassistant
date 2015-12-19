@@ -1,11 +1,7 @@
-
 package com.noiseapps.itassistant.model.jira.issues;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -14,10 +10,22 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class JiraIssueList implements Parcelable {
 
 
+    public static final Parcelable.Creator<JiraIssueList> CREATOR = new Parcelable.Creator<JiraIssueList>() {
+        public JiraIssueList createFromParcel(Parcel source) {
+            return new JiraIssueList(source);
+        }
+
+        public JiraIssueList[] newArray(int size) {
+            return new JiraIssueList[size];
+        }
+    };
     @SerializedName("expand")
     @Expose
     private String expand;
@@ -45,91 +53,79 @@ public class JiraIssueList implements Parcelable {
         this.issues = issues;
     }
 
+    protected JiraIssueList(Parcel in) {
+        this.expand = in.readString();
+        this.startAt = in.readLong();
+        this.maxResults = in.readLong();
+        this.total = in.readLong();
+        this.issues = in.createTypedArrayList(Issue.CREATOR);
+    }
+
     /**
-     * 
-     * @return
-     *     The expand
+     * @return The expand
      */
     public String getExpand() {
         return expand;
     }
 
     /**
-     * 
-     * @param expand
-     *     The expand
+     * @param expand The expand
      */
     public void setExpand(String expand) {
         this.expand = expand;
     }
 
     /**
-     * 
-     * @return
-     *     The startAt
+     * @return The startAt
      */
     public long getStartAt() {
         return startAt;
     }
 
     /**
-     * 
-     * @param startAt
-     *     The startAt
+     * @param startAt The startAt
      */
     public void setStartAt(long startAt) {
         this.startAt = startAt;
     }
 
     /**
-     * 
-     * @return
-     *     The maxResults
+     * @return The maxResults
      */
     public long getMaxResults() {
         return maxResults;
     }
 
     /**
-     * 
-     * @param maxResults
-     *     The maxResults
+     * @param maxResults The maxResults
      */
     public void setMaxResults(long maxResults) {
         this.maxResults = maxResults;
     }
 
     /**
-     * 
-     * @return
-     *     The total
+     * @return The total
      */
     public long getTotal() {
         return total;
     }
 
     /**
-     * 
-     * @param total
-     *     The total
+     * @param total The total
      */
     public void setTotal(long total) {
         this.total = total;
     }
 
     /**
-     * 
-     * @return
-     *     The issues
+     * @return The issues
      */
     public List<Issue> getIssues() {
         return issues;
     }
 
     /**
-     * 
-     * @param issues
-     *     The issues
+     * @param issues The issues
      */
     public void setIssues(List<Issue> issues) {
         this.issues = issues;
@@ -170,22 +166,4 @@ public class JiraIssueList implements Parcelable {
         dest.writeLong(this.total);
         dest.writeTypedList(issues);
     }
-
-    protected JiraIssueList(Parcel in) {
-        this.expand = in.readString();
-        this.startAt = in.readLong();
-        this.maxResults = in.readLong();
-        this.total = in.readLong();
-        this.issues = in.createTypedArrayList(Issue.CREATOR);
-    }
-
-    public static final Parcelable.Creator<JiraIssueList> CREATOR = new Parcelable.Creator<JiraIssueList>() {
-        public JiraIssueList createFromParcel(Parcel source) {
-            return new JiraIssueList(source);
-        }
-
-        public JiraIssueList[] newArray(int size) {
-            return new JiraIssueList[size];
-        }
-    };
 }

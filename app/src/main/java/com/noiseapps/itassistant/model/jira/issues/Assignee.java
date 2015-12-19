@@ -1,4 +1,3 @@
-
 package com.noiseapps.itassistant.model.jira.issues;
 
 import android.os.Parcel;
@@ -14,6 +13,15 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class Assignee implements Parcelable {
 
+    public static final Parcelable.Creator<Assignee> CREATOR = new Parcelable.Creator<Assignee>() {
+        public Assignee createFromParcel(Parcel source) {
+            return new Assignee(source);
+        }
+
+        public Assignee[] newArray(int size) {
+            return new Assignee[size];
+        }
+    };
     @SerializedName("self")
     @Expose
     private String self;
@@ -35,13 +43,11 @@ public class Assignee implements Parcelable {
 
     /**
      * No args constructor for use in serialization
-     * 
      */
     public Assignee() {
     }
 
     /**
-     * 
      * @param name
      * @param active
      * @param emailAddress
@@ -58,109 +64,94 @@ public class Assignee implements Parcelable {
         this.active = active;
     }
 
+    protected Assignee(Parcel in) {
+        this.self = in.readString();
+        this.name = in.readString();
+        this.emailAddress = in.readString();
+        this.avatarUrls = in.readParcelable(AvatarUrls.class.getClassLoader());
+        this.displayName = in.readString();
+        this.active = in.readByte() != 0;
+    }
+
     /**
-     * 
-     * @return
-     *     The self
+     * @return The self
      */
     public String getSelf() {
         return self;
     }
 
     /**
-     * 
-     * @param self
-     *     The self
+     * @param self The self
      */
     public void setSelf(String self) {
         this.self = self;
     }
 
     /**
-     * 
-     * @return
-     *     The name
+     * @return The name
      */
     public String getName() {
         return name;
     }
 
     /**
-     * 
-     * @param name
-     *     The name
+     * @param name The name
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * 
-     * @return
-     *     The emailAddress
+     * @return The emailAddress
      */
     public String getEmailAddress() {
         return emailAddress;
     }
 
     /**
-     * 
-     * @param emailAddress
-     *     The emailAddress
+     * @param emailAddress The emailAddress
      */
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
     }
 
     /**
-     * 
-     * @return
-     *     The avatarUrls
+     * @return The avatarUrls
      */
     public AvatarUrls getAvatarUrls() {
         return avatarUrls;
     }
 
     /**
-     * 
-     * @param avatarUrls
-     *     The avatarUrls
+     * @param avatarUrls The avatarUrls
      */
     public void setAvatarUrls(AvatarUrls avatarUrls) {
         this.avatarUrls = avatarUrls;
     }
 
     /**
-     * 
-     * @return
-     *     The displayName
+     * @return The displayName
      */
     public String getDisplayName() {
         return displayName;
     }
 
     /**
-     * 
-     * @param displayName
-     *     The displayName
+     * @param displayName The displayName
      */
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
 
     /**
-     * 
-     * @return
-     *     The active
+     * @return The active
      */
     public boolean isActive() {
         return active;
     }
 
     /**
-     * 
-     * @param active
-     *     The active
+     * @param active The active
      */
     public void setActive(boolean active) {
         this.active = active;
@@ -202,23 +193,4 @@ public class Assignee implements Parcelable {
         dest.writeString(this.displayName);
         dest.writeByte(active ? (byte) 1 : (byte) 0);
     }
-
-    protected Assignee(Parcel in) {
-        this.self = in.readString();
-        this.name = in.readString();
-        this.emailAddress = in.readString();
-        this.avatarUrls = in.readParcelable(AvatarUrls.class.getClassLoader());
-        this.displayName = in.readString();
-        this.active = in.readByte() != 0;
-    }
-
-    public static final Parcelable.Creator<Assignee> CREATOR = new Parcelable.Creator<Assignee>() {
-        public Assignee createFromParcel(Parcel source) {
-            return new Assignee(source);
-        }
-
-        public Assignee[] newArray(int size) {
-            return new Assignee[size];
-        }
-    };
 }

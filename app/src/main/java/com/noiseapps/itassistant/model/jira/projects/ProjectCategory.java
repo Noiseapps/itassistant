@@ -1,4 +1,3 @@
-
 package com.noiseapps.itassistant.model.jira.projects;
 
 import android.os.Parcel;
@@ -13,6 +12,15 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class ProjectCategory implements Parcelable {
 
+    public static final Parcelable.Creator<ProjectCategory> CREATOR = new Parcelable.Creator<ProjectCategory>() {
+        public ProjectCategory createFromParcel(Parcel source) {
+            return new ProjectCategory(source);
+        }
+
+        public ProjectCategory[] newArray(int size) {
+            return new ProjectCategory[size];
+        }
+    };
     @SerializedName("self")
     @Expose
     private String self;
@@ -28,13 +36,11 @@ public class ProjectCategory implements Parcelable {
 
     /**
      * No args constructor for use in serialization
-     * 
      */
     public ProjectCategory() {
     }
 
     /**
-     * 
      * @param id
      * @param description
      * @param name
@@ -47,73 +53,64 @@ public class ProjectCategory implements Parcelable {
         this.description = description;
     }
 
+    protected ProjectCategory(Parcel in) {
+        this.self = in.readString();
+        this.id = in.readString();
+        this.name = in.readString();
+        this.description = in.readString();
+    }
+
     /**
-     * 
-     * @return
-     *     The self
+     * @return The self
      */
     public String getSelf() {
         return self;
     }
 
     /**
-     * 
-     * @param self
-     *     The self
+     * @param self The self
      */
     public void setSelf(String self) {
         this.self = self;
     }
 
     /**
-     * 
-     * @return
-     *     The id
+     * @return The id
      */
     public String getId() {
         return id;
     }
 
     /**
-     * 
-     * @param id
-     *     The id
+     * @param id The id
      */
     public void setId(String id) {
         this.id = id;
     }
 
     /**
-     * 
-     * @return
-     *     The name
+     * @return The name
      */
     public String getName() {
         return name;
     }
 
     /**
-     * 
-     * @param name
-     *     The name
+     * @param name The name
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * 
-     * @return
-     *     The description
+     * @return The description
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * 
-     * @param description
-     *     The description
+     * @param description The description
      */
     public void setDescription(String description) {
         this.description = description;
@@ -153,21 +150,4 @@ public class ProjectCategory implements Parcelable {
         dest.writeString(this.name);
         dest.writeString(this.description);
     }
-
-    protected ProjectCategory(Parcel in) {
-        this.self = in.readString();
-        this.id = in.readString();
-        this.name = in.readString();
-        this.description = in.readString();
-    }
-
-    public static final Parcelable.Creator<ProjectCategory> CREATOR = new Parcelable.Creator<ProjectCategory>() {
-        public ProjectCategory createFromParcel(Parcel source) {
-            return new ProjectCategory(source);
-        }
-
-        public ProjectCategory[] newArray(int size) {
-            return new ProjectCategory[size];
-        }
-    };
 }

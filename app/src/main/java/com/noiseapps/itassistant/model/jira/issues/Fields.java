@@ -3,12 +3,12 @@ package com.noiseapps.itassistant.model.jira.issues;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.noiseapps.itassistant.model.jira.issues.common.IssueType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @SuppressWarnings("ALL")
@@ -109,6 +109,7 @@ public class Fields implements Parcelable {
     private long aggregatetimespent;
     private List<FixVersion> fixVersions = new ArrayList<>();
     private List<FixVersion> versions = new ArrayList<>();
+
     /**
      * No args constructor for use in serialization
      */

@@ -59,16 +59,6 @@ public class JiraIssueListFragment extends Fragment {
     private IssuesAdapter adapter;
     private MaterialDialog progressDialog;
 
-    public interface IssueListCallback {
-        void onItemSelected(Issue selectedIssue);
-
-        void onItemEdit(Issue issue);
-
-        void showFabProgress();
-
-        void hideFabProgress(boolean success);
-    }
-
     @AfterViews
     void init() {
         context = getActivity();
@@ -87,26 +77,11 @@ public class JiraIssueListFragment extends Fragment {
         issuesRecycler.setAdapter(adapter);
     }
 
-    private class AdapterCallback implements IssuesAdapter.IssueAdapterCallback {
-        @Override
-        public void onItemClicked(Issue selectedIssue) {
-            if(actionMode != null) {
-                actionMode.finish();
-            }
-            callback.onItemSelected(selectedIssue);
-        }
-
-        @Override
-        public void onItemLongPressed(ToggleList<Issue> issueToggleList) {
-            onLongPressed(issueToggleList);
-        }
-    }
-
     private void onLongPressed(ToggleList<Issue> issueToggleList) {
         Logger.d("Issue list size: " + issueToggleList.size());
         final AppCompatActivity activity = (AppCompatActivity) getActivity();
-        if(actionMode != null) {
-            if(issueToggleList.isEmpty()) {
+        if (actionMode != null) {
+            if (issueToggleList.isEmpty()) {
                 actionMode.finish();
             }
         } else {
@@ -181,7 +156,7 @@ public class JiraIssueListFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        if(actionMode != null) {
+        if (actionMode != null) {
             actionMode.finish();
         }
     }
@@ -213,11 +188,11 @@ public class JiraIssueListFragment extends Fragment {
     }
 
     private void showAssigneeDialog(ToggleList<Issue> toggleList) {
-        final String[] items = new String[assignees.size()+1];
+        final String[] items = new String[assignees.size() + 1];
         items[0] = getString(R.string.notAssigned);
         for (int i = 0; i < assignees.size(); i++) {
             final Assignee assignee = assignees.get(i);
-            items[i+1] = assignee.getDisplayName();
+            items[i + 1] = assignee.getDisplayName();
         }
         final int[] successful = {0};
         final AlertDialogWrapper.Builder builder = new AlertDialogWrapper.Builder(getActivity());
@@ -228,7 +203,7 @@ public class JiraIssueListFragment extends Fragment {
             progressDialog.show();
 
             final Assignee assignee;
-            if(which == 0) {
+            if (which == 0) {
                 assignee = new Assignee();
                 assignee.setName(null);
             } else {
@@ -250,5 +225,30 @@ public class JiraIssueListFragment extends Fragment {
             }
         }
         onFinished(unsuccessful[0]);
+    }
+
+    public interface IssueListCallback {
+        void onItemSelected(Issue selectedIssue);
+
+        void onItemEdit(Issue issue);
+
+        void showFabProgress();
+
+        void hideFabProgress(boolean success);
+    }
+
+    private class AdapterCallback implements IssuesAdapter.IssueAdapterCallback {
+        @Override
+        public void onItemClicked(Issue selectedIssue) {
+            if (actionMode != null) {
+                actionMode.finish();
+            }
+            callback.onItemSelected(selectedIssue);
+        }
+
+        @Override
+        public void onItemLongPressed(ToggleList<Issue> issueToggleList) {
+            onLongPressed(issueToggleList);
+        }
     }
 }

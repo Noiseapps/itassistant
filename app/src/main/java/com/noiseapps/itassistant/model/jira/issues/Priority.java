@@ -1,4 +1,3 @@
-
 package com.noiseapps.itassistant.model.jira.issues;
 
 import android.os.Parcel;
@@ -7,13 +6,18 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 
 public class Priority implements Parcelable {
 
+    public static final Creator<Priority> CREATOR = new Creator<Priority>() {
+        public Priority createFromParcel(Parcel source) {
+            return new Priority(source);
+        }
+
+        public Priority[] newArray(int size) {
+            return new Priority[size];
+        }
+    };
     @SerializedName("self")
     @Expose
     private String self;
@@ -30,6 +34,16 @@ public class Priority implements Parcelable {
     @Expose
     private String id;
 
+    public Priority() {
+    }
+
+    protected Priority(Parcel in) {
+        this.self = in.readString();
+        this.statusColor = in.readString();
+        this.iconUrl = in.readString();
+        this.name = in.readString();
+        this.id = in.readString();
+    }
 
     public String getSelf() {
         return self;
@@ -122,25 +136,4 @@ public class Priority implements Parcelable {
         dest.writeString(this.name);
         dest.writeString(this.id);
     }
-
-    public Priority() {
-    }
-
-    protected Priority(Parcel in) {
-        this.self = in.readString();
-        this.statusColor = in.readString();
-        this.iconUrl = in.readString();
-        this.name = in.readString();
-        this.id = in.readString();
-    }
-
-    public static final Creator<Priority> CREATOR = new Creator<Priority>() {
-        public Priority createFromParcel(Parcel source) {
-            return new Priority(source);
-        }
-
-        public Priority[] newArray(int size) {
-            return new Priority[size];
-        }
-    };
 }

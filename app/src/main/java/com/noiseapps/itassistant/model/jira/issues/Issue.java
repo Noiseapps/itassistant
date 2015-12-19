@@ -3,14 +3,23 @@ package com.noiseapps.itassistant.model.jira.issues;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.List;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 
 public class Issue implements Parcelable {
 
+    public static final Creator<Issue> CREATOR = new Creator<Issue>() {
+        public Issue createFromParcel(Parcel source) {
+            return new Issue(source);
+        }
+
+        public Issue[] newArray(int size) {
+            return new Issue[size];
+        }
+    };
     @SerializedName("expand")
     @Expose
     private String expand;
@@ -40,6 +49,15 @@ public class Issue implements Parcelable {
         this.key = key;
         this.fields = fields;
         this.transitions = transitions;
+    }
+
+    protected Issue(Parcel in) {
+        this.expand = in.readString();
+        this.id = in.readString();
+        this.self = in.readString();
+        this.key = in.readString();
+        this.fields = in.readParcelable(Fields.class.getClassLoader());
+        this.transitions = in.createTypedArrayList(Transition.CREATOR);
     }
 
     @Override
@@ -143,23 +161,4 @@ public class Issue implements Parcelable {
         dest.writeParcelable(this.fields, 0);
         dest.writeTypedList(transitions);
     }
-
-    protected Issue(Parcel in) {
-        this.expand = in.readString();
-        this.id = in.readString();
-        this.self = in.readString();
-        this.key = in.readString();
-        this.fields = in.readParcelable(Fields.class.getClassLoader());
-        this.transitions = in.createTypedArrayList(Transition.CREATOR);
-    }
-
-    public static final Creator<Issue> CREATOR = new Creator<Issue>() {
-        public Issue createFromParcel(Parcel source) {
-            return new Issue(source);
-        }
-
-        public Issue[] newArray(int size) {
-            return new Issue[size];
-        }
-    };
 }
