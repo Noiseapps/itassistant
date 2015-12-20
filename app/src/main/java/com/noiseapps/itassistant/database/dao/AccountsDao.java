@@ -85,6 +85,11 @@ public class AccountsDao extends BaseDao<BaseAccount> {
         return GSON.fromJson(json, ACCOUNT_TYPE);
     }
 
+    public void clearAll() {
+        allItems.clear();
+        save(new ArrayList<>());
+    }
+
     @Override
     public int getNextId() {
         int maxId = 0;

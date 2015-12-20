@@ -14,8 +14,8 @@ def signStorePass = properties.getProperty("storePassword") as String
 def signAlias = properties.getProperty("keyAlias") as String
 def signKeyPass = properties.getProperty("keyPassword") as String
 def appId = properties.getProperty("AppId") as String
-def appVersionName = System.getenv("VERSION_NAME") as String ?: "0.0.1"
-def appVersionCode = System.getenv("BUILD_NUMBER") as Integer ?: 1
+def appVersionName = System.getenv("VERSION_NAME") as String ?: "dev"
+def appVersionCode = System.getenv("BUILD_NUMBER") as Integer ?: 2
 
 System.out.print(
         String.format("\nBUILD CONFIGURATION : \n\nApplication version: %s\nAndroidAnnotations version: %s\nBuildToolsVersion : %s\nAppName: %s\nSigningFile: %s\nAppId: %s\n\nBUILD CONFIG END\n\n",
@@ -50,6 +50,9 @@ android {
 //            shrinkResources true
 //            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
+        }
+        debug {
+            applicationIdSuffix ".debug"
         }
     }
     packagingOptions {

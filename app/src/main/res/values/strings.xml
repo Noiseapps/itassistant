@@ -154,4 +154,6 @@
     <string name="issueTitle">Title</string>
     <string name="issueKey">Key</string>
     <string name="failedToUpdateIssue">Failed to update issue</string>
+    <string name="clearAccounts">Re-add accounts</string>
+    <string name="clearAccountsMsg">Due to change in account storage, you need to re-add your accounts. Sorry for the inconvenience.</string>
 </resources>

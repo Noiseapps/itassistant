@@ -12,6 +12,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -160,12 +161,25 @@ public class IssueListActivity extends AppCompatActivity
         handler = new Handler();
         setTablet();
         if (accountsDao.getAll().isEmpty()) {
+            Once.markDone("ClearAccounts");
             showNoAccountsDialog();
         } else {
-            if (navigationModels == null) {
-                downloadData();
+            if(!Once.beenDone(Once.THIS_APP_VERSION, "ClearAccounts")){
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(R.string.clearAccounts);
+                builder.setMessage(R.string.clearAccountsMsg);
+                builder.setPositiveButton(R.string.ok, (dialog, which) -> {
+                    Once.markDone("ClearAccounts");
+                    accountsDao.clearAll();
+                    onAccountAction();
+                });
+                builder.show();
             } else {
-                initNavigation(navigationModels);
+                if (navigationModels == null) {
+                    downloadData();
+                } else {
+                    initNavigation(navigationModels);
+                }
             }
         }
         initToolbar();
