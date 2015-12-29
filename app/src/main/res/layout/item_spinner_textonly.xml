@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/title"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:layout_gravity="center_vertical"
+    android:ellipsize="end"
+    android:gravity="center_vertical"
+    style="@style/AppTheme.WhiteText"
+    android:padding="8dp"
+    android:singleLine="true"
+    android:text="Large Text"
+    android:textAppearance="?android:attr/textAppearanceMedium" />

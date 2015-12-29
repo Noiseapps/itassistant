@@ -3,6 +3,7 @@ package com.noiseapps.itassistant.connector;
 import com.noiseapps.itassistant.api.StashAPI;
 import com.noiseapps.itassistant.database.PreferencesDAO;
 import com.noiseapps.itassistant.model.account.BaseAccount;
+import com.noiseapps.itassistant.model.stash.projects.ProjectRepos;
 import com.noiseapps.itassistant.model.stash.projects.UserProjects;
 import com.orhanobut.logger.Logger;
 
@@ -17,7 +18,7 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 import rx.Observable;
 
-@EBean
+@EBean(scope = EBean.Scope.Singleton)
 public class StashConnector {
 
     @Bean
@@ -38,7 +39,7 @@ public class StashConnector {
         return apiService.reactiveGetProjects();
     }
 
-    public Observable<Object> getProjectRepos(String projectKey) {
+    public Observable<ProjectRepos> getProjectRepos(String projectKey) {
         return apiService.getProjectRepos(projectKey);
     }
 

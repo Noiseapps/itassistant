@@ -1,19 +1,19 @@
-package com.noiseapps.itassistant.fragment;
+package com.noiseapps.itassistant.fragment.stash;
 
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.connector.StashConnector;
-import com.noiseapps.itassistant.connector.StashConnector_;
-import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.stash.projects.ProjectRepos;
 import com.noiseapps.itassistant.model.stash.projects.StashProject;
 import com.noiseapps.itassistant.model.stash.projects.StashRepoMeta;
@@ -22,56 +22,33 @@ import com.orhanobut.logger.Logger;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 @EFragment(R.layout.fragment_stash_project)
-public class StashProjectFragment extends Fragment {
+public class StashProjectDetailsFragment extends Fragment {
 
     @ViewById
     TextView textView3;
 
-    StashProject stashProject;
-    private BaseAccount baseAccount;
-
     @Bean
     StashConnector stashConnector;
 
+    @FragmentArg
+    StashProject stashProject;
+
     @AfterViews
     void init() {
-        configureToolbar(true);
-    }
-
-    private void configureToolbar(boolean showCustomView) {
-        final ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (supportActionBar != null) {
-            supportActionBar.setCustomView(R.layout.layout_toolbar_spinner);
-            supportActionBar.setDisplayShowCustomEnabled(showCustomView);
-            supportActionBar.setDisplayShowTitleEnabled(!showCustomView);
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        configureToolbar(false);
-        super.onDetach();
-    }
-
-    public void setProject(StashProject jiraProject, BaseAccount baseAccount) {
-        stashProject = jiraProject;
-        this.baseAccount = baseAccount;
-        if (stashConnector == null) {
-            stashConnector = StashConnector_.getInstance_(getContext());
-        }
+        showProgress();
         stashConnector.getProjectRepos(stashProject.getKey()).
                 subscribeOn(Schedulers.io()).
                 observeOn(AndroidSchedulers.mainThread()).
                 subscribe(this::onReposDownloaded, this::onDownloadFailed);
         Logger.d(String.valueOf(stashProject));
     }
-
 
     private void onDownloadFailed(Throwable throwable) {
         showError();
@@ -110,9 +87,9 @@ public class StashProjectFragment extends Fragment {
 
     private void loadProjectDetails(StashRepoMeta item) {
         stashConnector.getRepoDetails(stashProject.getKey(), item.getSlug()).
-                observeOn(AndroidSchedulers.mainThread()).
-                subscribeOn(Schedulers.io()).
-                subscribe(this::onDetailsDownloaded, this::onDownloadFailed);
+            observeOn(AndroidSchedulers.mainThread()).
+            subscribeOn(Schedulers.io()).
+            subscribe(this::onDetailsDownloaded, this::onDownloadFailed);
         // todo load and display data
     }
 
@@ -124,4 +101,12 @@ public class StashProjectFragment extends Fragment {
 
     }
 
+    @Override
+    public void onDetach() {
+        final ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (supportActionBar != null) {
+            supportActionBar.setDisplayShowCustomEnabled(false);
+        }
+        super.onDetach();
+    }
 }
