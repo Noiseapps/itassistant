@@ -46,7 +46,10 @@ public class AuthenticatedPicasso {
         if(BuildConfig.DEBUG) {
             builder.indicatorsEnabled(true);
             builder.loggingEnabled(true);
-            builder.listener((picasso, uri, exception) -> Logger.e(exception, exception.getMessage()));
+            builder.listener((picasso, uri, exception) -> {
+                Logger.e(exception, exception.getMessage());
+                exception.printStackTrace();
+            });
         }
         builder.downloader(new OkHttpDownloader(picassoClient));
         INSTANCE = builder.build();

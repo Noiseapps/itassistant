@@ -154,6 +154,8 @@
     <string name="issueTitle">Title</string>
     <string name="issueKey">Key</string>
     <string name="failedToUpdateIssue">Failed to update issue</string>
-    <string name="stashUrl">Adres stash</string>
+    <string name="stashUrl">Address stash</string>
     <string name="editStashAccount">Edit Stash Account</string>
+    <string name="failedToDownloadAvatar">Failed to download user avatar</string>
+    <string name="saveAnyway">Save with default</string>
 </resources>
