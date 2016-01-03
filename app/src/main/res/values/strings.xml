@@ -158,4 +158,13 @@
     <string name="editStashAccount">Edit Stash Account</string>
     <string name="failedToDownloadAvatar">Failed to download user avatar</string>
     <string name="saveAnyway">Save with default</string>
+    <string name="createBranch">Create branch</string>
+    <string name="createPullRequest">Create pull request</string>
+    <string name="fork">Fork</string>
+    <string name="source">Source</string>
+    <string name="commits">Commits</string>
+    <string name="branches">Branches</string>
+    <string name="pullRequests">Pull requests</string>
+    <string name="copy">Copy link</string>
+    <string name="linkCopied">Link copied</string>
 </resources>

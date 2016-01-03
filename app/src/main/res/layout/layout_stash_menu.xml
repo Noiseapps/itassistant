@@ -1,7 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/stashMenuRoot"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-</LinearLayout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.CardView style="@style/AppTheme.CardView">
+
+            <LinearLayout
+                android:id="@+id/cloneLinks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:orientation="vertical" />
+        </android.support.v7.widget.CardView>
+
+
+        <include layout="@layout/layout_stash_repo_actions" />
+
+        <include layout="@layout/layout_stash_repo_details" />
+
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>
