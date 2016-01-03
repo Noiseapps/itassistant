@@ -260,22 +260,22 @@ public class StashProjectFragment extends Fragment {
 //        alertDialog.show();
     }
 
-    private void onCreatePrDialogShown(AlertDialog alertDialog) {
-        SpinnerAdapter adapter = new ArrayAdapter<>(getActivity(),
-                R.layout.item_spinner_textonly_black,
-                R.id.title, branches);
-        final Spinner sourceBranch = (Spinner) alertDialog.findViewById(R.id.sourceBranch);
-        final Spinner targetBranch = (Spinner) alertDialog.findViewById(R.id.targetBranch);
-        final View creatingBranch = alertDialog.findViewById(R.id.creatingBranch);
-        sourceBranch.setAdapter(adapter);
-        targetBranch.setAdapter(adapter);
-        alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(v -> {
-            creatingBranch.setVisibility(View.VISIBLE);
-            final BranchModel selectedItem = (BranchModel) branchesSpinner.getSelectedItem();
-            final String branchName = branchNameEdit.getText().toString().trim();
-            createNewBranch(alertDialog, selectedItem, branchName);
-        });
-    }
+//    private void onCreatePrDialogShown(AlertDialog alertDialog) {
+//        SpinnerAdapter adapter = new ArrayAdapter<>(getActivity(),
+//                R.layout.item_spinner_textonly_black,
+//                R.id.title, branches);
+//        final Spinner sourceBranch = (Spinner) alertDialog.findViewById(R.id.sourceBranch);
+//        final Spinner targetBranch = (Spinner) alertDialog.findViewById(R.id.targetBranch);
+//        final View creatingBranch = alertDialog.findViewById(R.id.creatingBranch);
+//        sourceBranch.setAdapter(adapter);
+//        targetBranch.setAdapter(adapter);
+//        alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(v -> {
+//            creatingBranch.setVisibility(View.VISIBLE);
+//            final BranchModel selectedItem = (BranchModel) branchesSpinner.getSelectedItem();
+//            final String branchName = branchNameEdit.getText().toString().trim();
+//            createNewBranch(alertDialog, selectedItem, branchName);
+//        });
+//    }
 
     @Click(R.id.fork)
     void onForkRepo() {
