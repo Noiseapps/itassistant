@@ -14,6 +14,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
+            android:drawablePadding="16dp"
+            android:drawableStart="@drawable/icon_create_branch"
             android:padding="16dp"
             android:text="@string/createBranch"
             android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -27,6 +29,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
+            android:drawablePadding="16dp"
+            android:drawableStart="@drawable/icon_create_pull_request"
             android:padding="16dp"
             android:text="@string/createPullRequest"
             android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -40,6 +44,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
+            android:drawablePadding="16dp"
+            android:drawableStart="@drawable/icon_fork"
             android:padding="16dp"
             android:text="@string/fork"
             android:textAppearance="?android:attr/textAppearanceMedium" />

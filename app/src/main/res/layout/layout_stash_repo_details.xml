@@ -16,6 +16,8 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:padding="16dp"
+            android:drawablePadding="16dp"
+            android:drawableStart="@drawable/icon_source"
             android:text="@string/source"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -29,6 +31,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
+            android:drawablePadding="16dp"
+            android:drawableStart="@drawable/icon_commits"
             android:padding="16dp"
             android:text="@string/commits"
             android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -43,6 +47,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
+            android:drawablePadding="16dp"
+            android:drawableStart="@drawable/icon_branches"
             android:padding="16dp"
             android:text="@string/branches"
             android:textAppearance="?android:attr/textAppearanceMedium" />

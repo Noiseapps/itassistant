@@ -3,6 +3,9 @@ package com.noiseapps.itassistant.connector;
 import com.noiseapps.itassistant.api.StashAPI;
 import com.noiseapps.itassistant.database.PreferencesDAO;
 import com.noiseapps.itassistant.model.account.BaseAccount;
+import com.noiseapps.itassistant.model.atlassian.PagedApiModel;
+import com.noiseapps.itassistant.model.stash.projects.BranchModel;
+import com.noiseapps.itassistant.model.stash.projects.NewBranchModel;
 import com.noiseapps.itassistant.model.stash.projects.ProjectRepos;
 import com.noiseapps.itassistant.model.stash.projects.UserProjects;
 import com.orhanobut.logger.Logger;
@@ -10,16 +13,23 @@ import com.orhanobut.logger.Logger;
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.SupposeBackground;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit.ErrorHandler;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import retrofit.http.Path;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 @EBean(scope = EBean.Scope.Singleton)
-public class StashConnector {
+public class StashConnector{
 
     @Bean
     PreferencesDAO preferencesDAO;
@@ -46,6 +56,26 @@ public class StashConnector {
     public Observable<Object> getRepoDetails(String projectKey, String repoSlug) {
         return apiService.getRepoDetails(projectKey, repoSlug);
     }
+
+    @SupposeBackground
+    public List<BranchModel> getBranches(@Path("projectKey") String projectKey, @Path("repoSlug") String repoSlug) {
+        int start = 0;
+        PagedApiModel<BranchModel> branches;
+        final List<BranchModel> repoBranches = new ArrayList<>();
+        do {
+            branches = apiService.getBranches(projectKey, repoSlug, start);
+            repoBranches.addAll(branches.getValues());
+            start = branches.getStart() + branches.getLimit();
+        } while (!branches.isLastPage());
+        return repoBranches;
+    }
+
+    public Observable<BranchModel> createBranch(@Path("projectKey") String projectKey, @Path("repoSlug") String repoSlug, NewBranchModel newBranchModel) {
+        return apiService.createBranch(projectKey, repoSlug, newBranchModel).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribeOn(Schedulers.io());
+    }
+
 
     @AfterInject
     void init() {
