@@ -13,7 +13,7 @@ import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractExpandableItemVie
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.model.NavigationModel;
 import com.noiseapps.itassistant.model.account.BaseAccount;
-import com.noiseapps.itassistant.model.jira.projects.JiraProject;
+import com.noiseapps.itassistant.model.atlassian.AbstractBaseProject;
 import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -44,7 +44,7 @@ public class NavigationMenuAdapter extends AbstractExpandableItemAdapter<Navigat
 
     @Override
     public int getChildCount(int groupPosition) {
-        return navigationModels.get(groupPosition).getJiraProjects().size();
+        return navigationModels.get(groupPosition).getJiraProjects().length;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class NavigationMenuAdapter extends AbstractExpandableItemAdapter<Navigat
 
     @Override
     public long getChildId(int groupPosition, int childPosition) {
-        return navigationModels.get(groupPosition).getJiraProjects().get(childPosition).hashCode();
+        return navigationModels.get(groupPosition).getJiraProjects()[childPosition].hashCode();
     }
 
     @Override
@@ -88,7 +88,7 @@ public class NavigationMenuAdapter extends AbstractExpandableItemAdapter<Navigat
     @Override
     public void onBindChildViewHolder(ChildViewHolder holder, int groupPosition, int childPosition, int viewType) {
         final NavigationModel navigationModel = navigationModels.get(groupPosition);
-        holder.bind(navigationModel.getJiraProjects().get(childPosition), navigationModel.getBaseAccount());
+        holder.bind(navigationModel.getJiraProjects()[childPosition], navigationModel.getBaseAccount());
     }
 
     @Override
@@ -101,7 +101,7 @@ public class NavigationMenuAdapter extends AbstractExpandableItemAdapter<Navigat
     }
 
     public interface AdapterCallbacks {
-        void onItemClicked(JiraProject jiraProject, BaseAccount baseAccount);
+        void onItemClicked(AbstractBaseProject jiraProject, BaseAccount baseAccount);
     }
 
     abstract class AbstractViewHolder extends AbstractExpandableItemViewHolder {
@@ -166,7 +166,7 @@ public class NavigationMenuAdapter extends AbstractExpandableItemAdapter<Navigat
     class ChildViewHolder extends AbstractViewHolder implements View.OnClickListener {
         private final TextView projectName;
         private final TextView projectKey;
-        private JiraProject jiraProject;
+        private AbstractBaseProject jiraProject;
         private BaseAccount baseAccount;
 
         public ChildViewHolder(View itemView) {
@@ -176,7 +176,7 @@ public class NavigationMenuAdapter extends AbstractExpandableItemAdapter<Navigat
             itemView.setOnClickListener(this);
         }
 
-        public void bind(JiraProject jiraProject, BaseAccount baseAccount) {
+        public void bind(AbstractBaseProject jiraProject, BaseAccount baseAccount) {
             this.jiraProject = jiraProject;
             this.baseAccount = baseAccount;
             projectKey.setText(jiraProject.getKey());

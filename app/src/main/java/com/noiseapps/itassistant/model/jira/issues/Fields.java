@@ -50,9 +50,9 @@ public class Fields implements Parcelable {
     @SerializedName("description")
     @Expose
     private String description;
-    @SerializedName("issuelinks")
-    @Expose
-    private List<String> issuelinks = new ArrayList<>();
+//    @SerializedName("issuelinks")
+//    @Expose
+//    private List<String> issuelinks = new ArrayList<>();
     @SerializedName("status")
     @Expose
     private Status status;
@@ -126,7 +126,7 @@ public class Fields implements Parcelable {
         this.created = in.readString();
         this.priority = in.readParcelable(Priority.class.getClassLoader());
         this.description = in.readString();
-        this.issuelinks = in.createStringArrayList();
+//        this.issuelinks = in.createStringArrayList();
         this.status = in.readParcelable(Status.class.getClassLoader());
         this.labels = in.createStringArrayList();
         this.parent = in.readParcelable(Issue.class.getClassLoader());
@@ -190,8 +190,8 @@ public class Fields implements Parcelable {
             return false;
         if (description != null ? !description.equals(fields.description) : fields.description != null)
             return false;
-        if (issuelinks != null ? !issuelinks.equals(fields.issuelinks) : fields.issuelinks != null)
-            return false;
+//        if (issuelinks != null ? !issuelinks.equals(fields.issuelinks) : fields.issuelinks != null)
+//            return false;
         if (status != null ? !status.equals(fields.status) : fields.status != null) return false;
         if (labels != null ? !labels.equals(fields.labels) : fields.labels != null) return false;
         if (parent != null ? !parent.equals(fields.parent) : fields.parent != null) return false;
@@ -233,7 +233,7 @@ public class Fields implements Parcelable {
         result = 31 * result + (created != null ? created.hashCode() : 0);
         result = 31 * result + (priority != null ? priority.hashCode() : 0);
         result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (issuelinks != null ? issuelinks.hashCode() : 0);
+//        result = 31 * result + (issuelinks != null ? issuelinks.hashCode() : 0);
         result = 31 * result + (status != null ? status.hashCode() : 0);
         result = 31 * result + (labels != null ? labels.hashCode() : 0);
         result = 31 * result + (parent != null ? parent.hashCode() : 0);
@@ -269,7 +269,7 @@ public class Fields implements Parcelable {
                 ", created='" + created + '\'' +
                 ", priority=" + priority +
                 ", description='" + description + '\'' +
-                ", issuelinks=" + issuelinks +
+//                ", issuelinks=" + issuelinks +
                 ", status=" + status +
                 ", labels=" + labels +
                 ", parent=" + parent +
@@ -373,13 +373,13 @@ public class Fields implements Parcelable {
         this.description = description;
     }
 
-    public List<String> getIssuelinks() {
-        return issuelinks;
-    }
-
-    public void setIssuelinks(List<String> issuelinks) {
-        this.issuelinks = issuelinks;
-    }
+//    public List<String> getIssuelinks() {
+//        return issuelinks;
+//    }
+//
+//    public void setIssuelinks(List<String> issuelinks) {
+//        this.issuelinks = issuelinks;
+//    }
 
     public Status getStatus() {
         return status;
@@ -541,7 +541,7 @@ public class Fields implements Parcelable {
         dest.writeString(this.created);
         dest.writeParcelable(this.priority, 0);
         dest.writeString(this.description);
-        dest.writeStringList(this.issuelinks);
+//        dest.writeStringList(this.issuelinks);
         dest.writeParcelable(this.status, 0);
         dest.writeStringList(this.labels);
         dest.writeParcelable(this.parent, 0);

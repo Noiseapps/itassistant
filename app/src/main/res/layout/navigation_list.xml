@@ -57,7 +57,8 @@
         android:background="@drawable/list_background"
         android:clickable="true"
         android:drawableStart="@drawable/ic_action_settings"
-        android:text="@string/settings" />
+        android:text="@string/settings"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/actionAccounts"

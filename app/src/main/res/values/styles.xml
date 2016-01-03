@@ -68,4 +68,18 @@
         <item name="titleTextStyle">?android:attr/textAppearanceLarge</item>
     </style>
 
+    <style name="AppTheme.CardView">
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="cardUseCompatPadding">true</item>
+    </style>
+
+    <style name="AppTheme.Divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginRight">8dp</item>
+        <item name="android:layout_height">0.5dp</item>
+    </style>
+
 </resources>

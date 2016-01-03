@@ -25,6 +25,8 @@ public class AssistantApplication extends MultiDexApplication {
         AnalyticsTrackers_.getInstance_(this);
         JodaTimeAndroid.init(this);
         Once.initialise(this);
-        ACRA.init(this);
+        if(!BuildConfig.DEBUG){
+            ACRA.init(this);
+        }
     }
 }

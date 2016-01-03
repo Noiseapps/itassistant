@@ -1,53 +1,53 @@
 package com.noiseapps.itassistant.model.stash.projects;
 
-import com.google.gson.annotations.Expose;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class Links {
+public class Links implements Parcelable {
 
-    @Expose
-    private List<Self> self = new ArrayList<Self>();
-
-    /**
-     * @return The self
-     */
-    public List<Self> getSelf() {
-        return self;
-    }
-
-    /**
-     * @param self The self
-     */
-    public void setSelf(List<Self> self) {
-        this.self = self;
-    }
-
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(self).toHashCode();
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (other == this) {
-            return true;
+    public static final Creator<Links> CREATOR = new Creator<Links>() {
+        public Links createFromParcel(Parcel source) {
+            return new Links(source);
         }
-        if (!(other instanceof Links)) {
-            return false;
+
+        public Links[] newArray(int size) {
+            return new Links[size];
         }
-        Links rhs = ((Links) other);
-        return new EqualsBuilder().append(self, rhs.self).isEquals();
+    };
+    @SerializedName("clone")
+    private List<CloneLink> cloneLinks;
+    @SerializedName("self")
+    private List<SelfLink> selfLinks;
+
+    public Links() {
     }
 
+
+    protected Links(Parcel in) {
+        this.cloneLinks = in.createTypedArrayList(CloneLink.CREATOR);
+        this.selfLinks = in.createTypedArrayList(SelfLink.CREATOR);
+    }
+
+    public List<CloneLink> getCloneLinks() {
+        return cloneLinks;
+    }
+
+    public List<SelfLink> getSelfLinks() {
+        return selfLinks;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeTypedList(cloneLinks);
+        dest.writeTypedList(selfLinks);
+    }
 }

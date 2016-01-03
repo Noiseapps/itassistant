@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/AppTheme.CardView"
+    tools:showIn="@layout/layout_stash_menu">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/createBranch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:drawablePadding="16dp"
+            android:drawableStart="@drawable/icon_create_branch"
+            android:padding="16dp"
+            android:text="@string/createBranch"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <View
+            style="@style/AppTheme.Divider"
+            android:background="@color/colorDivider" />
+
+        <TextView
+            android:id="@+id/createPR"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:drawablePadding="16dp"
+            android:drawableStart="@drawable/icon_create_pull_request"
+            android:padding="16dp"
+            android:text="@string/createPullRequest"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <View
+            style="@style/AppTheme.Divider"
+            android:background="@color/colorDivider" />
+
+        <TextView
+            android:id="@+id/fork"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:drawablePadding="16dp"
+            android:drawableStart="@drawable/icon_fork"
+            android:padding="16dp"
+            android:text="@string/fork"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </LinearLayout>
+</android.support.v7.widget.CardView>

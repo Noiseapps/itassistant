@@ -2,6 +2,7 @@ package com.noiseapps.itassistant.fragment.accounts;
 
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -114,13 +115,13 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
         }
         if (BuildConfig.DEBUG) {
 //            accountName.setText("Local");
-            accountName.setText("Exaco");
+            accountName.setText("DTT");
 //            host.setText("10.1.221.123:8080");
-            host.setText("jira.exaco.pl");
+            host.setText("jira.przedwojski.com");
 //            username.setText("noiseapps@gmail.com");
             username.setText("tomasz.scibiorek");
 //            password.setText("test123");
-            password.setText("kotek77@");
+            password.setText("Tomek0269122@");
         }
     }
 
@@ -130,7 +131,7 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
         final String path = imageUtils.saveAvatar(avatarBitmap, avatarFilename);
         currentConfig.setAvatarPath(path);
         accountsDao.addOrUpdate(currentConfig);
-        handler.removeCallbacksAndMessages(null);
+        stopTimeout();
         callbacks.onAccountSaved();
     }
 
@@ -157,7 +158,7 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
     @Click(R.id.saveFab)
     void onSaveClicked() {
         requestCanceled = false;
-        handler.removeCallbacksAndMessages(null);
+        stopTimeout();
         startTimeout();
         showProgress();
         validator.validate(true);
@@ -178,15 +179,6 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
                 cancelable(true).
                 cancelListener(this).
                 show();
-
-
-//        progressDialog = new ProgressDialog(getContext());
-//        progressDialog.setIndeterminate(true);
-//        progressDialog.setCancelable(true);
-//        progressDialog.setCanceledOnTouchOutside(true);
-//        progressDialog.setOnCancelListener(this);
-//        progressDialog.setTitle(getString(R.string.validatingForm));
-//        progressDialog.show();
     }
 
     @EditorAction(R.id.password)
@@ -243,7 +235,7 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
     void onDataLoaded(JiraUser userData) {
         if (userData != null & !requestCanceled) {
             final Picasso authPicasso = AuthenticatedPicasso.getAuthPicasso(getContext(), currentConfig);
-            authPicasso.load(userData.getAvatarUrls().getAvatar48()).placeholder(R.drawable.ic_action_account_circle).into(new LoadTarget());
+            authPicasso.load(userData.getAvatarUrls().getAvatar48()).into(new LoadTarget());
         } else {
             hideProgress();
             Snackbar.make(saveFab, R.string.couldNotFetchUserData, Snackbar.LENGTH_LONG).show();
@@ -290,10 +282,20 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
         @Override
         public void onBitmapFailed(Drawable errorDrawable) {
             hideProgress();
+                Snackbar.make(rootView, R.string.failedToDownloadAvatar, Snackbar.LENGTH_LONG).
+                    setAction(R.string.saveAnyway, v -> {
+                        avatarBitmap = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.ic_action_account_circle);
+                        saveAccount();
+            }).show();
+            stopTimeout();
         }
 
         @Override
         public void onPrepareLoad(Drawable placeHolderDrawable) {
         }
+    }
+
+    private void stopTimeout() {
+        handler.removeCallbacksAndMessages(null);
     }
 }

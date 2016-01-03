@@ -143,7 +143,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         setHasOptionsMenu(issues != null);
         mCallbacks = (Callbacks) getActivity();
         final ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (supportActionBar != null) {
+        if (supportActionBar != null && jiraProject != null) {
             supportActionBar.setTitle(jiraProject.getName());
         }
         if (issues != null) {
@@ -424,7 +424,10 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         }
         jiraProject = null;
         baseAccount = null;
-        this.issues = new ArrayList<>(myIssues);
+        this.issues = new ArrayList<>();
+        if(myIssues != null) {
+            issues.addAll(myIssues);
+        }
         showProgress();
         setToolbarTitle(getString(R.string.myIssues));
         onProjectsDownloaded(true);

@@ -3,14 +3,12 @@
     <string-array name="accountTypes">
         <item>Jira</item>
         <item>Stash</item>
-        <item>Jenkins</item>
     </string-array>
 
     <string-array name="accountDetailsSections">
         <item>General</item>
         <item>Comments</item>
         <item>Work Log</item>
-        <item>Activities</item>
     </string-array>
     <string-array name="moreIssueActions">
         <item>Edit</item>
