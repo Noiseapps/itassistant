@@ -424,7 +424,10 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         }
         jiraProject = null;
         baseAccount = null;
-        this.issues = new ArrayList<>(myIssues);
+        this.issues = new ArrayList<>();
+        if(myIssues != null) {
+            issues.addAll(myIssues);
+        }
         showProgress();
         setToolbarTitle(getString(R.string.myIssues));
         onProjectsDownloaded(true);

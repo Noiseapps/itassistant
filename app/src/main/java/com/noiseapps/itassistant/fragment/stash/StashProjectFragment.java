@@ -162,6 +162,7 @@ public class StashProjectFragment extends Fragment {
     }
 
     private void configureCloneLinks(StashRepoMeta item) {
+        cloneLinks.removeAllViews();
         final LayoutInflater inflater = LayoutInflater.from(getActivity());
         for (CloneLink cloneLink : item.getLinks().getCloneLinks()) {
             addSingleCloneLink(inflater, cloneLink);
@@ -200,20 +201,25 @@ public class StashProjectFragment extends Fragment {
         builder.setNegativeButton(R.string.cancel, (dialog1, which) -> {});
         final AlertDialog alertDialog = builder.create();
         alertDialog.setOnShowListener(dialog -> {
-            SpinnerAdapter adapter = new ArrayAdapter<>(getActivity(),
-                    R.layout.item_spinner_textonly_black,
-                    R.id.title, branches);
-            final Spinner branchesSpinner = (Spinner) alertDialog.findViewById(R.id.branchesSpinner);
-            final EditText branchNameEdit = (EditText) alertDialog.findViewById(R.id.branchName);
-            branchesSpinner.setAdapter(adapter);
-            alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(v -> {
-                // todo show progress
-                final BranchModel selectedItem = (BranchModel) branchesSpinner.getSelectedItem();
-                final String branchName = branchNameEdit.getText().toString().trim();
-                createNewBranch(alertDialog, selectedItem, branchName);
-            });
+            onDialogShown(alertDialog);
         });
         alertDialog.show();
+    }
+
+    private void onDialogShown(AlertDialog alertDialog) {
+        SpinnerAdapter adapter = new ArrayAdapter<>(getActivity(),
+                R.layout.item_spinner_textonly_black,
+                R.id.title, branches);
+        final Spinner branchesSpinner = (Spinner) alertDialog.findViewById(R.id.branchesSpinner);
+        final EditText branchNameEdit = (EditText) alertDialog.findViewById(R.id.branchName);
+        final View creatingBranch = alertDialog.findViewById(R.id.creatingBranch);
+        branchesSpinner.setAdapter(adapter);
+        alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(v -> {
+            creatingBranch.setVisibility(View.VISIBLE);
+            final BranchModel selectedItem = (BranchModel) branchesSpinner.getSelectedItem();
+            final String branchName = branchNameEdit.getText().toString().trim();
+            createNewBranch(alertDialog, selectedItem, branchName);
+        });
     }
 
     private void createNewBranch(AlertDialog dialog, BranchModel selectedItem, String branchName) {
@@ -227,8 +233,8 @@ public class StashProjectFragment extends Fragment {
     }
 
     private void onCreateFailed(Throwable throwable, AlertDialog dialog) {
-        // todo hide dialog progress
         Logger.e(throwable, throwable.getMessage());
+        dialog.findViewById(R.id.creatingBranch).setVisibility(View.GONE);
         Snackbar.make(dialog.findViewById(R.id.branchName), R.string.createBranchFailed, Snackbar.LENGTH_LONG).show();
     }
 

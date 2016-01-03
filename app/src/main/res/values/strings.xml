@@ -168,7 +168,8 @@
     <string name="copy">Copy link</string>
     <string name="linkCopied">Link copied</string>
     <string name="enterBranchName">New branch name</string>
-    <string name="branchFrom">Create branch from</string>
+    <string name="branchFrom">Source branch:</string>
     <string name="createBranchFailed">Failed to create branch</string>
     <string name="branchCreated">Branch %s created</string>
+    <string name="creatingBranch">Creating branch…</string>
 </resources>
