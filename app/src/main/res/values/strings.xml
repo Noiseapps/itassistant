@@ -172,4 +172,5 @@
     <string name="createBranchFailed">Failed to create branch</string>
     <string name="branchCreated">Branch %s created</string>
     <string name="creatingBranch">Creating branch…</string>
+    <string name="enterReviewers">Add reviewers</string>
 </resources>

@@ -245,7 +245,36 @@ public class StashProjectFragment extends Fragment {
 
     @Click(R.id.createPR)
     void onCreatePullRequest() {
-        // todo show pull request dialog
+//        if(branches == null) {
+//            return;
+//        }
+//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//        builder.setView(R.layout.dialog_create_pull_request);
+//        builder.setTitle(R.string.createPullRequest);
+//        builder.setPositiveButton(R.string.createPullRequest, (dialog1, which) -> {});
+//        builder.setNegativeButton(R.string.cancel, (dialog1, which) -> {});
+//        final AlertDialog alertDialog = builder.create();
+//        alertDialog.setOnShowListener(dialog -> {
+//            onCreatePrDialogShown(alertDialog);
+//        });
+//        alertDialog.show();
+    }
+
+    private void onCreatePrDialogShown(AlertDialog alertDialog) {
+        SpinnerAdapter adapter = new ArrayAdapter<>(getActivity(),
+                R.layout.item_spinner_textonly_black,
+                R.id.title, branches);
+        final Spinner sourceBranch = (Spinner) alertDialog.findViewById(R.id.sourceBranch);
+        final Spinner targetBranch = (Spinner) alertDialog.findViewById(R.id.targetBranch);
+        final View creatingBranch = alertDialog.findViewById(R.id.creatingBranch);
+        sourceBranch.setAdapter(adapter);
+        targetBranch.setAdapter(adapter);
+        alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(v -> {
+            creatingBranch.setVisibility(View.VISIBLE);
+            final BranchModel selectedItem = (BranchModel) branchesSpinner.getSelectedItem();
+            final String branchName = branchNameEdit.getText().toString().trim();
+            createNewBranch(alertDialog, selectedItem, branchName);
+        });
     }
 
     @Click(R.id.fork)

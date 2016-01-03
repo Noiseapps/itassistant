@@ -21,4 +21,5 @@
     <color name="listItemBackgroundHighlight">#cccccc</color>
     <color name="white">#ffffff</color>
     <color name="stateDelete">#F44336</color>
+    <color name="mask">#cc000000</color>
 </resources>
