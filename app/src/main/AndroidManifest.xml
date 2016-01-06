@@ -46,6 +46,7 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
         <receiver
             android:name="com.google.android.gms.analytics.AnalyticsReceiver"
             android:enabled="true">
@@ -53,10 +54,16 @@
                 <action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
             </intent-filter>
         </receiver>
+
         <service
             android:name="com.google.android.gms.analytics.AnalyticsService"
             android:enabled="true"
             android:exported="false" />
+
+        <activity
+            android:name=".StashDetailsActivity_"
+            android:label="@string/title_activity_stash_branches"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

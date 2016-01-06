@@ -28,7 +28,7 @@ public interface StashAPI {
     Observable<Object> getRepoDetails(@Path("projectKey") String projectKey,
                                       @Path("repoSlug") String repoSlug);
 
-    @GET("/rest/api/1.0/projects/{projectKey}/repos/{repoSlug}/branches?orderBy=MODIFICATION")
+    @GET("/rest/api/1.0/projects/{projectKey}/repos/{repoSlug}/branches?orderBy=MODIFICATION&details=true")
     PagedApiModel<BranchModel> getBranches(@Path("projectKey") String projectKey,
                                            @Path("repoSlug") String repoSlug,
                                            @Query("start") int start);

@@ -12,14 +12,9 @@
 
         <TextView
             android:id="@+id/source"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:padding="16dp"
-            android:drawablePadding="16dp"
-            android:drawableStart="@drawable/icon_source"
             android:text="@string/source"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:drawableStart="@drawable/icon_source"
+            style="@style/AppTheme.StashMenuText" />
 
         <View
             style="@style/AppTheme.Divider"
@@ -28,14 +23,9 @@
 
         <TextView
             android:id="@+id/commits"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:drawablePadding="16dp"
-            android:drawableStart="@drawable/icon_commits"
-            android:padding="16dp"
             android:text="@string/commits"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:drawableStart="@drawable/icon_commits"
+            style="@style/AppTheme.StashMenuText" />
 
         <View
             style="@style/AppTheme.Divider"
@@ -44,14 +34,9 @@
 
         <TextView
             android:id="@+id/branches"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:drawablePadding="16dp"
-            android:drawableStart="@drawable/icon_branches"
-            android:padding="16dp"
             android:text="@string/branches"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:drawableStart="@drawable/icon_branches"
+            style="@style/AppTheme.StashMenuText" />
 
         <View
             style="@style/AppTheme.Divider"
@@ -60,17 +45,8 @@
 
         <TextView
             android:id="@+id/pullRequests"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:drawablePadding="16dp"
             android:drawableStart="@drawable/icon_pull_requests"
-            android:padding="16dp"
             android:text="@string/pullRequests"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <View
-            style="@style/AppTheme.Divider"
-            android:background="@color/colorDivider" />
+            style="@style/AppTheme.StashMenuText" />
     </LinearLayout>
 </android.support.v7.widget.CardView>

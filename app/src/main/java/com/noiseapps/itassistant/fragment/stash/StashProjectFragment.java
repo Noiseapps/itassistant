@@ -1,38 +1,30 @@
 package com.noiseapps.itassistant.fragment.stash;
 
-import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.DialogInterface;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.connector.StashConnector;
 import com.noiseapps.itassistant.connector.StashConnector_;
 import com.noiseapps.itassistant.dialogs.CreateBranchDialog;
 import com.noiseapps.itassistant.model.account.BaseAccount;
-import com.noiseapps.itassistant.model.atlassian.PagedApiModel;
 import com.noiseapps.itassistant.model.stash.projects.BranchModel;
 import com.noiseapps.itassistant.model.stash.projects.CloneLink;
-import com.noiseapps.itassistant.model.stash.projects.NewBranchModel;
 import com.noiseapps.itassistant.model.stash.projects.ProjectRepos;
 import com.noiseapps.itassistant.model.stash.projects.StashProject;
 import com.noiseapps.itassistant.model.stash.projects.StashRepoMeta;
@@ -47,10 +39,8 @@ import org.androidannotations.annotations.SystemService;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -75,9 +65,16 @@ public class StashProjectFragment extends Fragment {
     StashConnector stashConnector;
     private StashRepoMeta currentRepo;
     private List<BranchModel> branches;
+    private StashMenuCallbacks menuCallbacks;
+
+
+    public interface StashMenuCallbacks {
+        void onShowBranchesList(@NonNull StashProject stashProject, @NonNull String slug);
+    }
 
     @AfterViews
     void init() {
+        menuCallbacks = ((StashMenuCallbacks) getActivity());
         configureToolbar(true);
     }
 
@@ -190,12 +187,16 @@ public class StashProjectFragment extends Fragment {
         Snackbar.make(rootView, R.string.linkCopied, Snackbar.LENGTH_LONG).show();
     }
 
+    @Bean
+    CreateBranchDialog createBranchDialog;
+
     @Click(R.id.createBranch)
     void onCreateBranch() {
         if(branches == null) {
             return;
         }
-        new CreateBranchDialog(getActivity(), stashProject.getKey(), currentRepo.getSlug(), branches, this::showSuccessMessage);
+        createBranchDialog.init(stashProject.getKey(), currentRepo.getSlug(), branches, this::showSuccessMessage);
+
     }
 
     private void showSuccessMessage(BranchModel branchModel) {
@@ -239,6 +240,16 @@ public class StashProjectFragment extends Fragment {
     @Click(R.id.fork)
     void onForkRepo() {
         // todo show fork dialog
+    }
+
+    @Click(R.id.pullRequests)
+    void onShowPullRequests() {
+
+    }
+
+    @Click(R.id.branches)
+    void onShowBranches() {
+        menuCallbacks.onShowBranchesList(stashProject, currentRepo.getSlug());
     }
 
     private void showProgress() {

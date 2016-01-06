@@ -4,9 +4,11 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -33,6 +35,8 @@ import com.noiseapps.itassistant.fragment.IssueListFragment;
 import com.noiseapps.itassistant.fragment.IssueListFragment_;
 import com.noiseapps.itassistant.fragment.NewIssueFragment;
 import com.noiseapps.itassistant.fragment.NewIssueFragment_;
+import com.noiseapps.itassistant.fragment.stash.StashBranchListFragment;
+import com.noiseapps.itassistant.fragment.stash.StashBranchListFragment_;
 import com.noiseapps.itassistant.fragment.stash.StashProjectFragment;
 import com.noiseapps.itassistant.fragment.stash.StashProjectFragment_;
 import com.noiseapps.itassistant.model.NavigationModel;
@@ -75,7 +79,10 @@ import static com.noiseapps.itassistant.AnalyticsTrackers.SCREEN_ISSUE_LIST;
 
 @EActivity(R.layout.activity_issue_app_bar)
 public class IssueListActivity extends AppCompatActivity
-        implements IssueListFragment.Callbacks, NewIssueFragment.NewIssueCallbacks, IssueDetailFragment.IssueDetailCallbacks {
+        implements IssueListFragment.Callbacks,
+        NewIssueFragment.NewIssueCallbacks,
+        IssueDetailFragment.IssueDetailCallbacks,
+        StashProjectFragment.StashMenuCallbacks {
 
     public static final int ACCOUNTS_REQUEST = 633;
     public static final int NEW_ISSUE_REQUEST = 5135;
@@ -115,12 +122,16 @@ public class IssueListActivity extends AppCompatActivity
         if (mTwoPane) {
             nothingSelectedInfo.setVisibility(View.GONE);
             final IssueDetailFragment fragment = IssueDetailFragment_.builder().issue(issue).build();
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.issue_detail_container, fragment)
-                    .commit();
+            setDetailsFragment(fragment, null);
         } else {
             IssueDetailActivity_.intent(this).issue(issue).start();
         }
+    }
+
+    private void setDetailsFragment(Fragment fragment, @Nullable String backstackName) {
+        getSupportFragmentManager().beginTransaction().addToBackStack(backstackName)
+                .replace(R.id.issue_detail_container, fragment)
+                .commit();
     }
 
     @Override
@@ -130,9 +141,7 @@ public class IssueListActivity extends AppCompatActivity
         if (mTwoPane) {
             nothingSelectedInfo.setVisibility(View.GONE);
             final NewIssueFragment fragment = NewIssueFragment_.builder().projectKey(key).build();
-            getSupportFragmentManager().beginTransaction().addToBackStack("CREATE")
-                    .replace(R.id.issue_detail_container, fragment)
-                    .commit();
+            setDetailsFragment(fragment, "CREATE");
         } else {
             NewIssueActivity_.intent(this).projectKey(key).startForResult(NEW_ISSUE_REQUEST);
         }
@@ -145,9 +154,7 @@ public class IssueListActivity extends AppCompatActivity
         if (mTwoPane) {
             nothingSelectedInfo.setVisibility(View.GONE);
             final NewIssueFragment fragment = NewIssueFragment_.builder().projectKey(key).issue(issue).build();
-            getSupportFragmentManager().beginTransaction().addToBackStack("EDIT")
-                    .replace(R.id.issue_detail_container, fragment)
-                    .commit();
+            setDetailsFragment(fragment, "EDIT");
         } else {
             NewIssueActivity_.intent(this).projectKey(key).issue(issue).startForResult(NEW_ISSUE_REQUEST);
         }
@@ -486,5 +493,22 @@ public class IssueListActivity extends AppCompatActivity
     protected void onResume() {
         EventBus.getDefault().register(this);
         super.onResume();
+    }
+
+    @Override
+    public void onShowBranchesList(@NonNull StashProject project, @NonNull String repoSlug) {
+        if(mTwoPane){
+            final StashBranchListFragment fragment = StashBranchListFragment_.builder().
+                    project(project).
+                    repoSlug(repoSlug).
+                    build();
+            setDetailsFragment(fragment, "BRANCHES");
+        } else {
+            StashDetailsActivity_.intent(this).
+                    stashAction(StashDetailsActivity.ACTION_BRANCHES).
+                    project(project).
+                    repoSlug(repoSlug).
+                    start();
+        }
     }
 }

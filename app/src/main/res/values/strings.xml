@@ -173,4 +173,9 @@
     <string name="branchCreated">Branch %s created</string>
     <string name="creatingBranch">Creating branch…</string>
     <string name="enterReviewers">Add reviewers</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_stash_branches">StashBranchesActivity</string>
+    <string name="branchesForProject">Branches for %s</string>
 </resources>

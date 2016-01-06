@@ -60,15 +60,19 @@ public class StashConnector {
 
     @SupposeBackground
     public List<BranchModel> getBranches(@Path("projectKey") String projectKey, @Path("repoSlug") String repoSlug) {
-        int start = 0;
-        PagedApiModel<BranchModel> branches;
-        final List<BranchModel> repoBranches = new ArrayList<>();
-        do {
-            branches = apiService.getBranches(projectKey, repoSlug, start);
-            repoBranches.addAll(branches.getValues());
-            start = branches.getStart() + branches.getLimit();
-        } while (!branches.isLastPage());
-        return repoBranches;
+        try {
+            int start = 0;
+            PagedApiModel<BranchModel> branches;
+            final List<BranchModel> repoBranches = new ArrayList<>();
+            do {
+                branches = apiService.getBranches(projectKey, repoSlug, start);
+                repoBranches.addAll(branches.getValues());
+                start = branches.getStart() + branches.getLimit();
+            } while (!branches.isLastPage());
+            return repoBranches;
+        } catch (RetrofitError error) {
+            return new ArrayList<>();
+        }
     }
 
     public Observable<BranchModel> createBranch(@Path("projectKey") String projectKey, @Path("repoSlug") String repoSlug, NewBranchModel newBranchModel) {

@@ -25,19 +25,18 @@ import java.util.List;
 public class CreateBranchDialog {
 
     private final Context context;
-    private final String projectKey;
-    private final String repoSlug;
-    private final OnBranchCreatedCallback callback;
+    private String projectKey;
+    private String repoSlug;
+    private OnBranchCreatedCallback callback;
     @Bean
     StashConnector stashConnector;
-    private final List<BranchModel> branches;
+    private List<BranchModel> branches;
 
     public interface OnBranchCreatedCallback {
         void branchCreated(BranchModel branchModel);
     }
 
-    public CreateBranchDialog(Context context, String projectKey, String repoSlug, List<BranchModel> branches, OnBranchCreatedCallback callback) {
-        this.context = context;
+    public void init(String projectKey, String repoSlug, List<BranchModel> branches, OnBranchCreatedCallback callback) {
         this.projectKey = projectKey;
         this.repoSlug = repoSlug;
         this.branches = branches;
@@ -52,6 +51,10 @@ public class CreateBranchDialog {
         alertDialog.show();
     }
 
+    public CreateBranchDialog(Context context) {
+        this.context = context;
+    }
+
 
     private void onDialogShown(AlertDialog alertDialog) {
         SpinnerAdapter adapter = new ArrayAdapter<>(context,
@@ -60,8 +63,10 @@ public class CreateBranchDialog {
         final Spinner branchesSpinner = (Spinner) alertDialog.findViewById(R.id.branchesSpinner);
         final EditText branchNameEdit = (EditText) alertDialog.findViewById(R.id.branchName);
         final View creatingBranch = alertDialog.findViewById(R.id.creatingBranch);
+        final View rootView = alertDialog.findViewById(R.id.mainViewRoot);
         branchesSpinner.setAdapter(adapter);
         alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(v -> {
+            rootView.setVisibility(View.GONE);
             creatingBranch.setVisibility(View.VISIBLE);
             final BranchModel selectedItem = (BranchModel) branchesSpinner.getSelectedItem();
             final String branchName = branchNameEdit.getText().toString().trim();
@@ -81,6 +86,7 @@ public class CreateBranchDialog {
 
     private void onCreateFailed(Throwable throwable, AlertDialog dialog) {
         Logger.e(throwable, throwable.getMessage());
+        dialog.findViewById(R.id.mainViewRoot).setVisibility(View.VISIBLE);
         dialog.findViewById(R.id.creatingBranch).setVisibility(View.GONE);
         Snackbar.make(dialog.findViewById(R.id.branchName), R.string.createBranchFailed, Snackbar.LENGTH_LONG).show();
     }
