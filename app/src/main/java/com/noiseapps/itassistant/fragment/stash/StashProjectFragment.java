@@ -27,6 +27,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.connector.StashConnector;
 import com.noiseapps.itassistant.connector.StashConnector_;
+import com.noiseapps.itassistant.dialogs.CreateBranchDialog;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.atlassian.PagedApiModel;
 import com.noiseapps.itassistant.model.stash.projects.BranchModel;
@@ -59,7 +60,7 @@ public class StashProjectFragment extends Fragment {
     @ViewById
     LinearLayout fetchingDataProgress, noProjectData, cloneLinks;
     @ViewById
-    FrameLayout rootView;;
+    FrameLayout rootView;
     @ViewById
     NestedScrollView stashMenuRoot;
 
@@ -194,53 +195,11 @@ public class StashProjectFragment extends Fragment {
         if(branches == null) {
             return;
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setView(R.layout.dialog_create_branch);
-        builder.setTitle(R.string.createBranch);
-        builder.setPositiveButton(R.string.createBranch, (dialog1, which) -> {});
-        builder.setNegativeButton(R.string.cancel, (dialog1, which) -> {});
-        final AlertDialog alertDialog = builder.create();
-        alertDialog.setOnShowListener(dialog -> {
-            onDialogShown(alertDialog);
-        });
-        alertDialog.show();
+        new CreateBranchDialog(getActivity(), stashProject.getKey(), currentRepo.getSlug(), branches, this::showSuccessMessage);
     }
 
-    private void onDialogShown(AlertDialog alertDialog) {
-        SpinnerAdapter adapter = new ArrayAdapter<>(getActivity(),
-                R.layout.item_spinner_textonly_black,
-                R.id.title, branches);
-        final Spinner branchesSpinner = (Spinner) alertDialog.findViewById(R.id.branchesSpinner);
-        final EditText branchNameEdit = (EditText) alertDialog.findViewById(R.id.branchName);
-        final View creatingBranch = alertDialog.findViewById(R.id.creatingBranch);
-        branchesSpinner.setAdapter(adapter);
-        alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(v -> {
-            creatingBranch.setVisibility(View.VISIBLE);
-            final BranchModel selectedItem = (BranchModel) branchesSpinner.getSelectedItem();
-            final String branchName = branchNameEdit.getText().toString().trim();
-            createNewBranch(alertDialog, selectedItem, branchName);
-        });
-    }
-
-    private void createNewBranch(AlertDialog dialog, BranchModel selectedItem, String branchName) {
-        final NewBranchModel newBranchModel = new NewBranchModel(branchName, selectedItem.getId());
-        stashConnector.createBranch(stashProject.getKey(), currentRepo.getSlug(), newBranchModel).
-                subscribe(branchModel -> {
-                    onBranchCreated(branchModel, dialog);
-                }, throwable -> {
-                    onCreateFailed(throwable, dialog);
-                });
-    }
-
-    private void onCreateFailed(Throwable throwable, AlertDialog dialog) {
-        Logger.e(throwable, throwable.getMessage());
-        dialog.findViewById(R.id.creatingBranch).setVisibility(View.GONE);
-        Snackbar.make(dialog.findViewById(R.id.branchName), R.string.createBranchFailed, Snackbar.LENGTH_LONG).show();
-    }
-
-    private void onBranchCreated(BranchModel branchModel, DialogInterface dialog) {
+    private void showSuccessMessage(BranchModel branchModel) {
         Snackbar.make(rootView, getString(R.string.branchCreated, branchModel.getDisplayId()), Snackbar.LENGTH_LONG).show();
-        dialog.dismiss();
     }
 
     @Click(R.id.createPR)

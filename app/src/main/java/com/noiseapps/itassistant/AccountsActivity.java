@@ -41,8 +41,9 @@ public class AccountsActivity extends AppCompatActivity implements AccountsActiv
 
     @Override
     public void onAddAccount() {
-        onAccountTypeSelected(AccountTypes.ACC_JIRA);
+        getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.container, AccountTypeSelectFragment_.builder().build()).commit();
         tracker.sendEvent(SCREEN_ACCOUNTS, CATEGORY_ACCOUNTS, "onAdd");
+//        onAccountTypeSelected(AccountTypes.ACC_JIRA);
     }
 
     @Override
