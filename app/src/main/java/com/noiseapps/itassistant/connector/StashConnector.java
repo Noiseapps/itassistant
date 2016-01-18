@@ -1,5 +1,6 @@
 package com.noiseapps.itassistant.connector;
 
+import com.noiseapps.itassistant.BuildConfig;
 import com.noiseapps.itassistant.api.StashAPI;
 import com.noiseapps.itassistant.database.PreferencesDAO;
 import com.noiseapps.itassistant.model.account.BaseAccount;
@@ -16,7 +17,9 @@ import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.SupposeBackground;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit.Callback;
 import retrofit.ErrorHandler;
@@ -75,15 +78,22 @@ public class StashConnector {
         }
     }
 
-    public Observable<BranchModel> createBranch(@Path("projectKey") String projectKey, @Path("repoSlug") String repoSlug, NewBranchModel newBranchModel) {
+    public Observable<BranchModel> createBranch(String projectKey, String repoSlug, NewBranchModel newBranchModel) {
         return apiService.createBranch(projectKey, repoSlug, newBranchModel).
                 observeOn(AndroidSchedulers.mainThread()).
                 subscribeOn(Schedulers.io());
     }
 
+    public Observable<Response> deleteBranch(String projectKey, String repoSlug, String branchName) {
+        final Map<String, Object> params = new HashMap<>();
+        params.put("name", branchName);
+        params.put("dryRun", BuildConfig.DEBUG);
+        return apiService.deleteBranch(projectKey, repoSlug, params).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribeOn(Schedulers.io());
+    }
 
     @AfterInject
-
     void init() {
         initApiService();
     }

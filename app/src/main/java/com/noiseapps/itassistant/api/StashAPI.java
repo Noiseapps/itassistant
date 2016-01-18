@@ -5,8 +5,13 @@ import com.noiseapps.itassistant.model.stash.projects.BranchModel;
 import com.noiseapps.itassistant.model.stash.projects.NewBranchModel;
 import com.noiseapps.itassistant.model.stash.projects.ProjectRepos;
 import com.noiseapps.itassistant.model.stash.projects.UserProjects;
+import com.noiseapps.itassistant.utils.annotations.DELETEBODY;
 
+import java.util.Map;
+
+import retrofit.client.Response;
 import retrofit.http.Body;
+import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.POST;
 import retrofit.http.Path;
@@ -37,5 +42,10 @@ public interface StashAPI {
     Observable<BranchModel> createBranch(@Path("projectKey") String projectKey,
                                          @Path("repoSlug") String repoSlug,
                                          @Body NewBranchModel newBranchModel);
+
+    @DELETEBODY("/rest/branch-utils/1.0/projects/{projectKey}/repos/{repoSlug}/branches")
+    Observable<Response> deleteBranch(@Path("projectKey") String projectKey,
+                                      @Path("repoSlug") String repoSlug,
+                                      @Body Map<String, Object> params);
 
 }

@@ -18,7 +18,6 @@ import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractSwipeableItemView
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.model.stash.projects.BranchModel;
 import com.noiseapps.itassistant.utils.Consts;
-import com.orhanobut.logger.Logger;
 
 import org.joda.time.DateTime;
 
@@ -44,6 +43,11 @@ public class BranchListAdapter extends RecyclerView.Adapter<BranchListAdapter.Br
     public BranchViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final View view = inflater.inflate(R.layout.item_branch, parent, false);
         return new BranchViewHolder(view);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return branches.get(position).getId().hashCode();
     }
 
     @Override
@@ -118,6 +122,7 @@ public class BranchListAdapter extends RecyclerView.Adapter<BranchListAdapter.Br
 
         private final TextView branchName, branchCommit, branchLastUpdate;
         private final View rootView;
+        private BranchModel branchModel;
 
         public BranchViewHolder(View itemView) {
             super(itemView);
@@ -126,11 +131,12 @@ public class BranchListAdapter extends RecyclerView.Adapter<BranchListAdapter.Br
             branchCommit = (TextView) itemView.findViewById(R.id.branchLatestCommit);
             branchLastUpdate = (TextView) itemView.findViewById(R.id.branchLastUpdated);
             itemView.setOnClickListener(v -> {
-
+                callbacks.onItemClicked(branchModel);
             });
         }
 
         public void bind(BranchModel branchModel) {
+            this.branchModel = branchModel;
             branchName.setText(branchModel.getDisplayId());
             final String format = branchModel.getLatestChangeset().substring(0,7) + "…";
             branchCommit.setText(format);
