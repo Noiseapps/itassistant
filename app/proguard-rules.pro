@@ -12,7 +12,6 @@
 -keep public class * extends android.content.ContentProvider
 -keep public class * extends android.app.backup.BackupAgentHelper
 -keep public class * extends android.preference.Preference
--keep public class com.android.vending.licensing.ILicensingService
 
 -keepclasseswithmembernames class * {
     native <methods>;
@@ -68,10 +67,22 @@
 -keep class org.acra.** { *; }
 # Retrofit 1.X
 
+-ignorewarnings
+-dontwarn com.google.j2objc.*
+-dontwarn org.w3c.**
+-dontwarn java.lang.ClassValue.**
+
 -keep class com.noiseapps.itassistant.** {*;}
 -keep class com.squareup.okhttp.** { *; }
--keep class org.w3c.dom.** { *; }
+-keep class com.squareup.picasso.** { *; }
+-keep class org.springframework.** { *; }
+-keep class com.afollestad.** { *; }
+-keep class com.github.jorgecastilloprz.** { *; }
+-keep class com.google.common.** { *; }
+-keep class android.support.** { *; }
+-keep class android.** { *; }
 -keep class java.nio.file.** { *; }
+-keep class org.codehaus.** { *; }
 -keep class retrofit.** { *; }
 -keep class org.joda.time.** { *; }
 -keep class org.androidannotations.api.** { *; }
@@ -79,6 +90,7 @@
 -keep class com.google.gson.** { *; }
 -keep class com.google.appengine.** { *; }
 -keep class okio.** { *; }
+-keep class de.greenrobot.** { *; }
 -keep class rx.** { *; }
 -keep class com.google.j2objc.annotations.Weak
 -keep class com.google.common.io.Resources {
@@ -91,10 +103,7 @@
     public static <fields>;
 }
 
--keep class com.google.common.base.Joiner {
-    public static Joiner on(String);
-    public ** join(...);
-}
+-keep class com.google.common.base.Joiner { *; }
 
 -keep class com.google.common.collect.MapMakerInternalMap$ReferenceEntry
 -keep class com.google.common.cache.LocalCache$ReferenceEntry
