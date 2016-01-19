@@ -180,4 +180,6 @@
     <string name="branchesForProject">Branches for %s</string>
     <string name="confirmDelete">Delete branch %s?</string>
     <string name="confirmDeleteMsg">Are you sure to delete selected branch? This cannot be undone. Note that you need to have the required permissions to perform this action.</string>
+    <string name="failedToFetchCommitList">Failed to fetch commit list</string>
+    <string name="commitsForProject">Commits for project %s</string>
 </resources>

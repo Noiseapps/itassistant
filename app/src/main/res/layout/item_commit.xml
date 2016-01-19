@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:gravity="center_vertical"
+    android:layout_height="match_parent"
+    android:layout_weight="8"
+    android:layout_width="0dp"
+    android:orientation="vertical"
+    android:background="@drawable/list_background"
+    android:clickable="true"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:gravity="center_vertical"
+            android:id="@+id/commitMessage"
+            android:layout_height="match_parent"
+            android:layout_weight="5"
+            android:layout_width="0dp"
+            android:padding="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            tools:text="Sample commit message" />
+
+        <TextView
+            android:gravity="center_vertical|end"
+            android:id="@+id/commitAuthor"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:padding="8dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            tools:text="Tomasz Ścibiorek" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:gravity="center_vertical"
+            android:id="@+id/commitDigest"
+            android:layout_height="match_parent"
+            android:layout_weight="5"
+            android:layout_width="0dp"
+            android:padding="8dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            tools:text="adf30223…" />
+
+        <TextView
+            android:gravity="center_vertical|end"
+            android:id="@+id/commitTimestamp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:padding="8dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            tools:text="16.01.2016 08:55" />
+    </LinearLayout>
+</LinearLayout>

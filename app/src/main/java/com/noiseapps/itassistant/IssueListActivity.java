@@ -35,6 +35,8 @@ import com.noiseapps.itassistant.fragment.IssueListFragment;
 import com.noiseapps.itassistant.fragment.IssueListFragment_;
 import com.noiseapps.itassistant.fragment.NewIssueFragment;
 import com.noiseapps.itassistant.fragment.NewIssueFragment_;
+import com.noiseapps.itassistant.fragment.stash.CommitListFragment;
+import com.noiseapps.itassistant.fragment.stash.CommitListFragment_;
 import com.noiseapps.itassistant.fragment.stash.StashBranchListFragment;
 import com.noiseapps.itassistant.fragment.stash.StashBranchListFragment_;
 import com.noiseapps.itassistant.fragment.stash.StashProjectFragment;
@@ -506,6 +508,23 @@ public class IssueListActivity extends AppCompatActivity
         } else {
             StashDetailsActivity_.intent(this).
                     stashAction(StashDetailsActivity.ACTION_BRANCHES).
+                    project(project).
+                    repoSlug(repoSlug).
+                    start();
+        }
+    }
+
+    @Override
+    public void onShowCommitsList(@NonNull StashProject project, @NonNull String repoSlug) {
+        if(mTwoPane){
+            final CommitListFragment fragment = CommitListFragment_.builder().
+                    project(project).
+                    repoSlug(repoSlug).
+                    build();
+            setDetailsFragment(fragment, "COMMITS");
+        } else {
+            StashDetailsActivity_.intent(this).
+                    stashAction(StashDetailsActivity.ACTION_COMMITS).
                     project(project).
                     repoSlug(repoSlug).
                     start();

@@ -49,6 +49,7 @@
 
         <receiver
             android:name="com.google.android.gms.analytics.AnalyticsReceiver"
+            android:exported="false"
             android:enabled="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
@@ -63,7 +64,7 @@
         <activity
             android:name=".StashDetailsActivity_"
             android:label="@string/title_activity_stash_branches"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

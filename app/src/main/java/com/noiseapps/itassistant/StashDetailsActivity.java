@@ -5,6 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import com.noiseapps.itassistant.fragment.stash.CommitListFragment;
+import com.noiseapps.itassistant.fragment.stash.CommitListFragment_;
 import com.noiseapps.itassistant.fragment.stash.StashBranchListFragment;
 import com.noiseapps.itassistant.fragment.stash.StashBranchListFragment_;
 import com.noiseapps.itassistant.fragment.stash.StashProjectFragment;
@@ -45,20 +47,24 @@ public class StashDetailsActivity extends AppCompatActivity {
     }
 
     private void showActionFragment() {
+        Fragment fragment = null;
         switch (stashAction) {
             case ACTION_SOURCE:
                 break;
             case ACTION_BRANCHES:
-                final StashBranchListFragment fragment = StashBranchListFragment_.builder().project(project).repoSlug(repoSlug).build();
+                fragment = StashBranchListFragment_.builder().project(project).repoSlug(repoSlug).build();
                 replaceFragment(fragment);
                 break;
             case ACTION_COMMITS:
+                fragment = CommitListFragment_.builder().project(project).repoSlug(repoSlug).build();
+                replaceFragment(fragment);
                 break;
             case ACTION_PULL_REQUESTS:
                 break;
             default:
                 throw new UnsupportedOperationException("Wrong action code");
         }
+
     }
 
     private void replaceFragment(@NonNull Fragment fragment) {

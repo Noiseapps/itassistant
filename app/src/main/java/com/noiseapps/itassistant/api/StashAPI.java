@@ -2,6 +2,7 @@ package com.noiseapps.itassistant.api;
 
 import com.noiseapps.itassistant.model.atlassian.PagedApiModel;
 import com.noiseapps.itassistant.model.stash.projects.BranchModel;
+import com.noiseapps.itassistant.model.stash.projects.Commit;
 import com.noiseapps.itassistant.model.stash.projects.NewBranchModel;
 import com.noiseapps.itassistant.model.stash.projects.ProjectRepos;
 import com.noiseapps.itassistant.model.stash.projects.UserProjects;
@@ -37,6 +38,11 @@ public interface StashAPI {
     PagedApiModel<BranchModel> getBranches(@Path("projectKey") String projectKey,
                                            @Path("repoSlug") String repoSlug,
                                            @Query("start") int start);
+
+    @GET("/rest/api/1.0/projects/{projectKey}/repos/{repoSlug}/commits")
+    Observable<PagedApiModel<Commit>> getCommits(@Path("projectKey") String projectKey,
+                                     @Path("repoSlug") String repoSlug,
+                                     @Query("start") int start);
 
     @POST("/rest/branch-utils/1.0/projects/{projectKey}/repos/{repoSlug}/branches")
     Observable<BranchModel> createBranch(@Path("projectKey") String projectKey,

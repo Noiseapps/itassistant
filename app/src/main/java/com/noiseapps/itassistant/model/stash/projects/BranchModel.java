@@ -1,7 +1,8 @@
 package com.noiseapps.itassistant.model.stash.projects;
 
 import com.google.gson.annotations.SerializedName;
-
+// suppress, data populated through gson
+@SuppressWarnings("unused")
 public class BranchModel {
     private String id;
     private String displayId;
@@ -93,21 +94,4 @@ public class BranchModel {
         }
     }
 
-    public static class AuthorMetadata {
-        private String name;
-        private String emailAddress;
-        private String avatarUrl;
-
-        public String getName() {
-            return name;
-        }
-
-        public String getEmailAddress() {
-            return emailAddress;
-        }
-
-        public String getAvatarUrl() {
-            return avatarUrl;
-        }
-    }
 }

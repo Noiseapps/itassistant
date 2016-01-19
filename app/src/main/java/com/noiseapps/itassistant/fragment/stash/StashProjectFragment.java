@@ -70,6 +70,8 @@ public class StashProjectFragment extends Fragment {
 
     public interface StashMenuCallbacks {
         void onShowBranchesList(@NonNull StashProject stashProject, @NonNull String slug);
+
+        void onShowCommitsList(StashProject stashProject, String slug);
     }
 
     @AfterViews
@@ -250,6 +252,11 @@ public class StashProjectFragment extends Fragment {
     @Click(R.id.branches)
     void onShowBranches() {
         menuCallbacks.onShowBranchesList(stashProject, currentRepo.getSlug());
+    }
+
+    @Click(R.id.commits)
+    void onShowCommits() {
+        menuCallbacks.onShowCommitsList(stashProject, currentRepo.getSlug());
     }
 
     private void showProgress() {

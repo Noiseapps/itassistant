@@ -6,6 +6,7 @@ import com.noiseapps.itassistant.database.PreferencesDAO;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.atlassian.PagedApiModel;
 import com.noiseapps.itassistant.model.stash.projects.BranchModel;
+import com.noiseapps.itassistant.model.stash.projects.Commit;
 import com.noiseapps.itassistant.model.stash.projects.NewBranchModel;
 import com.noiseapps.itassistant.model.stash.projects.ProjectRepos;
 import com.noiseapps.itassistant.model.stash.projects.UserProjects;
@@ -76,6 +77,12 @@ public class StashConnector {
         } catch (RetrofitError error) {
             return new ArrayList<>();
         }
+    }
+
+    public Observable<PagedApiModel<Commit>> getCommitsPage(String projectKey, String repoSlug, int start) {
+        return apiService.getCommits(projectKey, repoSlug, start).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribeOn(Schedulers.io());
     }
 
     public Observable<BranchModel> createBranch(String projectKey, String repoSlug, NewBranchModel newBranchModel) {
