@@ -15,6 +15,7 @@ import com.noiseapps.itassistant.connector.StashConnector;
 import com.noiseapps.itassistant.model.atlassian.PagedApiModel;
 import com.noiseapps.itassistant.model.stash.projects.Commit;
 import com.noiseapps.itassistant.model.stash.projects.StashProject;
+import com.noiseapps.itassistant.utils.EndlessRecyclerOnScrollListener;
 import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
@@ -61,12 +62,12 @@ public class CommitListFragment extends Fragment {
         adapter = new CommitListAdapter(getActivity(), commits);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         commitList.setLayoutManager(layoutManager);
-//        commitList.addOnScrollListener(new EndlessRecyclerOnScrollListener(layoutManager) {
-//            @Override
-//            public void onLoadMore(int current_page) {
-//                downloadMoreItems();
-//            }
-//        });
+        commitList.addOnScrollListener(new EndlessRecyclerOnScrollListener(layoutManager) {
+            @Override
+            public void onLoadMore(int current_page) {
+                downloadMoreItems();
+            }
+        });
         commitList.setAdapter(adapter);
     }
 
@@ -89,6 +90,7 @@ public class CommitListFragment extends Fragment {
         Logger.d(String.valueOf(commitPagedApiModel.getValues().size()));
         fetchingDataProgress.setVisibility(View.GONE);
         downloadingMoreData.setVisibility(View.GONE);
+        commitList.setVisibility(View.VISIBLE);
         start = commitPagedApiModel.getStart() + commitPagedApiModel.getSize();
         commits.addAll(commitPagedApiModel.getValues());
         adapter.notifyDataSetChanged();

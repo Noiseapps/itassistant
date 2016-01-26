@@ -13,6 +13,7 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/commitList"
             android:layout_width="match_parent"
+            android:scrollbars="vertical"
             android:layout_height="match_parent"
             tools:listitem="@layout/item_commit" />
 
@@ -23,7 +24,11 @@
             android:layout_height="wrap_content" />
     </LinearLayout>
 
-    <!--<include layout="@layout/layout_fetching_data" />-->
+    <include
+        layout="@layout/layout_fetching_data"
+        tools:visibility="gone" />
 
-    <!--<include layout="@layout/layout_no_data" />-->
+    <include
+        layout="@layout/layout_no_data"
+        tools:visibility="gone" />
 </FrameLayout>

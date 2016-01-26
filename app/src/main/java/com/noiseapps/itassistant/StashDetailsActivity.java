@@ -17,6 +17,7 @@ import com.noiseapps.itassistant.utils.annotations.StashActions;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
+import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.ViewById;
 
 @EActivity(R.layout.activity_stash_details)
@@ -65,6 +66,11 @@ public class StashDetailsActivity extends AppCompatActivity {
                 throw new UnsupportedOperationException("Wrong action code");
         }
 
+    }
+
+    @OptionsItem(android.R.id.home)
+    void onHome() {
+        onBackPressed();
     }
 
     private void replaceFragment(@NonNull Fragment fragment) {
