@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.RecyclerViewSwipeManager;
@@ -30,6 +31,7 @@ public class BranchListAdapter extends RecyclerView.Adapter<BranchListAdapter.Br
     private final List<BranchModel> branches;
     private final BranchListCallbacks callbacks;
     private final LayoutInflater inflater;
+    private int maxBehind, maxAhead;
 
     public BranchListAdapter(@NonNull Context context, @NonNull List<BranchModel> branches, @NonNull BranchListCallbacks callbacks) {
         this.context = context;
@@ -37,6 +39,22 @@ public class BranchListAdapter extends RecyclerView.Adapter<BranchListAdapter.Br
         this.callbacks = callbacks;
         inflater = LayoutInflater.from(context);
         setHasStableIds(true);
+
+
+        setMaxBehindAheadValues(branches);
+
+    }
+
+    private void setMaxBehindAheadValues(@NonNull List<BranchModel> branches) {
+        for (BranchModel branch : branches) {
+            BranchModel.Metadata metadata = branch.getMetadata();
+            if(metadata != null && metadata.getBehindAheadMetadata() != null) {
+                int ahead = metadata.getBehindAheadMetadata().getAhead();
+                int behind = metadata.getBehindAheadMetadata().getBehind();
+                if (ahead > maxAhead) maxAhead = ahead;
+                if (behind > maxBehind) maxBehind = behind;
+            }
+        }
     }
 
     @Override
@@ -120,39 +138,68 @@ public class BranchListAdapter extends RecyclerView.Adapter<BranchListAdapter.Br
 
     public class BranchViewHolder extends AbstractSwipeableItemViewHolder {
 
-        private final TextView branchName, branchCommit, branchLastUpdate;
-        private final View rootView;
+        private final TextView branchName, branchCommit, branchLastUpdate, aheadValue, behindValue;
+        private final ProgressBar progressBehind, progressAhead;
+        private final View rootView, relationMetadata;
         private BranchModel branchModel;
 
         public BranchViewHolder(View itemView) {
             super(itemView);
             rootView = itemView.findViewById(R.id.listItemRoot);
+            relationMetadata = itemView.findViewById(R.id.relationMetadata);
             branchName = (TextView) itemView.findViewById(R.id.branchName);
             branchCommit = (TextView) itemView.findViewById(R.id.branchLatestCommit);
             branchLastUpdate = (TextView) itemView.findViewById(R.id.branchLastUpdated);
+            aheadValue = (TextView) itemView.findViewById(R.id.aheadValue);
+            behindValue = (TextView) itemView.findViewById(R.id.behindValue);
+            progressAhead = (ProgressBar) itemView.findViewById(R.id.progressAhead);
+            progressBehind = (ProgressBar) itemView.findViewById(R.id.progressBehind);
             itemView.setOnClickListener(v -> {
                 callbacks.onItemClicked(branchModel);
             });
         }
 
         public void bind(BranchModel branchModel) {
+            branchLastUpdate.setVisibility(View.GONE);
+            relationMetadata.setVisibility(View.GONE);
             this.branchModel = branchModel;
             branchName.setText(branchModel.getDisplayId());
             final String format = branchModel.getLatestChangeset().substring(0,7) + "…";
             branchCommit.setText(format);
             final BranchModel.Metadata metadata = branchModel.getMetadata();
             if (metadata != null) {
-                final BranchModel.LatestChangesetMetadata changesetMetadata = metadata.getChangesetMetadata();
-                if (changesetMetadata != null) {
-                    final long authorTimestamp = changesetMetadata.getAuthorTimestamp();
-                    final String updatedDate = new DateTime(authorTimestamp).toString(Consts.DATE_TIME_FORMAT);
-                    final String name = changesetMetadata.getAuthor().getName();
-                    final String updatedInfo = String.format("%s\n%s", updatedDate, name);
-                    branchLastUpdate.setText(updatedInfo);
-                    return;
-                }
+                setChangesetMetadata(metadata);
+                setBehindAheadMetadata(metadata);
             }
-            branchLastUpdate.setVisibility(View.GONE);
+        }
+
+        private void setBehindAheadMetadata(BranchModel.Metadata metadata) {
+            final BranchModel.BehindAheadMetadata relationMetadata = metadata.getBehindAheadMetadata();
+            if(relationMetadata != null) {
+                this.relationMetadata.setVisibility(View.VISIBLE);
+
+                int ahead = relationMetadata.getAhead();
+                progressAhead.setMax(maxAhead);
+                progressAhead.setProgress(ahead);
+                aheadValue.setText(String.valueOf(ahead));
+
+                int behind = relationMetadata.getBehind();
+                progressBehind.setMax(maxBehind);
+                progressBehind.setProgress(behind);
+                behindValue.setText(String.valueOf(behind));
+            }
+        }
+
+        private void setChangesetMetadata(BranchModel.Metadata metadata) {
+            final BranchModel.LatestChangesetMetadata changesetMetadata = metadata.getChangesetMetadata();
+            if (changesetMetadata != null) {
+                branchLastUpdate.setVisibility(View.VISIBLE);
+                final long authorTimestamp = changesetMetadata.getAuthorTimestamp();
+                final String updatedDate = new DateTime(authorTimestamp).toString(Consts.DATE_TIME_FORMAT);
+                final String name = changesetMetadata.getAuthor().getName();
+                final String updatedInfo = String.format("%s\n%s", updatedDate, name);
+                branchLastUpdate.setText(updatedInfo);
+            }
         }
 
         @Override

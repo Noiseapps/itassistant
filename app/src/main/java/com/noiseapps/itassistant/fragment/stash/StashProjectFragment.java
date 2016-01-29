@@ -1,7 +1,9 @@
 package com.noiseapps.itassistant.fragment.stash;
 
+import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -63,9 +65,13 @@ public class StashProjectFragment extends Fragment {
 
     @Bean
     StashConnector stashConnector;
+
+    @Bean
+    CreateBranchDialog createBranchDialog;
     private StashRepoMeta currentRepo;
     private List<BranchModel> branches;
     private StashMenuCallbacks menuCallbacks;
+    private ProgressDialog fetchingBranches;
 
 
     public interface StashMenuCallbacks {
@@ -135,7 +141,8 @@ public class StashProjectFragment extends Fragment {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     final StashRepoMeta item = adapter.getItem(position);
-                    getBranches(item);
+                    loadProjectDetails(item);
+                    branches = null;
                 }
 
                 @Override
@@ -147,15 +154,22 @@ public class StashProjectFragment extends Fragment {
     }
 
     @Background
-    void getBranches(StashRepoMeta item) {
-        final List<BranchModel> branches = stashConnector.getBranches(stashProject.getKey(), item.getSlug());
-        loadProjectDetails(item, branches);
+    void getBranches() {
+        final List<BranchModel> branches = stashConnector.getBranches(stashProject.getKey(), currentRepo.getSlug());
+        onBranchesDownloaded(branches);
     }
 
     @UiThread
-    void loadProjectDetails(StashRepoMeta item, List<BranchModel> branches) {
+    void onBranchesDownloaded(List<BranchModel> branches) {
+        if(fetchingBranches.isShowing()) {
+            fetchingBranches.dismiss();
+            createBranchDialog.init(stashProject.getKey(), currentRepo.getSlug(), branches, this::showSuccessMessage);
+        }
+    }
+
+    @UiThread
+    void loadProjectDetails(StashRepoMeta item) {
         currentRepo = item;
-        this.branches = branches;
         hideProgress();
         stashMenuRoot.setVisibility(View.VISIBLE);
         configureCloneLinks(item);
@@ -187,16 +201,19 @@ public class StashProjectFragment extends Fragment {
         Snackbar.make(rootView, R.string.linkCopied, Snackbar.LENGTH_LONG).show();
     }
 
-    @Bean
-    CreateBranchDialog createBranchDialog;
-
     @Click(R.id.createBranch)
     void onCreateBranch() {
-        if(branches == null) {
-            return;
+        if (branches == null) {
+            fetchingBranches = new ProgressDialog(getActivity());
+            fetchingBranches.setMessage(getString(R.string.fetchingBranches));
+            fetchingBranches.setIndeterminate(true);
+            fetchingBranches.setCancelable(true);
+            fetchingBranches.setOnCancelListener(DialogInterface::dismiss);
+            fetchingBranches.show();
+            getBranches();
+        } else {
+            onShowBranches();
         }
-        createBranchDialog.init(stashProject.getKey(), currentRepo.getSlug(), branches, this::showSuccessMessage);
-
     }
 
     private void showSuccessMessage(BranchModel branchModel) {
@@ -237,15 +254,15 @@ public class StashProjectFragment extends Fragment {
 //        });
 //    }
 
-    @Click(R.id.fork)
-    void onForkRepo() {
-        // todo show fork dialog
-    }
-
-    @Click(R.id.pullRequests)
-    void onShowPullRequests() {
-
-    }
+//    @Click(R.id.fork)
+//    void onForkRepo() {
+//        // todo show fork dialog
+//    }
+//
+//    @Click(R.id.pullRequests)
+//    void onShowPullRequests() {
+//
+//    }
 
     @Click(R.id.branches)
     void onShowBranches() {

@@ -182,4 +182,5 @@
     <string name="confirmDeleteMsg">Are you sure to delete selected branch? This cannot be undone. Note that you need to have the required permissions to perform this action.</string>
     <string name="failedToFetchCommitList">Failed to fetch commit list</string>
     <string name="commitsForProject">Commits for project %s</string>
+    <string name="fetchingBranches">Fetching project branches…</string>
 </resources>
