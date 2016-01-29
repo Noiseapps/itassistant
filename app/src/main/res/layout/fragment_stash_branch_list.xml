@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,7 +9,9 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/branchesList"
+        tools:listitem="@layout/item_branch"
         android:layout_width="match_parent"
+        android:scrollbars="vertical"
         android:layout_height="match_parent" />
 
     <com.noiseapps.itassistant.utils.views.MyFabProgressCircle
@@ -31,4 +33,4 @@
             android:src="@drawable/ic_add_white_24px"
             app:layout_anchor="@id/branchesList" />
     </com.noiseapps.itassistant.utils.views.MyFabProgressCircle>
-</FrameLayout>
+</android.support.design.widget.CoordinatorLayout>
