@@ -72,7 +72,10 @@
     </style>
 
     <style name="AppTheme.CardView">
-        <item name="android:layout_margin">8dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginRight">8dp</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="cardUseCompatPadding">true</item>

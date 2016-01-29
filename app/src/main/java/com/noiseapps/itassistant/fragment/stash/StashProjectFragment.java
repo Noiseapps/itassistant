@@ -176,9 +176,7 @@ public class StashProjectFragment extends Fragment {
 
         ((TextView) cloneLinks.findViewById(R.id.linkType)).setText(cloneLinkName);
         ((TextView) cloneLinks.findViewById(R.id.linkAddress)).setText(cloneLinkHref);
-        cloneLinks.findViewById(R.id.copyLink).setOnClickListener(v -> {
-            onCopyCloneLinkClicked(cloneLinkName, cloneLinkHref);
-        });
+        cloneLinks.findViewById(R.id.copyLink).setOnClickListener(v -> onCopyCloneLinkClicked(cloneLinkName, cloneLinkHref));
         this.cloneLinks.addView(cloneLinks);
     }
 

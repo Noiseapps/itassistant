@@ -48,7 +48,7 @@ public class StashDetailsActivity extends AppCompatActivity {
     }
 
     private void showActionFragment() {
-        Fragment fragment = null;
+        Fragment fragment;
         switch (stashAction) {
             case ACTION_SOURCE:
                 break;

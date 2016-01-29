@@ -314,7 +314,7 @@ public class IssueListActivity extends AppCompatActivity
 
     @UiThread
     void initMyIssues(List<Issue> myIssues) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, listFragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, listFragment).commitAllowingStateLoss();
         getSupportFragmentManager().executePendingTransactions();
         listFragment.setIssues(myIssues);
     }

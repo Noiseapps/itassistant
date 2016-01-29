@@ -20,32 +20,16 @@
         android:gravity="center_vertical"
         android:orientation="vertical">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/commitMessage"
+            style="@style/AppTheme.BlackText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:orientation="horizontal">
+            android:gravity="center_vertical"
+            android:padding="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Sample commit message" />
 
-            <TextView
-                android:id="@+id/commitMessage"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="5"
-                android:gravity="center_vertical"
-                android:padding="8dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                tools:text="Sample commit message" />
-
-            <TextView
-                android:id="@+id/commitAuthor"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="3"
-                android:gravity="top|end"
-                android:padding="8dp"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                tools:text="Tomasz Ścibiorek" />
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -57,21 +41,39 @@
                 android:id="@+id/commitDigest"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="5"
+                android:layout_weight="4"
                 android:gravity="center_vertical"
                 android:padding="8dp"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                tools:text="adf30223…" />
+                android:text="adf30223…" />
 
-            <TextView
-                android:id="@+id/commitTimestamp"
+            <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="3"
-                android:gravity="center_vertical|end"
-                android:padding="8dp"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                tools:text="16.01.2016 08:55" />
+                android:layout_weight="6">
+
+                <TextView
+                    android:id="@+id/commitAuthor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:gravity="top|end"
+                    android:padding="4dp"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Tomasz Ścibiorek" />
+
+                <TextView
+                    android:id="@+id/commitTimestamp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:gravity="center_vertical|end"
+                    android:padding="4dp"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="16.01.2016 08:55" />
+            </LinearLayout>
+
         </LinearLayout>
     </LinearLayout>
 </android.support.v7.widget.CardView>
