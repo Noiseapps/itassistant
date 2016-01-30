@@ -34,4 +34,9 @@
         <item>Project</item>
         <item>Workflow status</item>
     </string-array>
+    <string-array name="prCategories">
+        <item>OPEN</item>
+        <item>MERGED</item>
+        <item>DECLINED</item>
+    </string-array>
 </resources>

@@ -183,4 +183,6 @@
     <string name="failedToFetchCommitList">Failed to fetch commit list</string>
     <string name="commitsForProject">Commits for project %s</string>
     <string name="fetchingBranches">Fetching project branches…</string>
+    <string name="noPullRequests">No available pull requests</string>
+    <string name="prsForProject">Pull requests for %s</string>
 </resources>

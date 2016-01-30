@@ -181,10 +181,6 @@ public class JiraIssueListFragment extends Fragment {
                 title(changingTransitions).
                 cancelable(false).
                 progress(false, 0, true).build();
-//        progressDialog = new ProgressDialog(getActivity());
-//        progressDialog.setTitle(changingTransitions);
-//        progressDialog.setCancelable(false);
-//        progressDialog.setCanceledOnTouchOutside(false);
     }
 
     private void showAssigneeDialog(ToggleList<Issue> toggleList) {

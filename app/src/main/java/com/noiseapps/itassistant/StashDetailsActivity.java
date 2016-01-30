@@ -5,12 +5,10 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import com.noiseapps.itassistant.fragment.stash.CommitListFragment;
 import com.noiseapps.itassistant.fragment.stash.CommitListFragment_;
-import com.noiseapps.itassistant.fragment.stash.StashBranchListFragment;
-import com.noiseapps.itassistant.fragment.stash.StashBranchListFragment_;
-import com.noiseapps.itassistant.fragment.stash.StashProjectFragment;
-import com.noiseapps.itassistant.fragment.stash.StashProjectFragment_;
+import com.noiseapps.itassistant.fragment.stash.BranchListFragment_;
+import com.noiseapps.itassistant.fragment.stash.PullRequestListFragment;
+import com.noiseapps.itassistant.fragment.stash.PullRequestListFragment_;
 import com.noiseapps.itassistant.model.stash.projects.StashProject;
 import com.noiseapps.itassistant.utils.annotations.StashActions;
 
@@ -53,7 +51,7 @@ public class StashDetailsActivity extends AppCompatActivity {
             case ACTION_SOURCE:
                 break;
             case ACTION_BRANCHES:
-                fragment = StashBranchListFragment_.builder().project(project).repoSlug(repoSlug).build();
+                fragment = BranchListFragment_.builder().project(project).repoSlug(repoSlug).build();
                 replaceFragment(fragment);
                 break;
             case ACTION_COMMITS:
@@ -61,6 +59,8 @@ public class StashDetailsActivity extends AppCompatActivity {
                 replaceFragment(fragment);
                 break;
             case ACTION_PULL_REQUESTS:
+                fragment = PullRequestListFragment_.builder().stashProject(project).repoSlug(repoSlug).build();
+                replaceFragment(fragment);
                 break;
             default:
                 throw new UnsupportedOperationException("Wrong action code");

@@ -35,10 +35,12 @@ import com.noiseapps.itassistant.fragment.IssueListFragment;
 import com.noiseapps.itassistant.fragment.IssueListFragment_;
 import com.noiseapps.itassistant.fragment.NewIssueFragment;
 import com.noiseapps.itassistant.fragment.NewIssueFragment_;
+import com.noiseapps.itassistant.fragment.stash.BranchListFragment;
+import com.noiseapps.itassistant.fragment.stash.BranchListFragment_;
 import com.noiseapps.itassistant.fragment.stash.CommitListFragment;
 import com.noiseapps.itassistant.fragment.stash.CommitListFragment_;
-import com.noiseapps.itassistant.fragment.stash.StashBranchListFragment;
-import com.noiseapps.itassistant.fragment.stash.StashBranchListFragment_;
+import com.noiseapps.itassistant.fragment.stash.PullRequestListFragment;
+import com.noiseapps.itassistant.fragment.stash.PullRequestListFragment_;
 import com.noiseapps.itassistant.fragment.stash.StashProjectFragment;
 import com.noiseapps.itassistant.fragment.stash.StashProjectFragment_;
 import com.noiseapps.itassistant.model.NavigationModel;
@@ -500,7 +502,7 @@ public class IssueListActivity extends AppCompatActivity
     @Override
     public void onShowBranchesList(@NonNull StashProject project, @NonNull String repoSlug) {
         if(mTwoPane){
-            final StashBranchListFragment fragment = StashBranchListFragment_.builder().
+            final BranchListFragment fragment = BranchListFragment_.builder().
                     project(project).
                     repoSlug(repoSlug).
                     build();
@@ -525,6 +527,23 @@ public class IssueListActivity extends AppCompatActivity
         } else {
             StashDetailsActivity_.intent(this).
                     stashAction(StashDetailsActivity.ACTION_COMMITS).
+                    project(project).
+                    repoSlug(repoSlug).
+                    start();
+        }
+    }
+
+    @Override
+    public void onShowPullRequestList(StashProject project, String repoSlug) {
+        if(mTwoPane){
+            final PullRequestListFragment fragment = PullRequestListFragment_.builder().
+                    stashProject(project).
+                    repoSlug(repoSlug).
+                    build();
+            setDetailsFragment(fragment, "COMMITS");
+        } else {
+            StashDetailsActivity_.intent(this).
+                    stashAction(StashDetailsActivity.ACTION_PULL_REQUESTS).
                     project(project).
                     repoSlug(repoSlug).
                     start();

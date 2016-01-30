@@ -1,4 +1,4 @@
-package com.noiseapps.itassistant.model.stash.projects;
+package com.noiseapps.itassistant.model.stash.commits;
 
 public class Commit {
     private String id;

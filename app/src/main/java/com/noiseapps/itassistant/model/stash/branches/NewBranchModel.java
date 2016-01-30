@@ -1,4 +1,4 @@
-package com.noiseapps.itassistant.model.stash.projects;
+package com.noiseapps.itassistant.model.stash.branches;
 
 public class NewBranchModel {
 

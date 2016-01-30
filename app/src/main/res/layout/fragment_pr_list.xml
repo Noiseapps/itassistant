@@ -2,17 +2,41 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragment.stash.BranchListFragment">
 
+
+    <LinearLayout
+        android:id="@+id/tabView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabLayout"
+            style="@style/AppTheme.TabLayoutStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:elevation="2dp"
+            app:tabMode="scrollable"
+            app:tabTextAppearance="?android:attr/textAppearanceLarge" />
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewPager"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal" />
+    </LinearLayout>
+
     <include layout="@layout/layout_fetching_data"/>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/branchesList"
-        tools:listitem="@layout/item_branch"
-        android:layout_width="match_parent"
-        android:scrollbars="vertical"
-        android:layout_height="match_parent" />
+    <include
+        layout="@layout/layout_no_data"
+        tools:visibility="gone" />
 
     <com.noiseapps.itassistant.utils.views.MyFabProgressCircle
         android:id="@+id/fabProgressCircle"
@@ -25,12 +49,12 @@
         app:reusable="true">
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/addBranchFab"
+            android:id="@+id/addPrFab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_add_white_24px"
-            app:layout_anchor="@id/branchesList" />
+            app:layout_anchor="@id/tabView" />
     </com.noiseapps.itassistant.utils.views.MyFabProgressCircle>
 </android.support.design.widget.CoordinatorLayout>

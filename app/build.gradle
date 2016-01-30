@@ -35,6 +35,7 @@ android {
     dexOptions {
         incremental true
         javaMaxHeapSize "3g"
+        dexInProcess = true
     }
     signingConfigs {
         release {

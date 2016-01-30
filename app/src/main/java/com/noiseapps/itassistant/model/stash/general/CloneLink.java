@@ -1,4 +1,4 @@
-package com.noiseapps.itassistant.model.stash.projects;
+package com.noiseapps.itassistant.model.stash.general;
 
 import android.os.Parcel;
 import android.os.Parcelable;

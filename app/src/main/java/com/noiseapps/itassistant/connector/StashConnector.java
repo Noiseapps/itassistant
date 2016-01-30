@@ -5,11 +5,12 @@ import com.noiseapps.itassistant.api.StashAPI;
 import com.noiseapps.itassistant.database.PreferencesDAO;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.atlassian.PagedApiModel;
-import com.noiseapps.itassistant.model.stash.projects.BranchModel;
-import com.noiseapps.itassistant.model.stash.projects.Commit;
-import com.noiseapps.itassistant.model.stash.projects.NewBranchModel;
-import com.noiseapps.itassistant.model.stash.projects.ProjectRepos;
+import com.noiseapps.itassistant.model.stash.branches.BranchModel;
+import com.noiseapps.itassistant.model.stash.commits.Commit;
+import com.noiseapps.itassistant.model.stash.branches.NewBranchModel;
+import com.noiseapps.itassistant.model.stash.general.ProjectRepos;
 import com.noiseapps.itassistant.model.stash.projects.UserProjects;
+import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
 import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterInject;
@@ -22,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import retrofit.Callback;
 import retrofit.ErrorHandler;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
@@ -89,6 +89,23 @@ public class StashConnector {
         return apiService.createBranch(projectKey, repoSlug, newBranchModel).
                 observeOn(AndroidSchedulers.mainThread()).
                 subscribeOn(Schedulers.io());
+    }
+
+    @SupposeBackground
+    public List<PullRequest> getPullRequests(String projectKey, String repoSlug) {
+        try {
+            int start = 0;
+            PagedApiModel<PullRequest> branches;
+            final List<PullRequest> repoBranches = new ArrayList<>();
+            do {
+                branches = apiService.getPullRequests(projectKey, repoSlug, start);
+                repoBranches.addAll(branches.getValues());
+                start = branches.getStart() + branches.getLimit();
+            } while (!branches.isLastPage());
+            return repoBranches;
+        } catch (RetrofitError error) {
+            return new ArrayList<>();
+        }
     }
 
     public Observable<Response> deleteBranch(String projectKey, String repoSlug, String branchName) {

@@ -13,7 +13,7 @@ import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.stash.CommitListAdapter;
 import com.noiseapps.itassistant.connector.StashConnector;
 import com.noiseapps.itassistant.model.atlassian.PagedApiModel;
-import com.noiseapps.itassistant.model.stash.projects.Commit;
+import com.noiseapps.itassistant.model.stash.commits.Commit;
 import com.noiseapps.itassistant.model.stash.projects.StashProject;
 import com.noiseapps.itassistant.utils.EndlessRecyclerOnScrollListener;
 import com.orhanobut.logger.Logger;

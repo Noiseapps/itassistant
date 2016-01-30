@@ -25,11 +25,11 @@ import com.noiseapps.itassistant.connector.StashConnector;
 import com.noiseapps.itassistant.connector.StashConnector_;
 import com.noiseapps.itassistant.dialogs.CreateBranchDialog;
 import com.noiseapps.itassistant.model.account.BaseAccount;
-import com.noiseapps.itassistant.model.stash.projects.BranchModel;
-import com.noiseapps.itassistant.model.stash.projects.CloneLink;
-import com.noiseapps.itassistant.model.stash.projects.ProjectRepos;
+import com.noiseapps.itassistant.model.stash.branches.BranchModel;
+import com.noiseapps.itassistant.model.stash.general.CloneLink;
+import com.noiseapps.itassistant.model.stash.general.ProjectRepos;
 import com.noiseapps.itassistant.model.stash.projects.StashProject;
-import com.noiseapps.itassistant.model.stash.projects.StashRepoMeta;
+import com.noiseapps.itassistant.model.stash.general.StashRepoMeta;
 import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
@@ -78,6 +78,8 @@ public class StashProjectFragment extends Fragment {
         void onShowBranchesList(@NonNull StashProject stashProject, @NonNull String slug);
 
         void onShowCommitsList(StashProject stashProject, String slug);
+
+        void onShowPullRequestList(StashProject stashProject, String slug);
     }
 
     @AfterViews
@@ -259,10 +261,10 @@ public class StashProjectFragment extends Fragment {
 //        // todo show fork dialog
 //    }
 //
-//    @Click(R.id.pullRequests)
-//    void onShowPullRequests() {
-//
-//    }
+    @Click(R.id.pullRequests)
+    void onShowPullRequests() {
+        menuCallbacks.onShowPullRequestList(stashProject, currentRepo.getSlug());
+    }
 
     @Click(R.id.branches)
     void onShowBranches() {

@@ -12,8 +12,8 @@ import android.widget.SpinnerAdapter;
 
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.connector.StashConnector;
-import com.noiseapps.itassistant.model.stash.projects.BranchModel;
-import com.noiseapps.itassistant.model.stash.projects.NewBranchModel;
+import com.noiseapps.itassistant.model.stash.branches.BranchModel;
+import com.noiseapps.itassistant.model.stash.branches.NewBranchModel;
 import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.Bean;

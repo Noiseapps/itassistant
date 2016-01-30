@@ -17,7 +17,7 @@ import com.h6ah4i.android.widget.advrecyclerview.swipeable.action.SwipeResultAct
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.action.SwipeResultActionRemoveItem;
 import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractSwipeableItemViewHolder;
 import com.noiseapps.itassistant.R;
-import com.noiseapps.itassistant.model.stash.projects.BranchModel;
+import com.noiseapps.itassistant.model.stash.branches.BranchModel;
 import com.noiseapps.itassistant.utils.Consts;
 
 import org.joda.time.DateTime;

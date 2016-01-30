@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.noiseapps.itassistant.R;
-import com.noiseapps.itassistant.model.stash.projects.Commit;
+import com.noiseapps.itassistant.model.stash.commits.Commit;
 import com.noiseapps.itassistant.utils.Consts;
 
 import org.joda.time.DateTime;

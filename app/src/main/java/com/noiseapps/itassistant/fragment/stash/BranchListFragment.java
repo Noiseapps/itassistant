@@ -8,7 +8,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.github.jorgecastilloprz.FABProgressCircle;
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.RecyclerViewSwipeManager;
 import com.h6ah4i.android.widget.advrecyclerview.touchguard.RecyclerViewTouchActionGuardManager;
 import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
@@ -16,7 +15,7 @@ import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.stash.BranchListAdapter;
 import com.noiseapps.itassistant.connector.StashConnector;
 import com.noiseapps.itassistant.dialogs.CreateBranchDialog;
-import com.noiseapps.itassistant.model.stash.projects.BranchModel;
+import com.noiseapps.itassistant.model.stash.branches.BranchModel;
 import com.noiseapps.itassistant.model.stash.projects.StashProject;
 import com.noiseapps.itassistant.utils.DividerItemDecoration;
 import com.noiseapps.itassistant.utils.views.MyFabProgressCircle;
@@ -32,14 +31,11 @@ import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import retrofit.client.Response;
-
 @EFragment(R.layout.fragment_stash_branch_list)
-public class StashBranchListFragment extends Fragment {
+public class BranchListFragment extends Fragment {
 
     @Bean
     StashConnector connector;
