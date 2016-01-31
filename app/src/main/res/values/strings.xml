@@ -185,4 +185,6 @@
     <string name="fetchingBranches">Fetching project branches…</string>
     <string name="noPullRequests">No available pull requests</string>
     <string name="prsForProject">Pull requests for %s</string>
+    <string name="prId">#%d</string>
+    <string name="prFromTo">from: %1$s to: %2$s</string>
 </resources>

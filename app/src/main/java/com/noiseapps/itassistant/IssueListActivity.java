@@ -316,7 +316,7 @@ public class IssueListActivity extends AppCompatActivity
 
     @UiThread
     void initMyIssues(List<Issue> myIssues) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, listFragment).commitAllowingStateLoss();
+        getSupportFragmentManager().beginTransaction().replace(R.id.listContainer, listFragment).commitAllowingStateLoss();
         getSupportFragmentManager().executePendingTransactions();
         listFragment.setIssues(myIssues);
     }
@@ -346,26 +346,22 @@ public class IssueListActivity extends AppCompatActivity
     void initNavigation(List<NavigationModel> navigationModels) {
         final RecyclerViewExpandableItemManager manager = new RecyclerViewExpandableItemManager(null);
         final NavigationMenuAdapter adapter = new NavigationMenuAdapter(this, navigationModels, (jiraProject, baseAccount) -> {
+            mainLayout.setVisibility(View.VISIBLE);
+            drawerLayout.closeDrawer(GravityCompat.START);
             if(jiraProject.getAccountType() == AccountTypes.ACC_JIRA) {
-                mainLayout.setVisibility(View.VISIBLE);
-                drawerLayout.closeDrawer(GravityCompat.START);
-
                 final FragmentManager supportFragmentManager = getSupportFragmentManager();
-                if (!(supportFragmentManager.findFragmentById(R.id.container) instanceof IssueListFragment)) {
-                    supportFragmentManager.beginTransaction().replace(R.id.mainLayout, listFragment).commit();
+                if (!(supportFragmentManager.findFragmentById(R.id.listContainer) instanceof IssueListFragment)) {
+                    supportFragmentManager.beginTransaction().replace(R.id.listContainer, listFragment).commit();
                     getSupportFragmentManager().executePendingTransactions();
                 }
                 listFragment.setProject((JiraProject) jiraProject, baseAccount);
             } else {
-                mainLayout.setVisibility(View.VISIBLE);
-                drawerLayout.closeDrawer(GravityCompat.START);
                 final FragmentManager supportFragmentManager = getSupportFragmentManager();
-                if (!(supportFragmentManager.findFragmentById(R.id.container) instanceof IssueListFragment)) {
-                    supportFragmentManager.beginTransaction().replace(R.id.mainLayout, stashFragment).commit();
+                if (!(supportFragmentManager.findFragmentById(R.id.listContainer) instanceof StashProjectFragment)) {
+                    supportFragmentManager.beginTransaction().replace(R.id.listContainer, stashFragment).commit();
                     getSupportFragmentManager().executePendingTransactions();
                 }
                 stashFragment.setProject((StashProject) jiraProject, baseAccount);
-                // show stash fragment
             }
         });
         final RecyclerView.Adapter wrappedAdapter = manager.createWrappedAdapter(adapter);
@@ -391,7 +387,7 @@ public class IssueListActivity extends AppCompatActivity
 
     @UiThread
     void showErrorDialog() {
-        AlertDialogWrapper.Builder builder = new AlertDialogWrapper.Builder(this);
+        final AlertDialogWrapper.Builder builder = new AlertDialogWrapper.Builder(this);
         builder.setTitle(R.string.errorDownloading).setMessage(R.string.errorDownloadingMsg).
                 setPositiveButton(R.string.retry, (dialog, which) -> {
                     downloadData();

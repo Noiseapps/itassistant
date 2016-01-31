@@ -86,7 +86,6 @@ public class BranchListFragment extends Fragment {
                 setMessage(R.string.confirmDeleteMsg).
                 setPositiveButton(R.string.yes, (dialog, which) -> {
                     showDeleteInProgress(branchModel);
-                    // todo showProgress, delete branch, update list
                 }).
                 setNegativeButton(R.string.cancel, (dialog1, which1) -> {
                     dialog1.dismiss();

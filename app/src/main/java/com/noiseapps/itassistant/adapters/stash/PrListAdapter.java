@@ -9,20 +9,29 @@ import android.widget.TextView;
 
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
+import com.noiseapps.itassistant.utils.Consts;
+
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 
 public class PrListAdapter extends RecyclerView.Adapter<PrListAdapter.PrViewHolder> {
 
 
-    private final Context context;
+    private Context context;
     private final ArrayList<PullRequest> pullRequests;
+    private PrListCallbacks callbacks;
     private final LayoutInflater layoutInflater;
 
-    public PrListAdapter(Context context, ArrayList<PullRequest> pullRequests) {
+    public PrListAdapter(Context context, ArrayList<PullRequest> pullRequests, PrListCallbacks callbacks) {
         this.context = context;
         this.pullRequests = pullRequests;
+        this.callbacks = callbacks;
         layoutInflater = LayoutInflater.from(context);
+    }
+
+    public interface PrListCallbacks {
+        void onPrSelected(PullRequest pullRequest);
     }
 
     @Override
@@ -43,15 +52,24 @@ public class PrListAdapter extends RecyclerView.Adapter<PrListAdapter.PrViewHold
 
     class PrViewHolder extends RecyclerView.ViewHolder {
 
-        private final TextView prData;
+        private final TextView prId, prTitle, prToFrom, prUpdated;
+        private PullRequest pullRequest;
 
         public PrViewHolder(View itemView) {
             super(itemView);
-            prData = (TextView) itemView.findViewById(R.id.prData);
+            prId = (TextView) itemView.findViewById(R.id.prId);
+            prTitle = (TextView) itemView.findViewById(R.id.prTitle);
+            prToFrom = (TextView) itemView.findViewById(R.id.prFromTo);
+            prUpdated = (TextView) itemView.findViewById(R.id.prUpdated);
+            itemView.setOnClickListener(v -> callbacks.onPrSelected(pullRequest));
         }
 
         public void bind(PullRequest pullRequest) {
-            prData.setText(pullRequest.toString());
+            this.pullRequest = pullRequest;
+            prId.setText(context.getString(R.string.prId, pullRequest.getId()));
+            prTitle.setText(pullRequest.getTitle());
+            prToFrom.setText(context.getString(R.string.prFromTo, pullRequest.getFromRef(), pullRequest.getToRef()));
+            prUpdated.setText(new DateTime(pullRequest.getUpdatedDate()).toString(Consts.DATE_FORMAT));
         }
     }
 }
