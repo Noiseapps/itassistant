@@ -1,5 +1,6 @@
 package com.noiseapps.itassistant.fragment.stash;
 
+import android.app.ProgressDialog;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.connector.StashConnector;
+import com.noiseapps.itassistant.model.stash.branches.BranchModel;
 import com.noiseapps.itassistant.model.stash.projects.StashProject;
 import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
 import com.noiseapps.itassistant.utils.views.MyFabProgressCircle;
@@ -19,6 +21,7 @@ import com.noiseapps.itassistant.utils.views.MyFabProgressCircle;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.UiThread;
@@ -51,6 +54,7 @@ public class PullRequestListFragment extends Fragment {
     @ViewById
     TextView errorMessageTextView;
     private List<PullRequest> pullRequests;
+    private ProgressDialog progressDialog;
 
     @AfterViews
     void init() {
@@ -120,6 +124,22 @@ public class PullRequestListFragment extends Fragment {
 
             }
         });
+    }
+
+    @Click(R.id.fabProgressCircle)
+    void onAddPullRequest() {
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage(getString(R.string.fetchingBranches));
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(true);
+        progressDialog.show();
+
+        downloadCreatePullRequestData();
+    }
+
+    @Background
+    void downloadCreatePullRequestData() {
+        final List<BranchModel> branches = connector.getBranches(stashProject.getKey(), repoSlug);
     }
 
     private class PullRequestsPagerAdapter extends FragmentPagerAdapter {

@@ -2,6 +2,8 @@ package com.noiseapps.itassistant.fragment.stash;
 
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -38,9 +40,7 @@ public class PullRequestCategory extends Fragment {
     @AfterViews
     void init() {
         activity = getActivity();
-        final PrListAdapter adapter = new PrListAdapter(activity, pullRequests, pullRequest -> {
-            Logger.d(pullRequest.toString());
-        });
+        final PrListAdapter adapter = new PrListAdapter(activity, pullRequests, this::openPullRequestExternal);
         prList.setLayoutManager(new LinearLayoutManager(activity));
         prList.addItemDecoration(new DividerItemDecoration(activity, DividerItemDecoration.VERTICAL_LIST));
         prList.setHasFixedSize(true);
@@ -55,4 +55,10 @@ public class PullRequestCategory extends Fragment {
         }
     }
 
+    private void openPullRequestExternal(PullRequest pullRequest) {
+        final Intent showPrIntent = new Intent();
+        showPrIntent.setAction(Intent.ACTION_VIEW);
+        showPrIntent.setData(Uri.parse(pullRequest.getLinks().getSelf().get(0).getHref()));
+        activity.startActivity(showPrIntent);
+    }
 }

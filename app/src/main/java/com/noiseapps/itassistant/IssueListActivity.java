@@ -98,7 +98,7 @@ public class IssueListActivity extends AppCompatActivity
     @ViewById(R.id.recyclerView)
     RecyclerView navigationRecycler;
     @ViewById
-    View mainLayout, nothingSelectedInfo;
+    View nothingSelectedInfo;
     @ViewById
     DrawerLayout drawerLayout;
 
@@ -234,7 +234,7 @@ public class IssueListActivity extends AppCompatActivity
         if (isSearchOpen) {
             listFragment.closeSearchView();
         } else if (!doubleClicked) {
-            Snackbar.make(mainLayout, R.string.tapAgainToExit, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(coordinatorLayout, R.string.tapAgainToExit, Snackbar.LENGTH_LONG).show();
             doubleClicked = true;
             handler.postDelayed(() -> doubleClicked = false, DELAY_MILLIS);
         } else {
@@ -323,7 +323,7 @@ public class IssueListActivity extends AppCompatActivity
 
     private void showInfoAboutFailedAccounts(int failedAccounts) {
         if (failedAccounts > 0) {
-            Snackbar.make(mainLayout, getString(R.string.failedToReadAccountData, failedAccounts), Snackbar.LENGTH_LONG).show();
+            Snackbar.make(coordinatorLayout, getString(R.string.failedToReadAccountData, failedAccounts), Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -345,23 +345,12 @@ public class IssueListActivity extends AppCompatActivity
     @UiThread
     void initNavigation(List<NavigationModel> navigationModels) {
         final RecyclerViewExpandableItemManager manager = new RecyclerViewExpandableItemManager(null);
-        final NavigationMenuAdapter adapter = new NavigationMenuAdapter(this, navigationModels, (jiraProject, baseAccount) -> {
-            mainLayout.setVisibility(View.VISIBLE);
+        final NavigationMenuAdapter adapter = new NavigationMenuAdapter(this, navigationModels, (project, baseAccount) -> {
             drawerLayout.closeDrawer(GravityCompat.START);
-            if(jiraProject.getAccountType() == AccountTypes.ACC_JIRA) {
-                final FragmentManager supportFragmentManager = getSupportFragmentManager();
-                if (!(supportFragmentManager.findFragmentById(R.id.listContainer) instanceof IssueListFragment)) {
-                    supportFragmentManager.beginTransaction().replace(R.id.listContainer, listFragment).commit();
-                    getSupportFragmentManager().executePendingTransactions();
-                }
-                listFragment.setProject((JiraProject) jiraProject, baseAccount);
-            } else {
-                final FragmentManager supportFragmentManager = getSupportFragmentManager();
-                if (!(supportFragmentManager.findFragmentById(R.id.listContainer) instanceof StashProjectFragment)) {
-                    supportFragmentManager.beginTransaction().replace(R.id.listContainer, stashFragment).commit();
-                    getSupportFragmentManager().executePendingTransactions();
-                }
-                stashFragment.setProject((StashProject) jiraProject, baseAccount);
+            if(project.getAccountType() == AccountTypes.ACC_JIRA) {
+                showJiraFragment((JiraProject) project, baseAccount);
+            } else if(project.getAccountType() == AccountTypes.ACC_STASH){
+                showStashFragment((StashProject) project, baseAccount);
             }
         });
         final RecyclerView.Adapter wrappedAdapter = manager.createWrappedAdapter(adapter);
@@ -375,6 +364,24 @@ public class IssueListActivity extends AppCompatActivity
             drawerLayout.openDrawer(GravityCompat.START);
             Once.markDone(Consts.SHOW_DRAWER);
         }
+    }
+
+    private void showStashFragment(StashProject jiraProject, BaseAccount baseAccount) {
+        final FragmentManager supportFragmentManager = getSupportFragmentManager();
+        if (!(supportFragmentManager.findFragmentById(R.id.listContainer) instanceof StashProjectFragment)) {
+            supportFragmentManager.beginTransaction().replace(R.id.listContainer, stashFragment).commit();
+            getSupportFragmentManager().executePendingTransactions();
+        }
+        stashFragment.setProject(jiraProject, baseAccount);
+    }
+
+    private void showJiraFragment(JiraProject jiraProject, BaseAccount baseAccount) {
+        final FragmentManager supportFragmentManager = getSupportFragmentManager();
+        if (!(supportFragmentManager.findFragmentById(R.id.listContainer) instanceof IssueListFragment)) {
+            supportFragmentManager.beginTransaction().replace(R.id.listContainer, listFragment).commit();
+            getSupportFragmentManager().executePendingTransactions();
+        }
+        listFragment.setProject(jiraProject, baseAccount);
     }
 
     private boolean isTwoPane() {
@@ -408,7 +415,7 @@ public class IssueListActivity extends AppCompatActivity
     }
 
     private void showNotImplemented() {
-        Snackbar.make(mainLayout, R.string.optionUnavailable, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(coordinatorLayout, R.string.optionUnavailable, Snackbar.LENGTH_LONG).show();
     }
 
     @Click(R.id.actionAssignedToMe)

@@ -18,6 +18,7 @@ public class PullRequest implements Parcelable {
     PullRequestMember author;
     List<PullRequestMember> reviewers;
     PullRequestAttributes attributes;
+    Links links;
 
     @Override
     public String toString() {
@@ -31,7 +32,12 @@ public class PullRequest implements Parcelable {
                 ", author=" + author +
                 ", reviewers=" + reviewers +
                 ", attributes=" + attributes +
+                ", links=" + links +
                 '}';
+    }
+
+    public Links getLinks() {
+        return links;
     }
 
     public int getId() {
@@ -70,6 +76,9 @@ public class PullRequest implements Parcelable {
         return attributes;
     }
 
+    public PullRequest() {
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -86,9 +95,7 @@ public class PullRequest implements Parcelable {
         dest.writeParcelable(this.author, 0);
         dest.writeTypedList(reviewers);
         dest.writeParcelable(this.attributes, 0);
-    }
-
-    public PullRequest() {
+        dest.writeParcelable(this.links, 0);
     }
 
     protected PullRequest(Parcel in) {
@@ -101,9 +108,10 @@ public class PullRequest implements Parcelable {
         this.author = in.readParcelable(PullRequestMember.class.getClassLoader());
         this.reviewers = in.createTypedArrayList(PullRequestMember.CREATOR);
         this.attributes = in.readParcelable(PullRequestAttributes.class.getClassLoader());
+        this.links = in.readParcelable(Links.class.getClassLoader());
     }
 
-    public static final Parcelable.Creator<PullRequest> CREATOR = new Parcelable.Creator<PullRequest>() {
+    public static final Creator<PullRequest> CREATOR = new Creator<PullRequest>() {
         public PullRequest createFromParcel(Parcel source) {
             return new PullRequest(source);
         }
