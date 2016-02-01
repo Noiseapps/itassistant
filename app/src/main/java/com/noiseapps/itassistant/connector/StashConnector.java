@@ -1,5 +1,7 @@
 package com.noiseapps.itassistant.connector;
 
+import android.support.annotation.NonNull;
+
 import com.noiseapps.itassistant.BuildConfig;
 import com.noiseapps.itassistant.api.StashAPI;
 import com.noiseapps.itassistant.database.PreferencesDAO;
@@ -9,6 +11,7 @@ import com.noiseapps.itassistant.model.stash.branches.BranchModel;
 import com.noiseapps.itassistant.model.stash.commits.Commit;
 import com.noiseapps.itassistant.model.stash.branches.NewBranchModel;
 import com.noiseapps.itassistant.model.stash.general.ProjectRepos;
+import com.noiseapps.itassistant.model.stash.general.StashUser;
 import com.noiseapps.itassistant.model.stash.projects.UserProjects;
 import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
 import com.orhanobut.logger.Logger;
@@ -63,6 +66,7 @@ public class StashConnector {
     }
 
     @SupposeBackground
+    @NonNull
     public List<BranchModel> getBranches(@Path("projectKey") String projectKey, @Path("repoSlug") String repoSlug) {
         try {
             int start = 0;
@@ -92,6 +96,7 @@ public class StashConnector {
     }
 
     @SupposeBackground
+    @NonNull
     public List<PullRequest> getPullRequests(String projectKey, String repoSlug) {
         try {
             int start = 0;
@@ -103,6 +108,24 @@ public class StashConnector {
                 start = branches.getStart() + branches.getLimit();
             } while (!branches.isLastPage());
             return repoBranches;
+        } catch (RetrofitError error) {
+            return new ArrayList<>();
+        }
+    }
+
+    @SupposeBackground
+    @NonNull
+    public List<StashUser> getUsers() {
+        try {
+            int start = 0;
+            PagedApiModel<StashUser> users;
+            final List<StashUser> stashUsers = new ArrayList<>();
+            do {
+                users = apiService.getUserList(start);
+                stashUsers.addAll(users.getValues());
+                start = users.getStart() + users.getLimit();
+            } while (!users.isLastPage());
+            return stashUsers;
         } catch (RetrofitError error) {
             return new ArrayList<>();
         }

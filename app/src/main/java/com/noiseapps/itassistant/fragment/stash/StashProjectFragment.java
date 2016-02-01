@@ -79,7 +79,7 @@ public class StashProjectFragment extends Fragment {
 
         void onShowCommitsList(StashProject stashProject, String slug);
 
-        void onShowPullRequestList(StashProject stashProject, String slug);
+        void onShowPullRequestList(StashProject stashProject, String slug, BaseAccount baseAccount);
     }
 
     @AfterViews
@@ -263,7 +263,7 @@ public class StashProjectFragment extends Fragment {
 //
     @Click(R.id.pullRequests)
     void onShowPullRequests() {
-        menuCallbacks.onShowPullRequestList(stashProject, currentRepo.getSlug());
+        menuCallbacks.onShowPullRequestList(stashProject, currentRepo.getSlug(), baseAccount);
     }
 
     @Click(R.id.branches)

@@ -537,7 +537,7 @@ public class IssueListActivity extends AppCompatActivity
     }
 
     @Override
-    public void onShowPullRequestList(StashProject project, String repoSlug) {
+    public void onShowPullRequestList(StashProject project, String repoSlug, BaseAccount baseAccount) {
         if(mTwoPane){
             final PullRequestListFragment fragment = PullRequestListFragment_.builder().
                     stashProject(project).

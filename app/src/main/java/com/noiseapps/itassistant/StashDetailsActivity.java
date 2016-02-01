@@ -9,6 +9,7 @@ import com.noiseapps.itassistant.fragment.stash.CommitListFragment_;
 import com.noiseapps.itassistant.fragment.stash.BranchListFragment_;
 import com.noiseapps.itassistant.fragment.stash.PullRequestListFragment;
 import com.noiseapps.itassistant.fragment.stash.PullRequestListFragment_;
+import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.stash.projects.StashProject;
 import com.noiseapps.itassistant.utils.annotations.StashActions;
 
@@ -34,6 +35,8 @@ public class StashDetailsActivity extends AppCompatActivity {
     String repoSlug;
     @Extra
     StashProject project;
+    @Extra
+    BaseAccount baseAccount;
 
 
     @ViewById
@@ -59,7 +62,7 @@ public class StashDetailsActivity extends AppCompatActivity {
                 replaceFragment(fragment);
                 break;
             case ACTION_PULL_REQUESTS:
-                fragment = PullRequestListFragment_.builder().stashProject(project).repoSlug(repoSlug).build();
+                fragment = PullRequestListFragment_.builder().stashProject(project).repoSlug(repoSlug).baseAccount(baseAccount).build();
                 replaceFragment(fragment);
                 break;
             default:

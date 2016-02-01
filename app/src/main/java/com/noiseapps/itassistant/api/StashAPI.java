@@ -5,6 +5,7 @@ import com.noiseapps.itassistant.model.stash.branches.BranchModel;
 import com.noiseapps.itassistant.model.stash.commits.Commit;
 import com.noiseapps.itassistant.model.stash.branches.NewBranchModel;
 import com.noiseapps.itassistant.model.stash.general.ProjectRepos;
+import com.noiseapps.itassistant.model.stash.general.StashUser;
 import com.noiseapps.itassistant.model.stash.projects.UserProjects;
 import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
 import com.noiseapps.itassistant.utils.annotations.DELETEBODY;
@@ -89,6 +90,9 @@ public interface StashAPI {
     Observable<PullRequest> reopenPullRequest(@Path("projectKey") String projectKey,
                                               @Path("repoSlug") String repoSlug,
                                               @Path("prId") String pullRequestId);
+
+    @GET("/rest/api/1.0/users")
+    PagedApiModel<StashUser> getUserList(@Query("start") int start);
 
 
 }

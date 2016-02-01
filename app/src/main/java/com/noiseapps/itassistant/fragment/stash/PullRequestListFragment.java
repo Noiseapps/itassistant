@@ -13,7 +13,11 @@ import android.widget.TextView;
 
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.connector.StashConnector;
+import com.noiseapps.itassistant.dialogs.CreatePullRequestDialog;
+import com.noiseapps.itassistant.dialogs.CreatePullRequestDialog_;
+import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.stash.branches.BranchModel;
+import com.noiseapps.itassistant.model.stash.general.StashUser;
 import com.noiseapps.itassistant.model.stash.projects.StashProject;
 import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
 import com.noiseapps.itassistant.utils.views.MyFabProgressCircle;
@@ -38,6 +42,9 @@ public class PullRequestListFragment extends Fragment {
 
     @FragmentArg
     String repoSlug;
+
+    @FragmentArg
+    BaseAccount baseAccount;
 
     @Bean
     StashConnector connector;
@@ -140,6 +147,28 @@ public class PullRequestListFragment extends Fragment {
     @Background
     void downloadCreatePullRequestData() {
         final List<BranchModel> branches = connector.getBranches(stashProject.getKey(), repoSlug);
+        final List<StashUser> users = connector.getUsers();
+        if(!branches.isEmpty() && !users.isEmpty()) {
+            onBranchesDownloaded(branches, users);
+        } else {
+            onDownloadError();
+        }
+    }
+
+    @UiThread
+    void onBranchesDownloaded(List<BranchModel> branches, List<StashUser> users) {
+        CreatePullRequestDialog_.getInstance_(getActivity()).init(branches, users, baseAccount, this::onCreateBranch);
+    }
+
+    private void onCreateBranch() {
+        // TODO: 01.02.2016 show progress
+        // TODO: 01.02.2016 create pull request, show messages
+    }
+
+
+    @UiThread
+    void onDownloadError() {
+        // TODO: 01.02.2016 downloading error, show message
     }
 
     private class PullRequestsPagerAdapter extends FragmentPagerAdapter {
