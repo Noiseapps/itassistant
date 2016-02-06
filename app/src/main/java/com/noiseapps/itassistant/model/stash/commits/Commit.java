@@ -1,11 +1,13 @@
 package com.noiseapps.itassistant.model.stash.commits;
 
+import com.noiseapps.itassistant.model.stash.general.StashUser;
+
 public class Commit {
     private String id;
     private String displayId;
     private String message;
     private long authorTimestamp;
-    private AuthorMetadata author;
+    private StashUser author;
 
     public String getId() {
         return id;
@@ -23,7 +25,7 @@ public class Commit {
         return authorTimestamp;
     }
 
-    public AuthorMetadata getAuthorMetadata() {
+    public StashUser getAuthorMetadata() {
         return author;
     }
 }

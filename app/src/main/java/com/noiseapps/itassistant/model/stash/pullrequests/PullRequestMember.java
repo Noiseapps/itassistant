@@ -4,9 +4,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.noiseapps.itassistant.model.stash.commits.AuthorMetadata;
+import com.noiseapps.itassistant.model.stash.general.StashUser;
 
 public class PullRequestMember implements Parcelable {
-    AuthorMetadata user;
+    StashUser user;
     String role;
     boolean approved;
 
@@ -19,11 +20,11 @@ public class PullRequestMember implements Parcelable {
                 '}';
     }
 
-    public AuthorMetadata getUser() {
+    public StashUser getUser() {
         return user;
     }
 
-    public void setUser(AuthorMetadata user) {
+    public void setUser(StashUser user) {
         this.user = user;
     }
 
@@ -43,6 +44,9 @@ public class PullRequestMember implements Parcelable {
         this.approved = approved;
     }
 
+    public PullRequestMember() {
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -50,21 +54,18 @@ public class PullRequestMember implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(this.user, 0);
+        dest.writeParcelable(this.user, flags);
         dest.writeString(this.role);
         dest.writeByte(approved ? (byte) 1 : (byte) 0);
     }
 
-    public PullRequestMember() {
-    }
-
     protected PullRequestMember(Parcel in) {
-        this.user = in.readParcelable(AuthorMetadata.class.getClassLoader());
+        this.user = in.readParcelable(StashUser.class.getClassLoader());
         this.role = in.readString();
         this.approved = in.readByte() != 0;
     }
 
-    public static final Parcelable.Creator<PullRequestMember> CREATOR = new Parcelable.Creator<PullRequestMember>() {
+    public static final Creator<PullRequestMember> CREATOR = new Creator<PullRequestMember>() {
         public PullRequestMember createFromParcel(Parcel source) {
             return new PullRequestMember(source);
         }

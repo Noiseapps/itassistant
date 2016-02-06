@@ -20,16 +20,22 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.noiseapps.itassistant.BuildConfig;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.connector.StashConnector;
 import com.noiseapps.itassistant.connector.StashConnector_;
 import com.noiseapps.itassistant.dialogs.CreateBranchDialog;
+import com.noiseapps.itassistant.dialogs.CreateBranchDialog_;
+import com.noiseapps.itassistant.dialogs.CreatePullRequestDialog;
+import com.noiseapps.itassistant.dialogs.CreatePullRequestDialog_;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.stash.branches.BranchModel;
 import com.noiseapps.itassistant.model.stash.general.CloneLink;
 import com.noiseapps.itassistant.model.stash.general.ProjectRepos;
+import com.noiseapps.itassistant.model.stash.general.StashUser;
 import com.noiseapps.itassistant.model.stash.projects.StashProject;
 import com.noiseapps.itassistant.model.stash.general.StashRepoMeta;
+import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
 import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
@@ -72,12 +78,14 @@ public class StashProjectFragment extends Fragment {
     private List<BranchModel> branches;
     private StashMenuCallbacks menuCallbacks;
     private ProgressDialog fetchingBranches;
+    private List<StashUser> users;
+    private ProgressDialog progressDialog;
 
 
     public interface StashMenuCallbacks {
         void onShowBranchesList(@NonNull StashProject stashProject, @NonNull String slug);
 
-        void onShowCommitsList(StashProject stashProject, String slug);
+        void onShowCommitsList(StashProject stashProject, String slug, BaseAccount baseAccount);
 
         void onShowPullRequestList(StashProject stashProject, String slug, BaseAccount baseAccount);
     }
@@ -144,7 +152,6 @@ public class StashProjectFragment extends Fragment {
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     final StashRepoMeta item = adapter.getItem(position);
                     loadProjectDetails(item);
-                    branches = null;
                 }
 
                 @Override
@@ -163,7 +170,7 @@ public class StashProjectFragment extends Fragment {
 
     @UiThread
     void onBranchesDownloaded(List<BranchModel> branches) {
-        if(fetchingBranches.isShowing()) {
+        if (fetchingBranches.isShowing()) {
             fetchingBranches.dismiss();
             createBranchDialog.init(stashProject.getKey(), currentRepo.getSlug(), branches, this::showSuccessMessage);
         }
@@ -214,7 +221,9 @@ public class StashProjectFragment extends Fragment {
             fetchingBranches.show();
             getBranches();
         } else {
-            onShowBranches();
+            CreateBranchDialog_.getInstance_(getActivity()).init(stashProject.getKey(), currentRepo.getSlug(), branches, branchModel -> {
+                Snackbar.make(rootView, getString(R.string.branchCreated, branchModel.getDisplayId()), Snackbar.LENGTH_LONG).show();
+            });
         }
     }
 
@@ -224,43 +233,68 @@ public class StashProjectFragment extends Fragment {
 
     @Click(R.id.createPR)
     void onCreatePullRequest() {
-//        if(branches == null) {
-//            return;
-//        }
-//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//        builder.setView(R.layout.dialog_create_pull_request);
-//        builder.setTitle(R.string.createPullRequest);
-//        builder.setPositiveButton(R.string.createPullRequest, (dialog1, which) -> {});
-//        builder.setNegativeButton(R.string.cancel, (dialog1, which) -> {});
-//        final AlertDialog alertDialog = builder.create();
-//        alertDialog.setOnShowListener(dialog -> {
-//            onCreatePrDialogShown(alertDialog);
-//        });
-//        alertDialog.show();
+        if (branches == null && users == null) {
+            showDetailsFetchProgress();
+            downloadCreatePullRequestData();
+        } else {
+            onBranchesDownloaded(branches, users);
+        }
     }
 
-//    private void onCreatePrDialogShown(AlertDialog alertDialog) {
-//        SpinnerAdapter adapter = new ArrayAdapter<>(getActivity(),
-//                R.layout.item_spinner_textonly_black,
-//                R.id.title, branches);
-//        final Spinner sourceBranch = (Spinner) alertDialog.findViewById(R.id.sourceBranch);
-//        final Spinner targetBranch = (Spinner) alertDialog.findViewById(R.id.targetBranch);
-//        final View creatingBranch = alertDialog.findViewById(R.id.creatingBranch);
-//        sourceBranch.setAdapter(adapter);
-//        targetBranch.setAdapter(adapter);
-//        alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(v -> {
-//            creatingBranch.setVisibility(View.VISIBLE);
-//            final BranchModel selectedItem = (BranchModel) branchesSpinner.getSelectedItem();
-//            final String branchName = branchNameEdit.getText().toString().trim();
-//            createNewBranch(alertDialog, selectedItem, branchName);
-//        });
-//    }
+    private void showDetailsFetchProgress() {
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage(getString(R.string.fetchingBranches));
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(true);
+        progressDialog.show();
+    }
 
-//    @Click(R.id.fork)
-//    void onForkRepo() {
-//        // todo show fork dialog
-//    }
-//
+    @Background
+    void downloadCreatePullRequestData() {
+        if(branches == null) {
+            branches = stashConnector.getBranches(stashProject.getKey(), currentRepo.getSlug());
+        }
+        users = stashConnector.getUsers();
+        if (!branches.isEmpty() && !users.isEmpty()) {
+            onBranchesDownloaded(branches, users);
+        } else {
+            onDownloadError();
+        }
+    }
+
+    @UiThread
+    void onBranchesDownloaded(List<BranchModel> branches, List<StashUser> users) {
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
+        CreatePullRequestDialog_.getInstance_(getActivity()).init(branches, users, baseAccount, this::onCreatePullRequest);
+    }
+
+    private void onCreatePullRequest(PullRequest pullRequest, CreatePullRequestDialog dialog) {
+        if (BuildConfig.DEBUG) {
+            onPrCreated(PullRequest.spoof(), dialog);
+        } else {
+            stashConnector.createPullRequest(stashProject.getKey(), currentRepo.getSlug(), pullRequest).
+                    subscribe(request -> onPrCreated(request, dialog),
+                            throwable -> onCreateError(throwable, dialog));
+        }
+    }
+
+    private void onPrCreated(PullRequest response, CreatePullRequestDialog dialog) {
+        dialog.getAlertDialog().dismiss();
+        Snackbar.make(rootView, getString(R.string.pullRequestCreated, response.getId()), Snackbar.LENGTH_LONG).show();
+    }
+
+    private void onCreateError(Throwable throwable, CreatePullRequestDialog dialog) {
+        dialog.onCreateError();
+        Logger.e(throwable, throwable.getMessage());
+    }
+
+    @UiThread
+    void onDownloadError() {
+        Snackbar.make(rootView, R.string.failedToFetchDetails, Snackbar.LENGTH_LONG).show();
+    }
+
     @Click(R.id.pullRequests)
     void onShowPullRequests() {
         menuCallbacks.onShowPullRequestList(stashProject, currentRepo.getSlug(), baseAccount);
@@ -273,7 +307,7 @@ public class StashProjectFragment extends Fragment {
 
     @Click(R.id.commits)
     void onShowCommits() {
-        menuCallbacks.onShowCommitsList(stashProject, currentRepo.getSlug());
+        menuCallbacks.onShowCommitsList(stashProject, currentRepo.getSlug(), baseAccount);
     }
 
     private void showProgress() {

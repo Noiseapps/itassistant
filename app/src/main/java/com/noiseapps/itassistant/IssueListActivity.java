@@ -520,10 +520,11 @@ public class IssueListActivity extends AppCompatActivity
     }
 
     @Override
-    public void onShowCommitsList(@NonNull StashProject project, @NonNull String repoSlug) {
+    public void onShowCommitsList(@NonNull StashProject project, @NonNull String repoSlug, BaseAccount baseAccount) {
         if(mTwoPane){
             final CommitListFragment fragment = CommitListFragment_.builder().
                     project(project).
+                    account(baseAccount).
                     repoSlug(repoSlug).
                     build();
             setDetailsFragment(fragment, "COMMITS");

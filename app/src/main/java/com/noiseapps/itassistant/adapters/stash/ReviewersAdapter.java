@@ -16,6 +16,7 @@ import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.stash.general.StashUser;
 import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
+import com.orhanobut.logger.Logger;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -82,7 +83,7 @@ public class ReviewersAdapter extends BaseAdapter implements Filterable {
         }
 
         public void bind(StashUser item) {
-            authPicasso.load(item.getLinks().getSelf().get(0).getHref() + "/avatar.png").into(avatar);
+            authPicasso.load(item.getAvatarUrl()).into(avatar);
             title.setText(item.getDisplayName());
             subTitle.setText(item.getEmailAddress());
         }
@@ -105,9 +106,17 @@ public class ReviewersAdapter extends BaseAdapter implements Filterable {
         }
 
         @Override
+        public CharSequence convertResultToString(Object resultValue) {
+            return ((StashUser) resultValue).getDisplayName();
+        }
+
+        @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             users.clear();
-            Stream.of(results.values).forEach(value -> users.add((StashUser) value));
+            if(results.values != null) {
+                //noinspection unchecked
+                users.addAll((List<StashUser>) results.values);
+            }
             notifyDataSetChanged();
         }
     }

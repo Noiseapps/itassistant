@@ -12,9 +12,11 @@ import android.widget.TextView;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.stash.CommitListAdapter;
 import com.noiseapps.itassistant.connector.StashConnector;
+import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.atlassian.PagedApiModel;
 import com.noiseapps.itassistant.model.stash.commits.Commit;
 import com.noiseapps.itassistant.model.stash.projects.StashProject;
+import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 import com.noiseapps.itassistant.utils.EndlessRecyclerOnScrollListener;
 import com.orhanobut.logger.Logger;
 
@@ -45,6 +47,8 @@ public class CommitListFragment extends Fragment {
     String repoSlug;
     @FragmentArg
     StashProject project;
+    @FragmentArg
+    BaseAccount account;
     @Bean
     StashConnector connector;
     private int start;
@@ -59,7 +63,7 @@ public class CommitListFragment extends Fragment {
     }
 
     private void setupListView() {
-        adapter = new CommitListAdapter(getActivity(), commits);
+        adapter = new CommitListAdapter(getActivity(), AuthenticatedPicasso.getAuthPicasso(getActivity(), account), commits);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         commitList.setLayoutManager(layoutManager);
         commitList.addOnScrollListener(new EndlessRecyclerOnScrollListener(layoutManager) {

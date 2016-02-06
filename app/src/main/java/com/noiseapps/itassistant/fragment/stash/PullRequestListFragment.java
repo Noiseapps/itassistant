@@ -1,9 +1,11 @@
 package com.noiseapps.itassistant.fragment.stash;
 
 import android.app.ProgressDialog;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -11,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
+import com.noiseapps.itassistant.BuildConfig;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.connector.StashConnector;
 import com.noiseapps.itassistant.dialogs.CreatePullRequestDialog;
@@ -21,6 +24,7 @@ import com.noiseapps.itassistant.model.stash.general.StashUser;
 import com.noiseapps.itassistant.model.stash.projects.StashProject;
 import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
 import com.noiseapps.itassistant.utils.views.MyFabProgressCircle;
+import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -62,6 +66,8 @@ public class PullRequestListFragment extends Fragment {
     TextView errorMessageTextView;
     private List<PullRequest> pullRequests;
     private ProgressDialog progressDialog;
+    private List<StashUser> users;
+    private List<BranchModel> branches;
 
     @AfterViews
     void init() {
@@ -83,19 +89,21 @@ public class PullRequestListFragment extends Fragment {
     @Background
     void downloadPullRequests() {
         pullRequests = connector.getPullRequests(stashProject.getKey(), repoSlug);
-        if (pullRequests.size() > 0) {
-            onPullRequestsDownloaded();
-        } else {
-            showDownloadError();
+        if(isAdded() && getActivity() != null) {
+            if (pullRequests.size() > 0) {
+                onPullRequestsDownloaded();
+            } else {
+                showDownloadError();
+            }
         }
     }
 
-    private void showDownloadError() {
+    @UiThread
+    void showDownloadError() {
         hideProgress();
         noProjectData.setVisibility(View.VISIBLE);
     }
 
-    @UiThread
     void hideProgress() {
         fetchingDataProgress.setVisibility(View.GONE);
     }
@@ -112,6 +120,7 @@ public class PullRequestListFragment extends Fragment {
         tabView.setVisibility(View.VISIBLE);
         final PagerAdapter adapter = new PullRequestsPagerAdapter();
         viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(2);
         tabLayout.setupWithViewPager(viewPager);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -121,7 +130,7 @@ public class PullRequestListFragment extends Fragment {
 
             @Override
             public void onPageSelected(int position) {
-                if(fabProgressCircle.isCollapsed()) {
+                if (fabProgressCircle.isCollapsed()) {
                     fabProgressCircle.expand();
                 }
             }
@@ -135,47 +144,77 @@ public class PullRequestListFragment extends Fragment {
 
     @Click(R.id.fabProgressCircle)
     void onAddPullRequest() {
+        if(branches == null && users == null) {
+            showDetailsFetchProgress();
+            downloadCreatePullRequestData();
+        } else {
+            onBranchesDownloaded(branches, users);
+        }
+    }
+
+    private void showDetailsFetchProgress() {
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage(getString(R.string.fetchingBranches));
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(true);
         progressDialog.show();
-
-        downloadCreatePullRequestData();
     }
 
     @Background
     void downloadCreatePullRequestData() {
-        final List<BranchModel> branches = connector.getBranches(stashProject.getKey(), repoSlug);
-        final List<StashUser> users = connector.getUsers();
-        if(!branches.isEmpty() && !users.isEmpty()) {
-            onBranchesDownloaded(branches, users);
-        } else {
-            onDownloadError();
+        branches = connector.getBranches(stashProject.getKey(), repoSlug);
+        users = connector.getUsers();
+        if(isAdded() && getActivity() != null) {
+            if (!branches.isEmpty() && !users.isEmpty()) {
+                onBranchesDownloaded(branches, users);
+            } else {
+                onDownloadError();
+            }
         }
     }
 
     @UiThread
     void onBranchesDownloaded(List<BranchModel> branches, List<StashUser> users) {
-        CreatePullRequestDialog_.getInstance_(getActivity()).init(branches, users, baseAccount, this::onCreateBranch);
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
+        CreatePullRequestDialog_.getInstance_(getActivity()).init(branches, users, baseAccount, this::onCreatePullRequest);
     }
 
-    private void onCreateBranch() {
-        // TODO: 01.02.2016 show progress
-        // TODO: 01.02.2016 create pull request, show messages
+    private void onCreatePullRequest(PullRequest pullRequest, CreatePullRequestDialog dialog) {
+        if(BuildConfig.DEBUG) {
+            onPrCreated(PullRequest.spoof(), dialog);
+        } else {
+            connector.createPullRequest(stashProject.getKey(), repoSlug, pullRequest).
+                    subscribe(request -> onPrCreated(request, dialog),
+                            throwable -> onCreateError(throwable, dialog));
+        }
     }
 
+    private void onPrCreated(PullRequest response, CreatePullRequestDialog dialog) {
+        dialog.getAlertDialog().dismiss();
+        Snackbar.make(viewPager, getString(R.string.pullRequestCreated, response.getId()), Snackbar.LENGTH_LONG).show();
+        pullRequests.add(response);
+        final PullRequestsPagerAdapter adapter = (PullRequestsPagerAdapter) viewPager.getAdapter();
+        adapter.fillFragments();
+        viewPager.setAdapter(adapter);
+    }
+
+    private void onCreateError(Throwable throwable, CreatePullRequestDialog dialog) {
+        dialog.onCreateError();
+        Logger.e(throwable, throwable.getMessage());
+    }
 
     @UiThread
     void onDownloadError() {
-        // TODO: 01.02.2016 downloading error, show message
+        Snackbar.make(viewPager, R.string.failedToFetchDetails, Snackbar.LENGTH_LONG).show();
     }
 
     private class PullRequestsPagerAdapter extends FragmentPagerAdapter {
         private static final String STATUS_MERGED = "MERGED";
         private static final String STATUS_DECLINED = "DECLINED";
         private static final String STATUS_OPEN = "OPEN";
-        private final Fragment[] fragments = new Fragment[3];
+        private final PullRequestCategory[] fragments = new PullRequestCategory[3];
         private final String[] pullRequestCategories;
 
         public PullRequestsPagerAdapter() {
@@ -184,7 +223,7 @@ public class PullRequestListFragment extends Fragment {
             fillFragments();
         }
 
-        private void fillFragments() {
+        void fillFragments() {
             final ArrayList<PullRequest> open = new ArrayList<>(),
                     merged = new ArrayList<>(),
                     declined = new ArrayList<>();
@@ -200,9 +239,25 @@ public class PullRequestListFragment extends Fragment {
                 }
             }
 
-            fragments[0] = PullRequestCategory_.builder().pullRequests(open).build();
-            fragments[1] = PullRequestCategory_.builder().pullRequests(merged).build();
-            fragments[2] = PullRequestCategory_.builder().pullRequests(declined).build();
+            setupFragments(open, merged, declined);
+        }
+
+        private void setupFragments(ArrayList<PullRequest> open, ArrayList<PullRequest> merged, ArrayList<PullRequest> declined) {
+            if(fragments[0] == null) {
+                fragments[0] = PullRequestCategory_.builder().pullRequests(open).build();
+            } else {
+                fragments[0].setPullRequests(open);
+            }
+            if(fragments[1] == null) {
+                fragments[1] = PullRequestCategory_.builder().pullRequests(merged).build();
+            } else {
+                fragments[1].setPullRequests(merged);
+            }
+            if(fragments[2] == null) {
+                fragments[2] = PullRequestCategory_.builder().pullRequests(declined).build();
+            } else {
+                fragments[2].setPullRequests(declined);
+            }
         }
 
         @Override

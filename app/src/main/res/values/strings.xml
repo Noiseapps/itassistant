@@ -173,9 +173,6 @@
     <string name="branchCreated">Branch %s created</string>
     <string name="creatingBranch">Creating branch…</string>
     <string name="enterReviewers">Add reviewers</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_stash_branches">StashBranchesActivity</string>
     <string name="branchesForProject">Branches for %s</string>
     <string name="confirmDelete">Delete branch %s?</string>
@@ -187,4 +184,10 @@
     <string name="prsForProject">Pull requests for %s</string>
     <string name="prId">#%d</string>
     <string name="prFromTo">from: %1$s to: %2$s</string>
+    <string name="enterTitle">Pull request title</string>
+    <string name="branchTo">Target branch:</string>
+    <string name="noReviewers">You need to select at least one reviewer</string>
+    <string name="failedToAddPullRequest">Failed to add Pull Request</string>
+    <string name="creatingPullRequest">Creating pull request…</string>
+    <string name="pullRequestCreated">Pull request #%d successfully created</string>
 </resources>

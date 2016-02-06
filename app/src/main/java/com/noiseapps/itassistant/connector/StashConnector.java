@@ -131,6 +131,12 @@ public class StashConnector {
         }
     }
 
+    public Observable<PullRequest> createPullRequest(String projectKey, String repoSlug, PullRequest pullRequest) {
+        return apiService.addPullRequest(projectKey, repoSlug, pullRequest).
+        observeOn(AndroidSchedulers.mainThread()).
+                subscribeOn(Schedulers.io());
+    }
+
     public Observable<Response> deleteBranch(String projectKey, String repoSlug, String branchName) {
         final Map<String, Object> params = new HashMap<>();
         params.put("name", branchName);

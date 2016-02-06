@@ -78,6 +78,7 @@ dependencies {
         transitive = true
     }
     compile files('libs/feedback_v6.jar')
+    compile "com.splitwise:tokenautocomplete:2.0.2@aar"
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:recyclerview-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'

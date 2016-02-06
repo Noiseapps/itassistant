@@ -1,5 +1,6 @@
 package com.noiseapps.itassistant;
 
+import android.content.pm.ActivityInfo;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -44,9 +45,19 @@ public class StashDetailsActivity extends AppCompatActivity {
 
     @AfterViews
     void init() {
+        setTablet();
         setSupportActionBar(toolbar);
         showActionFragment();
     }
+
+    private void setTablet() {
+        if (getResources().getBoolean(R.bool.tabletSize)) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+        }
+    }
+
 
     private void showActionFragment() {
         Fragment fragment;

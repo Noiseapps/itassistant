@@ -25,6 +25,10 @@ public class AuthorMetadata implements Parcelable {
         return displayName;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public int describeContents() {
         return 0;

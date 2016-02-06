@@ -13,9 +13,12 @@ import android.widget.TextView;
 
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.stash.PrListAdapter;
+import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
+import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 import com.noiseapps.itassistant.utils.DividerItemDecoration;
 import com.orhanobut.logger.Logger;
+import com.squareup.picasso.Picasso;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
@@ -29,6 +32,8 @@ public class PullRequestCategory extends Fragment {
 
     @FragmentArg
     ArrayList<PullRequest> pullRequests;
+    @FragmentArg
+    BaseAccount baseAccount;
 
     @ViewById
     RecyclerView prList;
@@ -40,12 +45,16 @@ public class PullRequestCategory extends Fragment {
     @AfterViews
     void init() {
         activity = getActivity();
-        final PrListAdapter adapter = new PrListAdapter(activity, pullRequests, this::openPullRequestExternal);
+        final Picasso authPicasso = AuthenticatedPicasso.getAuthPicasso(getActivity(), baseAccount);
+        final PrListAdapter adapter = new PrListAdapter(activity, pullRequests, authPicasso, this::openPullRequestExternal);
         prList.setLayoutManager(new LinearLayoutManager(activity));
         prList.addItemDecoration(new DividerItemDecoration(activity, DividerItemDecoration.VERTICAL_LIST));
         prList.setHasFixedSize(true);
         prList.setAdapter(adapter);
+        setListVisibility();
+    }
 
+    private void setListVisibility() {
         if (pullRequests.isEmpty()) {
             noPullRequests.setVisibility(View.VISIBLE);
             prList.setVisibility(View.GONE);
@@ -60,5 +69,11 @@ public class PullRequestCategory extends Fragment {
         showPrIntent.setAction(Intent.ACTION_VIEW);
         showPrIntent.setData(Uri.parse(pullRequest.getLinks().getSelf().get(0).getHref()));
         activity.startActivity(showPrIntent);
+    }
+
+    public void setPullRequests(ArrayList<PullRequest> pullRequests) {
+        this.pullRequests = pullRequests;
+        prList.getAdapter().notifyDataSetChanged();
+        setListVisibility();
     }
 }

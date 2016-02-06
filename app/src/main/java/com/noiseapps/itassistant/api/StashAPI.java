@@ -10,6 +10,8 @@ import com.noiseapps.itassistant.model.stash.projects.UserProjects;
 import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
 import com.noiseapps.itassistant.utils.annotations.DELETEBODY;
 
+import org.androidannotations.annotations.Bean;
+
 import java.util.Map;
 
 import retrofit.client.Response;
@@ -60,6 +62,11 @@ public interface StashAPI {
     PagedApiModel<PullRequest> getPullRequests(@Path("projectKey") String projectKey,
                                                @Path("repoSlug") String repoSlug,
                                                @Query("start") int start);
+
+    @POST("/rest/api/1.0/projects/{projectKey}/repos/{repoSlug}/pull-requests")
+    Observable<PullRequest> addPullRequest(@Path("projectKey") String projectKey,
+                                        @Path("repoSlug") String repoSlug,
+                                        @Body PullRequest pullRequest);
 
     @GET("/rest/api/1.0/projects/{projectKey}/repos/{repoSlug}/pull-requests/{prId}/merge")
     Observable<PullRequest> checkPullRequestStatus(@Path("projectKey") String projectKey,
