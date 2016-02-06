@@ -42,7 +42,6 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.
 
     @Override
     public int onGetSwipeReactionType(ViewHolder holder, int position, int x, int y) {
-        Logger.d(String.valueOf(position));
         return RecyclerViewSwipeManager.REACTION_CAN_SWIPE_BOTH_H;
     }
 
@@ -65,7 +64,6 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.
     @Override
     public SwipeResultAction onSwipeItem(ViewHolder holder, int position, int result) {
         if (result != RecyclerViewSwipeManager.RESULT_CANCELED) {
-            Logger.d(String.valueOf(position));
             return new SwipeAction(position);
         }
         return new DoNothingAction();
@@ -116,7 +114,6 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.
     private class DoNothingAction extends SwipeResultActionDefault {
         @Override
         protected void onPerformAction() {
-            Logger.d("DO NOTHING");
         }
     }
 

@@ -4,9 +4,11 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -33,6 +35,12 @@ import com.noiseapps.itassistant.fragment.IssueListFragment;
 import com.noiseapps.itassistant.fragment.IssueListFragment_;
 import com.noiseapps.itassistant.fragment.NewIssueFragment;
 import com.noiseapps.itassistant.fragment.NewIssueFragment_;
+import com.noiseapps.itassistant.fragment.stash.BranchListFragment;
+import com.noiseapps.itassistant.fragment.stash.BranchListFragment_;
+import com.noiseapps.itassistant.fragment.stash.CommitListFragment;
+import com.noiseapps.itassistant.fragment.stash.CommitListFragment_;
+import com.noiseapps.itassistant.fragment.stash.PullRequestListFragment;
+import com.noiseapps.itassistant.fragment.stash.PullRequestListFragment_;
 import com.noiseapps.itassistant.fragment.stash.StashProjectFragment;
 import com.noiseapps.itassistant.fragment.stash.StashProjectFragment_;
 import com.noiseapps.itassistant.model.NavigationModel;
@@ -75,7 +83,10 @@ import static com.noiseapps.itassistant.AnalyticsTrackers.SCREEN_ISSUE_LIST;
 
 @EActivity(R.layout.activity_issue_app_bar)
 public class IssueListActivity extends AppCompatActivity
-        implements IssueListFragment.Callbacks, NewIssueFragment.NewIssueCallbacks, IssueDetailFragment.IssueDetailCallbacks {
+        implements IssueListFragment.Callbacks,
+        NewIssueFragment.NewIssueCallbacks,
+        IssueDetailFragment.IssueDetailCallbacks,
+        StashProjectFragment.StashMenuCallbacks {
 
     public static final int ACCOUNTS_REQUEST = 633;
     public static final int NEW_ISSUE_REQUEST = 5135;
@@ -87,7 +98,7 @@ public class IssueListActivity extends AppCompatActivity
     @ViewById(R.id.recyclerView)
     RecyclerView navigationRecycler;
     @ViewById
-    View mainLayout, nothingSelectedInfo;
+    View nothingSelectedInfo;
     @ViewById
     DrawerLayout drawerLayout;
 
@@ -115,12 +126,16 @@ public class IssueListActivity extends AppCompatActivity
         if (mTwoPane) {
             nothingSelectedInfo.setVisibility(View.GONE);
             final IssueDetailFragment fragment = IssueDetailFragment_.builder().issue(issue).build();
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.issue_detail_container, fragment)
-                    .commit();
+            setDetailsFragment(fragment, null);
         } else {
             IssueDetailActivity_.intent(this).issue(issue).start();
         }
+    }
+
+    private void setDetailsFragment(Fragment fragment, @Nullable String backstackName) {
+        getSupportFragmentManager().beginTransaction().addToBackStack(backstackName)
+                .replace(R.id.issue_detail_container, fragment)
+                .commit();
     }
 
     @Override
@@ -130,9 +145,7 @@ public class IssueListActivity extends AppCompatActivity
         if (mTwoPane) {
             nothingSelectedInfo.setVisibility(View.GONE);
             final NewIssueFragment fragment = NewIssueFragment_.builder().projectKey(key).build();
-            getSupportFragmentManager().beginTransaction().addToBackStack("CREATE")
-                    .replace(R.id.issue_detail_container, fragment)
-                    .commit();
+            setDetailsFragment(fragment, "CREATE");
         } else {
             NewIssueActivity_.intent(this).projectKey(key).startForResult(NEW_ISSUE_REQUEST);
         }
@@ -145,9 +158,7 @@ public class IssueListActivity extends AppCompatActivity
         if (mTwoPane) {
             nothingSelectedInfo.setVisibility(View.GONE);
             final NewIssueFragment fragment = NewIssueFragment_.builder().projectKey(key).issue(issue).build();
-            getSupportFragmentManager().beginTransaction().addToBackStack("EDIT")
-                    .replace(R.id.issue_detail_container, fragment)
-                    .commit();
+            setDetailsFragment(fragment, "EDIT");
         } else {
             NewIssueActivity_.intent(this).projectKey(key).issue(issue).startForResult(NEW_ISSUE_REQUEST);
         }
@@ -223,7 +234,7 @@ public class IssueListActivity extends AppCompatActivity
         if (isSearchOpen) {
             listFragment.closeSearchView();
         } else if (!doubleClicked) {
-            Snackbar.make(mainLayout, R.string.tapAgainToExit, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(coordinatorLayout, R.string.tapAgainToExit, Snackbar.LENGTH_LONG).show();
             doubleClicked = true;
             handler.postDelayed(() -> doubleClicked = false, DELAY_MILLIS);
         } else {
@@ -305,14 +316,14 @@ public class IssueListActivity extends AppCompatActivity
 
     @UiThread
     void initMyIssues(List<Issue> myIssues) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.mainLayout, listFragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.listContainer, listFragment).commitAllowingStateLoss();
         getSupportFragmentManager().executePendingTransactions();
         listFragment.setIssues(myIssues);
     }
 
     private void showInfoAboutFailedAccounts(int failedAccounts) {
         if (failedAccounts > 0) {
-            Snackbar.make(mainLayout, getString(R.string.failedToReadAccountData, failedAccounts), Snackbar.LENGTH_LONG).show();
+            Snackbar.make(coordinatorLayout, getString(R.string.failedToReadAccountData, failedAccounts), Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -334,27 +345,12 @@ public class IssueListActivity extends AppCompatActivity
     @UiThread
     void initNavigation(List<NavigationModel> navigationModels) {
         final RecyclerViewExpandableItemManager manager = new RecyclerViewExpandableItemManager(null);
-        final NavigationMenuAdapter adapter = new NavigationMenuAdapter(this, navigationModels, (jiraProject, baseAccount) -> {
-            if(jiraProject.getAccountType() == AccountTypes.ACC_JIRA) {
-                mainLayout.setVisibility(View.VISIBLE);
-                drawerLayout.closeDrawer(GravityCompat.START);
-
-                final FragmentManager supportFragmentManager = getSupportFragmentManager();
-                if (!(supportFragmentManager.findFragmentById(R.id.container) instanceof IssueListFragment)) {
-                    supportFragmentManager.beginTransaction().replace(R.id.mainLayout, listFragment).commit();
-                    getSupportFragmentManager().executePendingTransactions();
-                }
-                listFragment.setProject((JiraProject) jiraProject, baseAccount);
-            } else {
-                mainLayout.setVisibility(View.VISIBLE);
-                drawerLayout.closeDrawer(GravityCompat.START);
-                final FragmentManager supportFragmentManager = getSupportFragmentManager();
-                if (!(supportFragmentManager.findFragmentById(R.id.container) instanceof IssueListFragment)) {
-                    supportFragmentManager.beginTransaction().replace(R.id.mainLayout, stashFragment).commit();
-                    getSupportFragmentManager().executePendingTransactions();
-                }
-                stashFragment.setProject((StashProject) jiraProject, baseAccount);
-                // show stash fragment
+        final NavigationMenuAdapter adapter = new NavigationMenuAdapter(this, navigationModels, (project, baseAccount) -> {
+            drawerLayout.closeDrawer(GravityCompat.START);
+            if(project.getAccountType() == AccountTypes.ACC_JIRA) {
+                showJiraFragment((JiraProject) project, baseAccount);
+            } else if(project.getAccountType() == AccountTypes.ACC_STASH){
+                showStashFragment((StashProject) project, baseAccount);
             }
         });
         final RecyclerView.Adapter wrappedAdapter = manager.createWrappedAdapter(adapter);
@@ -370,6 +366,24 @@ public class IssueListActivity extends AppCompatActivity
         }
     }
 
+    private void showStashFragment(StashProject jiraProject, BaseAccount baseAccount) {
+        final FragmentManager supportFragmentManager = getSupportFragmentManager();
+        if (!(supportFragmentManager.findFragmentById(R.id.listContainer) instanceof StashProjectFragment)) {
+            supportFragmentManager.beginTransaction().replace(R.id.listContainer, stashFragment).commit();
+            getSupportFragmentManager().executePendingTransactions();
+        }
+        stashFragment.setProject(jiraProject, baseAccount);
+    }
+
+    private void showJiraFragment(JiraProject jiraProject, BaseAccount baseAccount) {
+        final FragmentManager supportFragmentManager = getSupportFragmentManager();
+        if (!(supportFragmentManager.findFragmentById(R.id.listContainer) instanceof IssueListFragment)) {
+            supportFragmentManager.beginTransaction().replace(R.id.listContainer, listFragment).commit();
+            getSupportFragmentManager().executePendingTransactions();
+        }
+        listFragment.setProject(jiraProject, baseAccount);
+    }
+
     private boolean isTwoPane() {
         if (findViewById(R.id.issue_detail_container) != null) {
             mTwoPane = true;
@@ -380,7 +394,7 @@ public class IssueListActivity extends AppCompatActivity
 
     @UiThread
     void showErrorDialog() {
-        AlertDialogWrapper.Builder builder = new AlertDialogWrapper.Builder(this);
+        final AlertDialogWrapper.Builder builder = new AlertDialogWrapper.Builder(this);
         builder.setTitle(R.string.errorDownloading).setMessage(R.string.errorDownloadingMsg).
                 setPositiveButton(R.string.retry, (dialog, which) -> {
                     downloadData();
@@ -401,7 +415,7 @@ public class IssueListActivity extends AppCompatActivity
     }
 
     private void showNotImplemented() {
-        Snackbar.make(mainLayout, R.string.optionUnavailable, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(coordinatorLayout, R.string.optionUnavailable, Snackbar.LENGTH_LONG).show();
     }
 
     @Click(R.id.actionAssignedToMe)
@@ -486,5 +500,57 @@ public class IssueListActivity extends AppCompatActivity
     protected void onResume() {
         EventBus.getDefault().register(this);
         super.onResume();
+    }
+
+    @Override
+    public void onShowBranchesList(@NonNull StashProject project, @NonNull String repoSlug) {
+        if(mTwoPane){
+            final BranchListFragment fragment = BranchListFragment_.builder().
+                    project(project).
+                    repoSlug(repoSlug).
+                    build();
+            setDetailsFragment(fragment, "BRANCHES");
+        } else {
+            StashDetailsActivity_.intent(this).
+                    stashAction(StashDetailsActivity.ACTION_BRANCHES).
+                    project(project).
+                    repoSlug(repoSlug).
+                    start();
+        }
+    }
+
+    @Override
+    public void onShowCommitsList(@NonNull StashProject project, @NonNull String repoSlug, BaseAccount baseAccount) {
+        if(mTwoPane){
+            final CommitListFragment fragment = CommitListFragment_.builder().
+                    project(project).
+                    account(baseAccount).
+                    repoSlug(repoSlug).
+                    build();
+            setDetailsFragment(fragment, "COMMITS");
+        } else {
+            StashDetailsActivity_.intent(this).
+                    stashAction(StashDetailsActivity.ACTION_COMMITS).
+                    project(project).
+                    repoSlug(repoSlug).
+                    start();
+        }
+    }
+
+    @Override
+    public void onShowPullRequestList(StashProject project, String repoSlug, BaseAccount baseAccount) {
+        if(mTwoPane){
+            final PullRequestListFragment fragment = PullRequestListFragment_.builder().
+                    stashProject(project).
+                    repoSlug(repoSlug).
+                    build();
+            setDetailsFragment(fragment, "COMMITS");
+        } else {
+            StashDetailsActivity_.intent(this).
+                    stashAction(StashDetailsActivity.ACTION_PULL_REQUESTS).
+                    project(project).
+                    repoSlug(repoSlug).
+                    start();
+        }
     }
 }

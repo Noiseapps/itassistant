@@ -173,4 +173,21 @@
     <string name="branchCreated">Branch %s created</string>
     <string name="creatingBranch">Creating branch…</string>
     <string name="enterReviewers">Add reviewers</string>
+    <string name="title_activity_stash_branches">StashBranchesActivity</string>
+    <string name="branchesForProject">Branches for %s</string>
+    <string name="confirmDelete">Delete branch %s?</string>
+    <string name="confirmDeleteMsg">Are you sure to delete selected branch? This cannot be undone. Note that you need to have the required permissions to perform this action.</string>
+    <string name="failedToFetchCommitList">Failed to fetch commit list</string>
+    <string name="commitsForProject">Commits for project %s</string>
+    <string name="fetchingBranches">Fetching project branches…</string>
+    <string name="noPullRequests">No available pull requests</string>
+    <string name="prsForProject">Pull requests for %s</string>
+    <string name="prId">#%d</string>
+    <string name="prFromTo">from: %1$s to: %2$s</string>
+    <string name="enterTitle">Pull request title</string>
+    <string name="branchTo">Target branch:</string>
+    <string name="noReviewers">You need to select at least one reviewer</string>
+    <string name="failedToAddPullRequest">Failed to add Pull Request</string>
+    <string name="creatingPullRequest">Creating pull request…</string>
+    <string name="pullRequestCreated">Pull request #%d successfully created</string>
 </resources>

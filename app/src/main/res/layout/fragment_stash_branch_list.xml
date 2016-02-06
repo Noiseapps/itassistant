@@ -1,0 +1,36 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragment.stash.BranchListFragment">
+
+    <include layout="@layout/layout_fetching_data"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/branchesList"
+        tools:listitem="@layout/item_branch"
+        android:layout_width="match_parent"
+        android:scrollbars="vertical"
+        android:layout_height="match_parent" />
+
+    <com.noiseapps.itassistant.utils.views.MyFabProgressCircle
+        android:id="@+id/fabProgressCircle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right|end"
+        app:arcColor="@color/colorPrimary"
+        app:arcWidth="4dp"
+        app:layout_behavior="com.noiseapps.itassistant.utils.FabBehavior"
+        app:reusable="true">
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/addBranchFab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_add_white_24px"
+            app:layout_anchor="@id/branchesList" />
+    </com.noiseapps.itassistant.utils.views.MyFabProgressCircle>
+</android.support.design.widget.CoordinatorLayout>

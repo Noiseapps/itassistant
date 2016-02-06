@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.PagerAdapter;
@@ -18,6 +19,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import com.afollestad.materialdialogs.AlertDialogWrapper;
 import com.google.common.base.Predicate;
@@ -51,13 +60,6 @@ import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import rx.Observable;
 import rx.Subscription;
@@ -267,6 +269,18 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     public void onDetach() {
         super.onDetach();
         mCallbacks = sDummyCallbacks;
+        issues = null;
+        detachFragmentManager();
+    }
+
+    private void detachFragmentManager() {
+        try {
+            Field childFragmentManager = Fragment.class.getDeclaredField("mChildFragmentManager");
+            childFragmentManager.setAccessible(true);
+            childFragmentManager.set(this, null);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Click(R.id.addIssueFab)
@@ -569,7 +583,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         }
     }
 
-    private class WorkflowAdapter extends FragmentStatePagerAdapter {
+    private class WorkflowAdapter extends FragmentPagerAdapter {
         private final Fragment[] fragments;
         private final ListMultimap<String, Issue> issuesInWorkflow;
         private final boolean assignedToMeScreen;

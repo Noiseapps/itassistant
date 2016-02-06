@@ -1,13 +1,19 @@
 package com.noiseapps.itassistant.connector;
 
+import android.support.annotation.NonNull;
+
+import com.noiseapps.itassistant.BuildConfig;
 import com.noiseapps.itassistant.api.StashAPI;
 import com.noiseapps.itassistant.database.PreferencesDAO;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.atlassian.PagedApiModel;
-import com.noiseapps.itassistant.model.stash.projects.BranchModel;
-import com.noiseapps.itassistant.model.stash.projects.NewBranchModel;
-import com.noiseapps.itassistant.model.stash.projects.ProjectRepos;
+import com.noiseapps.itassistant.model.stash.branches.BranchModel;
+import com.noiseapps.itassistant.model.stash.commits.Commit;
+import com.noiseapps.itassistant.model.stash.branches.NewBranchModel;
+import com.noiseapps.itassistant.model.stash.general.ProjectRepos;
+import com.noiseapps.itassistant.model.stash.general.StashUser;
 import com.noiseapps.itassistant.model.stash.projects.UserProjects;
+import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
 import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterInject;
@@ -16,9 +22,10 @@ import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.SupposeBackground;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import retrofit.Callback;
 import retrofit.ErrorHandler;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
@@ -59,27 +66,87 @@ public class StashConnector {
     }
 
     @SupposeBackground
+    @NonNull
     public List<BranchModel> getBranches(@Path("projectKey") String projectKey, @Path("repoSlug") String repoSlug) {
-        int start = 0;
-        PagedApiModel<BranchModel> branches;
-        final List<BranchModel> repoBranches = new ArrayList<>();
-        do {
-            branches = apiService.getBranches(projectKey, repoSlug, start);
-            repoBranches.addAll(branches.getValues());
-            start = branches.getStart() + branches.getLimit();
-        } while (!branches.isLastPage());
-        return repoBranches;
+        try {
+            int start = 0;
+            PagedApiModel<BranchModel> branches;
+            final List<BranchModel> repoBranches = new ArrayList<>();
+            do {
+                branches = apiService.getBranches(projectKey, repoSlug, start);
+                repoBranches.addAll(branches.getValues());
+                start = branches.getStart() + branches.getLimit();
+            } while (!branches.isLastPage());
+            return repoBranches;
+        } catch (RetrofitError error) {
+            return new ArrayList<>();
+        }
     }
 
-    public Observable<BranchModel> createBranch(@Path("projectKey") String projectKey, @Path("repoSlug") String repoSlug, NewBranchModel newBranchModel) {
+    public Observable<PagedApiModel<Commit>> getCommitsPage(String projectKey, String repoSlug, int start) {
+        return apiService.getCommits(projectKey, repoSlug, start).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribeOn(Schedulers.io());
+    }
+
+    public Observable<BranchModel> createBranch(String projectKey, String repoSlug, NewBranchModel newBranchModel) {
         return apiService.createBranch(projectKey, repoSlug, newBranchModel).
                 observeOn(AndroidSchedulers.mainThread()).
                 subscribeOn(Schedulers.io());
     }
 
+    @SupposeBackground
+    @NonNull
+    public List<PullRequest> getPullRequests(String projectKey, String repoSlug) {
+        try {
+            int start = 0;
+            PagedApiModel<PullRequest> branches;
+            final List<PullRequest> repoBranches = new ArrayList<>();
+            do {
+                branches = apiService.getPullRequests(projectKey, repoSlug, start);
+                repoBranches.addAll(branches.getValues());
+                start = branches.getStart() + branches.getLimit();
+            } while (!branches.isLastPage());
+            return repoBranches;
+        } catch (RetrofitError error) {
+            return new ArrayList<>();
+        }
+    }
+
+    @SupposeBackground
+    @NonNull
+    public List<StashUser> getUsers() {
+        try {
+            int start = 0;
+            PagedApiModel<StashUser> users;
+            final List<StashUser> stashUsers = new ArrayList<>();
+            do {
+                users = apiService.getUserList(start);
+                stashUsers.addAll(users.getValues());
+                start = users.getStart() + users.getLimit();
+            } while (!users.isLastPage());
+            return stashUsers;
+        } catch (RetrofitError error) {
+            return new ArrayList<>();
+        }
+    }
+
+    public Observable<PullRequest> createPullRequest(String projectKey, String repoSlug, PullRequest pullRequest) {
+        return apiService.addPullRequest(projectKey, repoSlug, pullRequest).
+        observeOn(AndroidSchedulers.mainThread()).
+                subscribeOn(Schedulers.io());
+    }
+
+    public Observable<Response> deleteBranch(String projectKey, String repoSlug, String branchName) {
+        final Map<String, Object> params = new HashMap<>();
+        params.put("name", branchName);
+        params.put("dryRun", BuildConfig.DEBUG);
+        return apiService.deleteBranch(projectKey, repoSlug, params).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribeOn(Schedulers.io());
+    }
 
     @AfterInject
-
     void init() {
         initApiService();
     }
