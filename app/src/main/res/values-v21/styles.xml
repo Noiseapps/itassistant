@@ -8,8 +8,8 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
-    <style name="AppTheme.ButtonPrimary" parent="Base.Widget.AppCompat.Button">
-        <item name="android:background">@drawable/button_primary</item>
+    <style name="AppTheme.ButtonBase" parent="Base.Widget.AppCompat.Button">
+        <item name="android:layout_margin">8dp</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:padding">8dp</item>
         <item name="android:elevation">2dp</item>

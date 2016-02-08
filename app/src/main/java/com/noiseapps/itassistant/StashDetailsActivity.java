@@ -2,16 +2,20 @@ package com.noiseapps.itassistant;
 
 import android.content.pm.ActivityInfo;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.noiseapps.itassistant.fragment.stash.CommitListFragment_;
 import com.noiseapps.itassistant.fragment.stash.BranchListFragment_;
+import com.noiseapps.itassistant.fragment.stash.PullRequestDetailsFragment;
+import com.noiseapps.itassistant.fragment.stash.PullRequestDetailsFragment_;
 import com.noiseapps.itassistant.fragment.stash.PullRequestListFragment;
 import com.noiseapps.itassistant.fragment.stash.PullRequestListFragment_;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.stash.projects.StashProject;
+import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
 import com.noiseapps.itassistant.utils.annotations.StashActions;
 
 import org.androidannotations.annotations.AfterViews;
@@ -27,6 +31,7 @@ public class StashDetailsActivity extends AppCompatActivity {
     public static final int ACTION_COMMITS = 1;
     public static final int ACTION_BRANCHES = 2;
     public static final int ACTION_PULL_REQUESTS = 3;
+    public static final int ACTION_PULL_REQUEST_DETAILS = 4;
 
     @Extra
     @StashActions
@@ -38,6 +43,8 @@ public class StashDetailsActivity extends AppCompatActivity {
     StashProject project;
     @Extra
     BaseAccount baseAccount;
+    @Extra
+    PullRequest pullRequest;
 
 
     @ViewById
@@ -61,25 +68,35 @@ public class StashDetailsActivity extends AppCompatActivity {
 
     private void showActionFragment() {
         Fragment fragment;
+        fragment = getDetailsFragment();
+        if(fragment != null) {
+            replaceFragment(fragment);
+        }
+    }
+
+    @Nullable
+    private Fragment getDetailsFragment() {
+        final Fragment fragment;
         switch (stashAction) {
             case ACTION_SOURCE:
+                fragment = null;
                 break;
             case ACTION_BRANCHES:
                 fragment = BranchListFragment_.builder().project(project).repoSlug(repoSlug).build();
-                replaceFragment(fragment);
                 break;
             case ACTION_COMMITS:
                 fragment = CommitListFragment_.builder().project(project).repoSlug(repoSlug).build();
-                replaceFragment(fragment);
                 break;
             case ACTION_PULL_REQUESTS:
                 fragment = PullRequestListFragment_.builder().stashProject(project).repoSlug(repoSlug).baseAccount(baseAccount).build();
-                replaceFragment(fragment);
+                break;
+            case ACTION_PULL_REQUEST_DETAILS:
+                fragment = PullRequestDetailsFragment_.builder().stashProject(project).repoSlug(repoSlug).pullRequest(pullRequest).build();
                 break;
             default:
                 throw new UnsupportedOperationException("Wrong action code");
         }
-
+        return fragment;
     }
 
     @OptionsItem(android.R.id.home)

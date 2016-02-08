@@ -13,7 +13,9 @@ import com.noiseapps.itassistant.model.stash.branches.NewBranchModel;
 import com.noiseapps.itassistant.model.stash.general.ProjectRepos;
 import com.noiseapps.itassistant.model.stash.general.StashUser;
 import com.noiseapps.itassistant.model.stash.projects.UserProjects;
+import com.noiseapps.itassistant.model.stash.pullrequests.MergeStatus;
 import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
+import com.noiseapps.itassistant.model.stash.pullrequests.details.DetailsBase;
 import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterInject;
@@ -136,6 +138,50 @@ public class StashConnector {
         observeOn(AndroidSchedulers.mainThread()).
                 subscribeOn(Schedulers.io());
     }
+
+    public Observable<DetailsBase> getPullRequestDetails(String projectKey, String repoSlug, String fromRef, String toRef) {
+        return apiService.getPullRequestDiff(projectKey, repoSlug, fromRef, toRef).
+        observeOn(AndroidSchedulers.mainThread()).
+                subscribeOn(Schedulers.io());
+    }
+
+    public Observable<MergeStatus> checkPullRequestStatus(String projectKey, String repoSlug, int pullRequestId) {
+        return apiService.checkPullRequestStatus(projectKey, repoSlug, pullRequestId).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribeOn(Schedulers.io());
+    }
+
+    public Observable<PullRequest> reopenPullRequest(String projectKey, String repoSlug, int pullRequestId, long pullRequestVersion) {
+        return apiService.reopenPullRequest(projectKey, repoSlug, pullRequestId, pullRequestVersion).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribeOn(Schedulers.io());
+    }
+
+    public Observable<PullRequest> approvePullRequest(String projectKey, String repoSlug, int pullRequestId, long pullRequestVersion) {
+        return apiService.approvePullRequest(projectKey, repoSlug, pullRequestId, pullRequestVersion).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribeOn(Schedulers.io());
+    }
+
+    public Observable<PullRequest> unApprovePullRequest(String projectKey, String repoSlug, int pullRequestId, long pullRequestVersion) {
+        return apiService.unApprovePullRequest(projectKey, repoSlug, pullRequestId, pullRequestVersion).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribeOn(Schedulers.io());
+    }
+
+    public Observable<PullRequest> declinePullRequest(String projectKey, String repoSlug, int pullRequestId, long pullRequestVersion) {
+        return apiService.declinePullRequest(projectKey, repoSlug, pullRequestId, pullRequestVersion).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribeOn(Schedulers.io());
+    }
+
+    public Observable<PullRequest> mergePullRequest(String projectKey, String repoSlug, int pullRequestId, long pullRequestVersion) {
+        return apiService.mergePullRequest(projectKey, repoSlug, pullRequestId, pullRequestVersion).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribeOn(Schedulers.io());
+    }
+
+
 
     public Observable<Response> deleteBranch(String projectKey, String repoSlug, String branchName) {
         final Map<String, Object> params = new HashMap<>();

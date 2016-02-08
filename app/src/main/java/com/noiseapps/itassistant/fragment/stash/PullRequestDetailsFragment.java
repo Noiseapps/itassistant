@@ -1,0 +1,267 @@
+package com.noiseapps.itassistant.fragment.stash;
+
+
+import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.annimon.stream.Stream;
+import com.noiseapps.itassistant.R;
+import com.noiseapps.itassistant.connector.StashConnector;
+import com.noiseapps.itassistant.model.account.BaseAccount;
+import com.noiseapps.itassistant.model.stash.projects.StashProject;
+import com.noiseapps.itassistant.model.stash.pullrequests.MergeStatus;
+import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
+import com.noiseapps.itassistant.model.stash.pullrequests.details.DetailsBase;
+
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.ViewById;
+
+import rx.Observable;
+
+@EFragment(R.layout.fragment_pull_request_details)
+public class PullRequestDetailsFragment extends Fragment {
+
+    @FragmentArg
+    String repoSlug;
+
+    @FragmentArg
+    StashProject stashProject;
+
+    @FragmentArg
+    PullRequest pullRequest;
+
+    @FragmentArg
+    BaseAccount account;
+
+    @ViewById
+    TextView conflicts, fetchError;
+    @ViewById
+    LinearLayout fetchingDataProgress, contentView;
+    @ViewById
+    TabLayout tabLayout;
+    @ViewById
+    ViewPager viewPager;
+
+    @Bean
+    StashConnector connector;
+    private DetailsBase detailsBase;
+    private MergeStatus mergeStatus;
+
+    @AfterViews
+    void init() {
+        setupToolbar();
+        connector.getPullRequestDetails(stashProject.getKey(), repoSlug, pullRequest.getFromRef().getLatestChangeset(), pullRequest.getToRef().getLatestChangeset()).
+                subscribe(this::showPullRequestDetails, this::onDownloadError);
+    }
+
+
+    private void setupToolbar() {
+        final ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (supportActionBar != null) {
+            supportActionBar.setDisplayHomeAsUpEnabled(true);
+            supportActionBar.setHomeButtonEnabled(true);
+            supportActionBar.setTitle(getString(R.string.pullRequestDetails, pullRequest.getId()));
+            setHasOptionsMenu(true);
+        }
+    }
+
+    private void showPullRequestDetails(DetailsBase detailsBase) {
+        if(pullRequest.getState().equalsIgnoreCase(PullRequest.STATUS_OPEN)){
+            connector.checkPullRequestStatus(stashProject.getKey(), repoSlug, pullRequest.getId()).
+                subscribe(this::onStatusDownloaded, this::onDownloadError);
+        } else {
+            fillData();
+        }
+    }
+
+    private void onStatusDownloaded(MergeStatus mergeStatus) {
+        if (mergeStatus.isConflicted()) {
+            hideAll();
+            conflicts.setVisibility(View.VISIBLE);
+        } else {
+            fillData();
+        }
+    }
+
+
+    private void fillData() {
+        hideAll();
+        contentView.setVisibility(View.VISIBLE);
+        viewPager.setAdapter(new StashDetailsPagerAdapter());
+        tabLayout.setupWithViewPager(viewPager);
+    }
+
+    private void hideAll() {
+        fetchingDataProgress.setVisibility(View.GONE);
+        conflicts.setVisibility(View.GONE);
+        contentView.setVisibility(View.GONE);
+        fetchError.setVisibility(View.GONE);
+    }
+
+    private void onDownloadError(Throwable throwable) {
+        hideAll();
+        fetchError.setVisibility(View.VISIBLE);
+
+    }
+
+    private class StashDetailsPagerAdapter extends PagerAdapter {
+
+        private final String[] tabTitles;
+        private final LayoutInflater inflater;
+        private MaterialDialog progressDialog;
+        private View statusView;
+
+        public StashDetailsPagerAdapter() {
+            tabTitles = getResources().getStringArray(R.array.prTabs);
+            inflater = LayoutInflater.from(getActivity());
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            final View view;
+            if (position == 0) {
+                view = createStatusView(container);
+            } else {
+                view = createDiffView(container);
+            }
+            container.addView(view);
+            return view;
+        }
+
+        private View createStatusView(ViewGroup container) {
+            statusView = inflater.inflate(R.layout.layout_stash_pull_request_overview, container, false);
+            updateStatusView();
+            return statusView;
+        }
+
+        private void updateStatusView() {
+            if (pullRequest.getState().equalsIgnoreCase(PullRequest.STATUS_MERGED)) {
+                createMergedState();
+            } else if (pullRequest.getState().equalsIgnoreCase(PullRequest.STATUS_DECLINED)) {
+                createPrDeclinedState();
+            } else {
+                createPrRegularState();
+            }
+        }
+
+        private void createMergedState() {
+            statusView.findViewById(R.id.stateButtons).setVisibility(View.GONE);
+        }
+
+        private void createPrRegularState() {
+            final Button acceptButton = (Button) statusView.findViewById(R.id.acceptButton);
+            final View mergeButton = statusView.findViewById(R.id.mergeButton);
+
+            final boolean[] isApproved = {false};
+            Stream.of(pullRequest.getReviewers()).
+                    filter(requestMember -> requestMember.getUser().getName().equalsIgnoreCase(account.getUsername())).
+                    findFirst().
+                    ifPresent(value -> isApproved[0] = value.isApproved());
+
+            if(isApproved[0]) {
+                acceptButton.setText(R.string.unapprove);
+            }
+
+            mergeButton.setEnabled(mergeStatus.isCanMerge());
+            mergeButton.setOnClickListener(v ->  {
+                final Observable<PullRequest> observable = connector.mergePullRequest(stashProject.getKey(), repoSlug, pullRequest.getId(), pullRequest.getVersion());
+                subscribeForUpdate(observable);
+            });
+            acceptButton.setOnClickListener(v ->  {
+                final Observable<PullRequest> observable;
+                if(isApproved[0]) {
+                    observable = connector.unApprovePullRequest(stashProject.getKey(), repoSlug, pullRequest.getId(), pullRequest.getVersion());
+                } else {
+                    observable = connector.approvePullRequest(stashProject.getKey(), repoSlug, pullRequest.getId(), pullRequest.getVersion());
+                }
+                subscribeForUpdate(observable);
+
+            });
+            statusView.findViewById(R.id.declineButton).setOnClickListener(v ->  {
+                final Observable<PullRequest> observable = connector.declinePullRequest(stashProject.getKey(), repoSlug, pullRequest.getId(), pullRequest.getVersion());
+                subscribeForUpdate(observable);
+            });
+        }
+
+        private void createPrDeclinedState() {
+            statusView.findViewById(R.id.mergeButton).setVisibility(View.GONE);
+            statusView.findViewById(R.id.acceptButton).setVisibility(View.GONE);
+            statusView.findViewById(R.id.declineButton).setVisibility(View.GONE);
+            final View reopenButton = statusView.findViewById(R.id.reopenButton);
+            reopenButton.setVisibility(View.VISIBLE);
+            reopenButton.setOnClickListener(v -> {
+                final Observable<PullRequest> observable = connector.reopenPullRequest(stashProject.getKey(), repoSlug, pullRequest.getId(), pullRequest.getVersion());
+                subscribeForUpdate(observable);
+            });
+        }
+
+        public void subscribeForUpdate(Observable<PullRequest> observable) {
+            showProgress();
+            observable.subscribe(this::onUpdated, this::onUpdateError);
+        }
+
+        private void onUpdated(PullRequest pullRequest) {
+            hideProgress();
+            PullRequestDetailsFragment.this.pullRequest = pullRequest;
+            updateStatusView();
+        }
+
+        private void onUpdateError(Throwable throwable) {
+            hideProgress();
+            Snackbar.make(viewPager, R.string.failedToUpdatePr, Snackbar.LENGTH_LONG).show();
+        }
+
+        private void hideProgress() {
+            if (progressDialog != null) {
+                progressDialog.dismiss();
+                progressDialog = null;
+            }
+        }
+
+        private void showProgress() {
+            progressDialog = new MaterialDialog.Builder(getActivity()).
+                    progress(true, 0).
+                    content(R.string.updating).
+                    cancelable(false).show();
+        }
+
+        private View createDiffView(ViewGroup container) {
+            return new TextView(getActivity());
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView((View) object);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return tabTitles[position];
+        }
+
+        @Override
+        public int getCount() {
+            return 2;
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
+        }
+    }
+}

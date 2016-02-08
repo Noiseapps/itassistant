@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.noiseapps.itassistant.R;
+import com.noiseapps.itassistant.StashDetailsActivity_;
 import com.noiseapps.itassistant.adapters.stash.PrListAdapter;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
@@ -65,10 +66,7 @@ public class PullRequestCategory extends Fragment {
     }
 
     private void openPullRequestExternal(PullRequest pullRequest) {
-        final Intent showPrIntent = new Intent();
-        showPrIntent.setAction(Intent.ACTION_VIEW);
-        showPrIntent.setData(Uri.parse(pullRequest.getLinks().getSelf().get(0).getHref()));
-        activity.startActivity(showPrIntent);
+        ((PullRequestListFragment) getParentFragment()).onPrSelected(pullRequest);
     }
 
     public void setPullRequests(ArrayList<PullRequest> pullRequests) {
