@@ -5,7 +5,6 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -13,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
+import com.noiseapps.itassistant.AnalyticsTrackers;
 import com.noiseapps.itassistant.BuildConfig;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.connector.StashConnector;
@@ -64,6 +64,9 @@ public class PullRequestListFragment extends Fragment {
     View fetchingDataProgress, noProjectData, tabView;
     @ViewById
     TextView errorMessageTextView;
+    @Bean
+    AnalyticsTrackers tracker;
+
     private List<PullRequest> pullRequests;
     private ProgressDialog progressDialog;
     private List<StashUser> users;
@@ -89,7 +92,7 @@ public class PullRequestListFragment extends Fragment {
     @Background
     void downloadPullRequests() {
         pullRequests = connector.getPullRequests(stashProject.getKey(), repoSlug);
-        if(isAdded() && getActivity() != null) {
+        if (isAdded() && getActivity() != null) {
             if (pullRequests.size() > 0) {
                 onPullRequestsDownloaded();
             } else {
@@ -144,7 +147,7 @@ public class PullRequestListFragment extends Fragment {
 
     @Click(R.id.fabProgressCircle)
     void onAddPullRequest() {
-        if(branches == null && users == null) {
+        if (branches == null && users == null) {
             showDetailsFetchProgress();
             downloadCreatePullRequestData();
         } else {
@@ -164,7 +167,7 @@ public class PullRequestListFragment extends Fragment {
     void downloadCreatePullRequestData() {
         branches = connector.getBranches(stashProject.getKey(), repoSlug);
         users = connector.getUsers();
-        if(isAdded() && getActivity() != null) {
+        if (isAdded() && getActivity() != null) {
             if (!branches.isEmpty() && !users.isEmpty()) {
                 onBranchesDownloaded(branches, users);
             } else {
@@ -182,7 +185,7 @@ public class PullRequestListFragment extends Fragment {
     }
 
     private void onCreatePullRequest(PullRequest pullRequest, CreatePullRequestDialog dialog) {
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             onPrCreated(PullRequest.spoof(), dialog);
         } else {
             connector.createPullRequest(stashProject.getKey(), repoSlug, pullRequest).
@@ -193,6 +196,7 @@ public class PullRequestListFragment extends Fragment {
 
     private void onPrCreated(PullRequest response, CreatePullRequestDialog dialog) {
         dialog.getAlertDialog().dismiss();
+        tracker.sendEvent(AnalyticsTrackers.SCREEN_STASH_ACCOUNT, AnalyticsTrackers.CATEGORY_STASH_PR_LIST, "pullRequestCreated");
         Snackbar.make(viewPager, getString(R.string.pullRequestCreated, response.getId()), Snackbar.LENGTH_LONG).show();
         pullRequests.add(response);
         final PullRequestsPagerAdapter adapter = (PullRequestsPagerAdapter) viewPager.getAdapter();
@@ -243,17 +247,17 @@ public class PullRequestListFragment extends Fragment {
         }
 
         private void setupFragments(ArrayList<PullRequest> open, ArrayList<PullRequest> merged, ArrayList<PullRequest> declined) {
-            if(fragments[0] == null) {
+            if (fragments[0] == null) {
                 fragments[0] = PullRequestCategory_.builder().pullRequests(open).build();
             } else {
                 fragments[0].setPullRequests(open);
             }
-            if(fragments[1] == null) {
+            if (fragments[1] == null) {
                 fragments[1] = PullRequestCategory_.builder().pullRequests(merged).build();
             } else {
                 fragments[1].setPullRequests(merged);
             }
-            if(fragments[2] == null) {
+            if (fragments[2] == null) {
                 fragments[2] = PullRequestCategory_.builder().pullRequests(declined).build();
             } else {
                 fragments[2].setPullRequests(declined);

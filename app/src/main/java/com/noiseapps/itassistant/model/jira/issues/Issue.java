@@ -62,14 +62,7 @@ public class Issue implements Parcelable {
 
     @Override
     public String toString() {
-        return "Issue{" +
-                "transitions=" + transitions +
-                ", fields=" + fields +
-                ", key='" + key + '\'' +
-                ", self='" + self + '\'' +
-                ", id='" + id + '\'' +
-                ", expand='" + expand + '\'' +
-                '}';
+        return key;
     }
 
     @Override

@@ -11,6 +11,7 @@ import android.view.View;
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.RecyclerViewSwipeManager;
 import com.h6ah4i.android.widget.advrecyclerview.touchguard.RecyclerViewTouchActionGuardManager;
 import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
+import com.noiseapps.itassistant.AnalyticsTrackers;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.stash.BranchListAdapter;
 import com.noiseapps.itassistant.connector.StashConnector;
@@ -48,25 +49,16 @@ public class BranchListFragment extends Fragment {
     RecyclerView branchesList;
     @ViewById
     View fetchingDataProgress;
+    @ViewById
+    MyFabProgressCircle fabProgressCircle;
+    @Bean
+    CreateBranchDialog branchDialog;
+    @Bean
+    AnalyticsTrackers tracker;
     private List<BranchModel> branches;
-    private BranchListAdapter listAdapter;
     private RecyclerViewTouchActionGuardManager recyclerViewTouchActionGuardManager;
     private RecyclerViewSwipeManager recyclerViewSwipeManager;
     private RecyclerView.Adapter wrappedAdapter;
-    @ViewById
-    MyFabProgressCircle fabProgressCircle;
-
-    @Bean
-    CreateBranchDialog branchDialog;
-
-    @Click(R.id.addBranchFab)
-    void onAddBranch() {
-        branchDialog.init(project.getKey(), repoSlug, branches, branchModel -> {
-            branches.add(0, branchModel);
-            wrappedAdapter.notifyItemInserted(0);
-        });
-    }
-
     private BranchListAdapter.BranchListCallbacks listCallbacks = new BranchListAdapter.BranchListCallbacks() {
         @Override
         public void onItemClicked(BranchModel branchModel) {
@@ -79,6 +71,15 @@ public class BranchListFragment extends Fragment {
             showRemoveConfirmationDialog(branchModel);
         }
     };
+
+    @Click(R.id.addBranchFab)
+    void onAddBranch() {
+        branchDialog.init(project.getKey(), repoSlug, branches, branchModel -> {
+            tracker.sendEvent(AnalyticsTrackers.SCREEN_STASH_DETAILS, AnalyticsTrackers.CATEGORY_STASH_BRANCH_LIST, "newBranchAdded");
+            branches.add(0, branchModel);
+            wrappedAdapter.notifyItemInserted(0);
+        });
+    }
 
     private void showRemoveConfirmationDialog(BranchModel branchModel) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -111,11 +112,12 @@ public class BranchListFragment extends Fragment {
     private void onBranchDeleted(BranchModel response) {
         for (ListIterator<BranchModel> iterator = branches.listIterator(); iterator.hasNext(); ) {
             final BranchModel branch = iterator.next();
-            if(branch.getId().equalsIgnoreCase(response.getId())) {
+            if (branch.getId().equalsIgnoreCase(response.getId())) {
                 iterator.remove();
                 break;
             }
         }
+        tracker.sendEvent(AnalyticsTrackers.SCREEN_STASH_DETAILS, AnalyticsTrackers.CATEGORY_STASH_BRANCH_LIST, "branchDeleted");
         wrappedAdapter.notifyDataSetChanged();
         fabProgressCircle.beginFinalAnimation();
     }
@@ -160,7 +162,7 @@ public class BranchListFragment extends Fragment {
     }
 
     private void initList() {
-        listAdapter = new BranchListAdapter(getContext(), branches, listCallbacks);
+        final BranchListAdapter listAdapter = new BranchListAdapter(getContext(), branches, listCallbacks);
         recyclerViewTouchActionGuardManager = new RecyclerViewTouchActionGuardManager();
         recyclerViewTouchActionGuardManager.setInterceptVerticalScrollingWhileAnimationRunning(true);
         recyclerViewTouchActionGuardManager.setEnabled(true);

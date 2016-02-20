@@ -24,11 +24,17 @@ public class AnalyticsTrackers {
     public static final String SCREEN_ISSUE_LIST = "IssueList";
     public static final String SCREEN_ISSUE_DETAILS = "IssueDetails";
     public static final String SCREEN_ISSUE_EDIT = "IssueForm";
+    public static final String SCREEN_STASH_DETAILS = "StashDetails";
+    public static final String SCREEN_STASH_ACCOUNT = "StashAccount";
 
     public static final String CATEGORY_ACCOUNTS = "Accounts";
     public static final String CATEGORY_APP = "App";
     public static final String CATEGORY_MENU = "Menu";
     public static final String CATEGORY_ISSUES = "Issues";
+    public static final String CATEGORY_STASH_SCREEN_DETAILS = "StashDetails";
+    public static final String CATEGORY_STASH_BRANCH_LIST = "BranchList";
+    public static final String CATEGORY_STASH_COMMIT_LIST = "CommitList";
+    public static final String CATEGORY_STASH_PR_LIST = "PullRequestList";
     public static final String CATEGORY_TIME_TRACKER = "TimeTracking";
     private final SparseArray<Tracker> mTrackers = new SparseArray<>();
     @RootContext
@@ -39,6 +45,7 @@ public class AnalyticsTrackers {
     void init() {
         googleAnalytics = GoogleAnalytics.getInstance(context);
 //        googleAnalytics.setDryRun(BuildConfig.DEBUG);
+        //noinspection deprecation
         googleAnalytics.getLogger().setLogLevel(Logger.LogLevel.VERBOSE);
     }
 
@@ -88,11 +95,25 @@ public class AnalyticsTrackers {
     public @interface TargetTypes {
     }
 
-    @StringDef({SCREEN_ACCOUNTS, SCREEN_ACCOUNT_EDIT, SCREEN_ISSUE_LIST, SCREEN_ISSUE_DETAILS, SCREEN_ISSUE_EDIT})
+    @StringDef({SCREEN_ACCOUNTS,
+            SCREEN_ACCOUNT_EDIT,
+            SCREEN_ISSUE_LIST,
+            SCREEN_ISSUE_DETAILS,
+            SCREEN_ISSUE_EDIT,
+            SCREEN_STASH_ACCOUNT,
+            SCREEN_STASH_DETAILS})
     public @interface ScreenNames {
     }
 
-    @StringDef({CATEGORY_ACCOUNTS, CATEGORY_APP, CATEGORY_MENU, CATEGORY_ISSUES, CATEGORY_TIME_TRACKER})
+    @StringDef({CATEGORY_ACCOUNTS,
+            CATEGORY_APP,
+            CATEGORY_MENU,
+            CATEGORY_ISSUES,
+            CATEGORY_TIME_TRACKER,
+            CATEGORY_STASH_SCREEN_DETAILS,
+            CATEGORY_STASH_COMMIT_LIST,
+            CATEGORY_STASH_BRANCH_LIST,
+            CATEGORY_STASH_PR_LIST})
     public @interface Categories {
     }
 }

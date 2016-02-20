@@ -207,6 +207,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         }
         noProject.setVisibility(View.GONE);
         isEmpty = issues.isEmpty();
+        viewPager.setAdapter(null);
         final PagerAdapter adapter = fillAdapter(issues, assignedToMe);
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -616,12 +617,13 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         @Override
         public Fragment getItem(int position) {
             final String pageTitle = String.valueOf(getPageTitle(position));
-            if (fragments[position] == null) {
-                fragments[position] = JiraIssueListFragment_.builder().assignees(assignees).assignedToMe(assignedToMeScreen).
-                        workflowName(pageTitle).build();
-            }
+            fragments[position] = JiraIssueListFragment_.builder().assignees(assignees).assignedToMe(assignedToMeScreen).
+                    workflowName(pageTitle).build();
+//            if (fragments[position] == null) {
+//            }
             final ArrayList<Issue> issues = new ArrayList<>(issuesInWorkflow.get(pageTitle));
             ((JiraIssueListFragment) fragments[position]).setIssues(issues);
+
             return fragments[position];
         }
     }
