@@ -19,6 +19,7 @@ import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
 import com.noiseapps.itassistant.utils.annotations.StashActions;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.OptionsItem;
@@ -49,12 +50,21 @@ public class StashDetailsActivity extends AppCompatActivity {
 
     @ViewById
     Toolbar toolbar;
+    @Bean
+    AnalyticsTrackers tracker;
 
     @AfterViews
     void init() {
         setTablet();
         setSupportActionBar(toolbar);
         showActionFragment();
+
+
+        tracker.sendScreenVisit(AnalyticsTrackers.SCREEN_STASH_DETAILS);
+        tracker.sendEvent(AnalyticsTrackers.SCREEN_STASH_DETAILS,
+                AnalyticsTrackers.CATEGORY_STASH_SCREEN_DETAILS,
+                "stashDetailsAction",
+                String.valueOf(stashAction));
     }
 
     private void setTablet() {

@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.noiseapps.itassistant.AnalyticsTrackers;
 import com.noiseapps.itassistant.BuildConfig;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.connector.StashConnector;
@@ -32,9 +33,9 @@ import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.stash.branches.BranchModel;
 import com.noiseapps.itassistant.model.stash.general.CloneLink;
 import com.noiseapps.itassistant.model.stash.general.ProjectRepos;
+import com.noiseapps.itassistant.model.stash.general.StashRepoMeta;
 import com.noiseapps.itassistant.model.stash.general.StashUser;
 import com.noiseapps.itassistant.model.stash.projects.StashProject;
-import com.noiseapps.itassistant.model.stash.general.StashRepoMeta;
 import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
 import com.orhanobut.logger.Logger;
 
@@ -67,28 +68,19 @@ public class StashProjectFragment extends Fragment {
 
 
     StashProject stashProject;
-    private BaseAccount baseAccount;
-
     @Bean
     StashConnector stashConnector;
-
     @Bean
     CreateBranchDialog createBranchDialog;
+    @Bean
+    AnalyticsTrackers tracker;
+    private BaseAccount baseAccount;
     private StashRepoMeta currentRepo;
     private List<BranchModel> branches;
     private StashMenuCallbacks menuCallbacks;
     private ProgressDialog fetchingBranches;
     private List<StashUser> users;
     private ProgressDialog progressDialog;
-
-
-    public interface StashMenuCallbacks {
-        void onShowBranchesList(@NonNull StashProject stashProject, @NonNull String slug);
-
-        void onShowCommitsList(StashProject stashProject, String slug, BaseAccount baseAccount);
-
-        void onShowPullRequestList(StashProject stashProject, String slug, BaseAccount baseAccount);
-    }
 
     @AfterViews
     void init() {
@@ -207,6 +199,7 @@ public class StashProjectFragment extends Fragment {
         final Uri uri = Uri.parse(cloneLinkHref);
         final ClipData clipData = ClipData.newRawUri(cloneLinkName, uri);
         clipboardManager.setPrimaryClip(clipData);
+        tracker.sendEvent(AnalyticsTrackers.SCREEN_STASH_ACCOUNT, AnalyticsTrackers.CATEGORY_STASH_SCREEN_DETAILS, "linkCopied");
         Snackbar.make(rootView, R.string.linkCopied, Snackbar.LENGTH_LONG).show();
     }
 
@@ -221,13 +214,12 @@ public class StashProjectFragment extends Fragment {
             fetchingBranches.show();
             getBranches();
         } else {
-            CreateBranchDialog_.getInstance_(getActivity()).init(stashProject.getKey(), currentRepo.getSlug(), branches, branchModel -> {
-                Snackbar.make(rootView, getString(R.string.branchCreated, branchModel.getDisplayId()), Snackbar.LENGTH_LONG).show();
-            });
+            CreateBranchDialog_.getInstance_(getActivity()).init(stashProject.getKey(), currentRepo.getSlug(), branches, this::showSuccessMessage);
         }
     }
 
     private void showSuccessMessage(BranchModel branchModel) {
+        tracker.sendEvent(AnalyticsTrackers.SCREEN_STASH_ACCOUNT, AnalyticsTrackers.CATEGORY_STASH_SCREEN_DETAILS, "branchCreated");
         Snackbar.make(rootView, getString(R.string.branchCreated, branchModel.getDisplayId()), Snackbar.LENGTH_LONG).show();
     }
 
@@ -251,7 +243,7 @@ public class StashProjectFragment extends Fragment {
 
     @Background
     void downloadCreatePullRequestData() {
-        if(branches == null) {
+        if (branches == null) {
             branches = stashConnector.getBranches(stashProject.getKey(), currentRepo.getSlug());
         }
         users = stashConnector.getUsers();
@@ -282,6 +274,7 @@ public class StashProjectFragment extends Fragment {
 
     private void onPrCreated(PullRequest response, CreatePullRequestDialog dialog) {
         dialog.getAlertDialog().dismiss();
+        tracker.sendEvent(AnalyticsTrackers.SCREEN_STASH_ACCOUNT, AnalyticsTrackers.CATEGORY_STASH_SCREEN_DETAILS, "pullRequestCreated");
         Snackbar.make(rootView, getString(R.string.pullRequestCreated, response.getId()), Snackbar.LENGTH_LONG).show();
     }
 
@@ -312,6 +305,14 @@ public class StashProjectFragment extends Fragment {
 
     private void showProgress() {
         fetchingDataProgress.setVisibility(View.VISIBLE);
+    }
+
+    public interface StashMenuCallbacks {
+        void onShowBranchesList(@NonNull StashProject stashProject, @NonNull String slug);
+
+        void onShowCommitsList(StashProject stashProject, String slug, BaseAccount baseAccount);
+
+        void onShowPullRequestList(StashProject stashProject, String slug, BaseAccount baseAccount);
     }
 
 }

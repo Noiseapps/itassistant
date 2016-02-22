@@ -51,6 +51,7 @@ public class CommitListFragment extends Fragment {
     BaseAccount account;
     @Bean
     StashConnector connector;
+
     private int start;
     private CommitListAdapter adapter;
 
