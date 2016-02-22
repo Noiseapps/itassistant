@@ -23,7 +23,9 @@ import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.stash.projects.StashProject;
 import com.noiseapps.itassistant.model.stash.pullrequests.MergeStatus;
 import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
+import com.noiseapps.itassistant.model.stash.pullrequests.Veto;
 import com.noiseapps.itassistant.model.stash.pullrequests.details.DetailsBase;
+import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -81,6 +83,7 @@ public class PullRequestDetailsFragment extends Fragment {
     }
 
     private void showPullRequestDetails(DetailsBase detailsBase) {
+        this.detailsBase = detailsBase;
         if(pullRequest.getState().equalsIgnoreCase(PullRequest.STATUS_OPEN)){
             connector.checkPullRequestStatus(stashProject.getKey(), repoSlug, pullRequest.getId()).
                 subscribe(this::onStatusDownloaded, this::onDownloadError);
@@ -90,6 +93,7 @@ public class PullRequestDetailsFragment extends Fragment {
     }
 
     private void onStatusDownloaded(MergeStatus mergeStatus) {
+        this.mergeStatus = mergeStatus;
         if (mergeStatus.isConflicted()) {
             hideAll();
             conflicts.setVisibility(View.VISIBLE);
@@ -98,8 +102,8 @@ public class PullRequestDetailsFragment extends Fragment {
         }
     }
 
-
     private void fillData() {
+        Logger.d("fill data");
         hideAll();
         contentView.setVisibility(View.VISIBLE);
         viewPager.setAdapter(new StashDetailsPagerAdapter());
@@ -114,6 +118,7 @@ public class PullRequestDetailsFragment extends Fragment {
     }
 
     private void onDownloadError(Throwable throwable) {
+        Logger.e(throwable, throwable.getMessage());
         hideAll();
         fetchError.setVisibility(View.VISIBLE);
 
@@ -165,9 +170,15 @@ public class PullRequestDetailsFragment extends Fragment {
 
         private void createPrRegularState() {
             final Button acceptButton = (Button) statusView.findViewById(R.id.acceptButton);
-            final View mergeButton = statusView.findViewById(R.id.mergeButton);
+            final Button mergeButton = (Button) statusView.findViewById(R.id.mergeButton);
+            final TextView vetoes = (TextView) statusView.findViewById(R.id.vetoesTextView);
 
             final boolean[] isApproved = {false};
+
+            if(pullRequest.getAuthor().getUser().getName().equalsIgnoreCase(account.getUsername())) {
+                acceptButton.setEnabled(false);
+            }
+
             Stream.of(pullRequest.getReviewers()).
                     filter(requestMember -> requestMember.getUser().getName().equalsIgnoreCase(account.getUsername())).
                     findFirst().
@@ -176,6 +187,8 @@ public class PullRequestDetailsFragment extends Fragment {
             if(isApproved[0]) {
                 acceptButton.setText(R.string.unapprove);
             }
+
+            setVetoesView(vetoes);
 
             mergeButton.setEnabled(mergeStatus.isCanMerge());
             mergeButton.setOnClickListener(v ->  {
@@ -198,6 +211,17 @@ public class PullRequestDetailsFragment extends Fragment {
             });
         }
 
+        private void setVetoesView(TextView vetoes) {
+            if(!mergeStatus.isCanMerge()) {
+                final StringBuilder sb = new StringBuilder();
+                for (Veto veto : mergeStatus.getVetoes()) {
+                    sb.append(veto.getDetailedMessage()).append('\n');
+                }
+                vetoes.setText(sb.toString());
+                vetoes.setVisibility(View.VISIBLE);
+            }
+        }
+
         private void createPrDeclinedState() {
             statusView.findViewById(R.id.mergeButton).setVisibility(View.GONE);
             statusView.findViewById(R.id.acceptButton).setVisibility(View.GONE);
@@ -217,7 +241,7 @@ public class PullRequestDetailsFragment extends Fragment {
 
         private void onUpdated(PullRequest pullRequest) {
             hideProgress();
-            PullRequestDetailsFragment.this.pullRequest = pullRequest;
+//            PullRequestDetailsFragment.this.pullRequest = pullRequest;
             updateStatusView();
         }
 

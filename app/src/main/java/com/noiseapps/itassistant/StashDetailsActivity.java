@@ -98,10 +98,17 @@ public class StashDetailsActivity extends AppCompatActivity {
                 fragment = CommitListFragment_.builder().project(project).repoSlug(repoSlug).build();
                 break;
             case ACTION_PULL_REQUESTS:
-                fragment = PullRequestListFragment_.builder().stashProject(project).repoSlug(repoSlug).baseAccount(baseAccount).build();
+                fragment = PullRequestListFragment_.builder().
+                        stashProject(project).
+                        repoSlug(repoSlug).
+                        baseAccount(baseAccount).build();
                 break;
             case ACTION_PULL_REQUEST_DETAILS:
-                fragment = PullRequestDetailsFragment_.builder().stashProject(project).repoSlug(repoSlug).pullRequest(pullRequest).build();
+                fragment = PullRequestDetailsFragment_.builder().
+                        stashProject(project).
+                        repoSlug(repoSlug).
+                        pullRequest(pullRequest).
+                        account(baseAccount).build();
                 break;
             default:
                 throw new UnsupportedOperationException("Wrong action code");

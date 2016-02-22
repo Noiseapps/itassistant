@@ -85,6 +85,7 @@ public interface StashAPI {
     Observable<PullRequest> approvePullRequest(@Path("projectKey") String projectKey,
                                                @Path("repoSlug") String repoSlug,
                                                @Path("prId") int pullRequestId,
+                                               @Body String body,
                                                @Query("version") long pullRequestVersion);
 
     @DELETE("/rest/api/1.0/projects/{projectKey}/repos/{repoSlug}/pull-requests/{prId}/approve")
@@ -97,12 +98,14 @@ public interface StashAPI {
     Observable<PullRequest> declinePullRequest(@Path("projectKey") String projectKey,
                                                @Path("repoSlug") String repoSlug,
                                                @Path("prId") int pullRequestId,
+                                               @Body String body,
                                                @Query("version") long pullRequestVersion);
 
     @POST("/rest/api/1.0/projects/{projectKey}/repos/{repoSlug}/pull-requests/{prId}/reopen")
     Observable<PullRequest> reopenPullRequest(@Path("projectKey") String projectKey,
                                               @Path("repoSlug") String repoSlug,
                                               @Path("prId") int pullRequestId,
+                                              @Body String body,
                                               @Query("version") long pullRequestVersion);
 
     @GET("/rest/api/1.0/users")

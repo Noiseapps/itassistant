@@ -187,13 +187,9 @@ public class PullRequestListFragment extends Fragment {
     }
 
     private void onCreatePullRequest(PullRequest pullRequest, CreatePullRequestDialog dialog) {
-//        if (BuildConfig.DEBUG) {
-//            onPrCreated(PullRequest.spoof(), dialog);
-//        } else {
             connector.createPullRequest(stashProject.getKey(), repoSlug, pullRequest).
                     subscribe(request -> onPrCreated(request, dialog),
                             throwable -> onCreateError(throwable, dialog));
-//        }
     }
 
     private void onPrCreated(PullRequest response, CreatePullRequestDialog dialog) {
