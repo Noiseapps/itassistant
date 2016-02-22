@@ -584,7 +584,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         }
     }
 
-    private class WorkflowAdapter extends FragmentPagerAdapter {
+    private class WorkflowAdapter extends FragmentStatePagerAdapter {
         private final Fragment[] fragments;
         private final ListMultimap<String, Issue> issuesInWorkflow;
         private final boolean assignedToMeScreen;
@@ -617,10 +617,10 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         @Override
         public Fragment getItem(int position) {
             final String pageTitle = String.valueOf(getPageTitle(position));
-            fragments[position] = JiraIssueListFragment_.builder().assignees(assignees).assignedToMe(assignedToMeScreen).
+            if (fragments[position] == null) {
+                fragments[position] = JiraIssueListFragment_.builder().assignees(assignees).assignedToMe(assignedToMeScreen).
                     workflowName(pageTitle).build();
-//            if (fragments[position] == null) {
-//            }
+            }
             final ArrayList<Issue> issues = new ArrayList<>(issuesInWorkflow.get(pageTitle));
             ((JiraIssueListFragment) fragments[position]).setIssues(issues);
 

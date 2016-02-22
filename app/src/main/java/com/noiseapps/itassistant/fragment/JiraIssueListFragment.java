@@ -67,10 +67,12 @@ public class JiraIssueListFragment extends Fragment {
     }
 
     public void setIssues(ArrayList<Issue> issues) {
+        Logger.d("Setting issues");
         this.issues = issues;
     }
 
     private void setAdapter() {
+        Logger.d("Setting adapter");
         issuesRecycler.setLayoutManager(new LinearLayoutManager(context));
         final Picasso authPicasso = AuthenticatedPicasso.getAuthPicasso(context, jiraConnector.getCurrentConfig());
         adapter = new IssuesAdapter(context, issues, authPicasso, new AdapterCallback(), assignedToMe);

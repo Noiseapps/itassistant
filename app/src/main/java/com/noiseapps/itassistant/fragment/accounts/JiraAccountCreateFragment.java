@@ -114,14 +114,13 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
             return;
         }
         if (BuildConfig.DEBUG) {
-//            accountName.setText("Local");
-            accountName.setText("DTT");
-//            host.setText("10.1.221.123:8080");
-            host.setText("jira.przedwojski.com");
-//            username.setText("noiseapps@gmail.com");
+            accountName.setText("Exaco");
+//            accountName.setText("DTT");
+            host.setText("jira.exaco.pl");
+//            host.setText("jira.przedwojski.com");
             username.setText("tomasz.scibiorek");
-//            password.setText("test123");
-            password.setText("Tomek0269122@");
+            password.setText("kotek77@");
+//            password.setText("Tomek0269122@");
         }
     }
 
