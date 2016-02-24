@@ -107,7 +107,7 @@ public class StashDetailsActivity extends AppCompatActivity {
                 fragment = PullRequestDetailsFragment_.builder().
                         stashProject(project).
                         repoSlug(repoSlug).
-                        pullRequest(pullRequest).
+                        pullRequestId(pullRequest.getId()).
                         account(baseAccount).build();
                 break;
             default:

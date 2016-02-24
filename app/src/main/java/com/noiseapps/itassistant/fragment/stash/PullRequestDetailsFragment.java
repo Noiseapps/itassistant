@@ -24,7 +24,7 @@ import com.noiseapps.itassistant.model.stash.projects.StashProject;
 import com.noiseapps.itassistant.model.stash.pullrequests.MergeStatus;
 import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
 import com.noiseapps.itassistant.model.stash.pullrequests.Veto;
-import com.noiseapps.itassistant.model.stash.pullrequests.details.DetailsBase;
+import com.noiseapps.itassistant.model.stash.pullrequests.details.DiffBase;
 import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterViews;
@@ -45,45 +45,53 @@ public class PullRequestDetailsFragment extends Fragment {
     StashProject stashProject;
 
     @FragmentArg
-    PullRequest pullRequest;
+    int pullRequestId;
 
     @FragmentArg
     BaseAccount account;
 
     @ViewById
     TextView conflicts, fetchError;
+
     @ViewById
     LinearLayout fetchingDataProgress, contentView;
     @ViewById
     TabLayout tabLayout;
     @ViewById
     ViewPager viewPager;
-
     @Bean
     StashConnector connector;
-    private DetailsBase detailsBase;
+
+    private PullRequest pullRequest;
+    private DiffBase diffBase;
     private MergeStatus mergeStatus;
 
     @AfterViews
     void init() {
+        showProgress();
         setupToolbar();
+        connector.getPullRequest(stashProject.getKey(), repoSlug, pullRequestId).
+                subscribe(this::onPullRequestReceived, this::onDownloadError);
+    }
+
+    private void onPullRequestReceived(PullRequest pullRequest) {
+        this.pullRequest = pullRequest;
         connector.getPullRequestDetails(stashProject.getKey(), repoSlug, pullRequest.getFromRef().getLatestChangeset(), pullRequest.getToRef().getLatestChangeset()).
                 subscribe(this::showPullRequestDetails, this::onDownloadError);
     }
-
 
     private void setupToolbar() {
         final ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (supportActionBar != null) {
             supportActionBar.setDisplayHomeAsUpEnabled(true);
             supportActionBar.setHomeButtonEnabled(true);
-            supportActionBar.setTitle(getString(R.string.pullRequestDetails, pullRequest.getId()));
+            supportActionBar.setTitle(getString(R.string.pullRequestDetails, pullRequestId));
             setHasOptionsMenu(true);
         }
     }
 
-    private void showPullRequestDetails(DetailsBase detailsBase) {
-        this.detailsBase = detailsBase;
+    private void showPullRequestDetails(DiffBase diffBase) {
+        this.diffBase = diffBase;
         if(pullRequest.getState().equalsIgnoreCase(PullRequest.STATUS_OPEN)){
             connector.checkPullRequestStatus(stashProject.getKey(), repoSlug, pullRequest.getId()).
                 subscribe(this::onStatusDownloaded, this::onDownloadError);
@@ -112,6 +120,13 @@ public class PullRequestDetailsFragment extends Fragment {
 
     private void hideAll() {
         fetchingDataProgress.setVisibility(View.GONE);
+        conflicts.setVisibility(View.GONE);
+        contentView.setVisibility(View.GONE);
+        fetchError.setVisibility(View.GONE);
+    }
+
+    private void showProgress() {
+        fetchingDataProgress.setVisibility(View.VISIBLE);
         conflicts.setVisibility(View.GONE);
         contentView.setVisibility(View.GONE);
         fetchError.setVisibility(View.GONE);
@@ -166,11 +181,22 @@ public class PullRequestDetailsFragment extends Fragment {
 
         private void createMergedState() {
             statusView.findViewById(R.id.stateButtons).setVisibility(View.GONE);
+            final TextView statusTextView = (TextView) statusView.findViewById(R.id.pullRequestStatus);
+            statusTextView.setVisibility(View.VISIBLE);
+            statusTextView.setText(R.string.prIsMerged);
+
         }
 
         private void createPrRegularState() {
             final Button acceptButton = (Button) statusView.findViewById(R.id.acceptButton);
             final Button mergeButton = (Button) statusView.findViewById(R.id.mergeButton);
+            final Button declineButton = (Button) statusView.findViewById(R.id.declineButton);
+            acceptButton.setVisibility(View.VISIBLE);
+            mergeButton.setVisibility(View.VISIBLE);
+            declineButton.setVisibility(View.VISIBLE);
+            statusView.findViewById(R.id.reopenButton).setVisibility(View.GONE);
+            statusView.findViewById(R.id.pullRequestStatus).setVisibility(View.GONE);
+
             final TextView vetoes = (TextView) statusView.findViewById(R.id.vetoesTextView);
 
             final boolean[] isApproved = {false};
@@ -202,10 +228,10 @@ public class PullRequestDetailsFragment extends Fragment {
                 } else {
                     observable = connector.approvePullRequest(stashProject.getKey(), repoSlug, pullRequest.getId(), pullRequest.getVersion());
                 }
-                subscribeForUpdate(observable);
+//                subscribeForUpdate(observable);
 
             });
-            statusView.findViewById(R.id.declineButton).setOnClickListener(v ->  {
+            declineButton.setOnClickListener(v ->  {
                 final Observable<PullRequest> observable = connector.declinePullRequest(stashProject.getKey(), repoSlug, pullRequest.getId(), pullRequest.getVersion());
                 subscribeForUpdate(observable);
             });
@@ -227,10 +253,22 @@ public class PullRequestDetailsFragment extends Fragment {
             statusView.findViewById(R.id.acceptButton).setVisibility(View.GONE);
             statusView.findViewById(R.id.declineButton).setVisibility(View.GONE);
             final View reopenButton = statusView.findViewById(R.id.reopenButton);
+            statusView.findViewById(R.id.vetoesTextView).setVisibility(View.GONE);
+            final TextView statusTextView = (TextView) statusView.findViewById(R.id.pullRequestStatus);
+            statusTextView.setVisibility(View.VISIBLE);
+            statusTextView.setText(R.string.prIsDeclined);
             reopenButton.setVisibility(View.VISIBLE);
             reopenButton.setOnClickListener(v -> {
+                showProgress();
                 final Observable<PullRequest> observable = connector.reopenPullRequest(stashProject.getKey(), repoSlug, pullRequest.getId(), pullRequest.getVersion());
-                subscribeForUpdate(observable);
+                observable.flatMap(pullRequest -> {
+                    PullRequestDetailsFragment.this.pullRequest = pullRequest;
+                    return connector.checkPullRequestStatus(stashProject.getKey(), repoSlug, pullRequest.getId());
+                }).subscribe(mergeStatusLocal -> {
+                    mergeStatus = mergeStatusLocal;
+                    hideProgress();
+                    updateStatusView();
+                }, this::onUpdateError);
             });
         }
 
@@ -241,11 +279,14 @@ public class PullRequestDetailsFragment extends Fragment {
 
         private void onUpdated(PullRequest pullRequest) {
             hideProgress();
-//            PullRequestDetailsFragment.this.pullRequest = pullRequest;
+            if(pullRequest != null) {
+                PullRequestDetailsFragment.this.pullRequest = pullRequest;
+            }
             updateStatusView();
         }
 
         private void onUpdateError(Throwable throwable) {
+            Logger.e(throwable, throwable.getMessage());
             hideProgress();
             Snackbar.make(viewPager, R.string.failedToUpdatePr, Snackbar.LENGTH_LONG).show();
         }

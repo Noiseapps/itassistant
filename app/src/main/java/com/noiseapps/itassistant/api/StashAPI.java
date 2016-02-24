@@ -9,10 +9,8 @@ import com.noiseapps.itassistant.model.stash.general.StashUser;
 import com.noiseapps.itassistant.model.stash.projects.UserProjects;
 import com.noiseapps.itassistant.model.stash.pullrequests.MergeStatus;
 import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
-import com.noiseapps.itassistant.model.stash.pullrequests.details.DetailsBase;
+import com.noiseapps.itassistant.model.stash.pullrequests.details.DiffBase;
 import com.noiseapps.itassistant.utils.annotations.DELETEBODY;
-
-import org.androidannotations.annotations.Bean;
 
 import java.util.Map;
 
@@ -65,6 +63,11 @@ public interface StashAPI {
                                                @Path("repoSlug") String repoSlug,
                                                @Query("start") int start);
 
+    @GET("/rest/api/1.0/projects/{projectKey}/repos/{repoSlug}/pull-requests/{prId}")
+    Observable<PullRequest> getPullRequest(@Path("projectKey") String projectKey,
+                                           @Path("repoSlug") String repoSlug,
+                                           @Path("prId") int pullRequestId);
+
     @POST("/rest/api/1.0/projects/{projectKey}/repos/{repoSlug}/pull-requests")
     Observable<PullRequest> addPullRequest(@Path("projectKey") String projectKey,
                                         @Path("repoSlug") String repoSlug,
@@ -113,10 +116,10 @@ public interface StashAPI {
 
 
     @GET("/rest/api/1.0/projects/{projectKey}/repos/{repoSlug}/compare/diff")
-    Observable<DetailsBase> getPullRequestDiff(@Path("projectKey") String projectKey,
-                                               @Path("repoSlug") String repoSlug,
-                                               @Query("from") String from,
-                                               @Query("to") String to);
+    Observable<DiffBase> getPullRequestDiff(@Path("projectKey") String projectKey,
+                                            @Path("repoSlug") String repoSlug,
+                                            @Query("from") String from,
+                                            @Query("to") String to);
 
 
 }

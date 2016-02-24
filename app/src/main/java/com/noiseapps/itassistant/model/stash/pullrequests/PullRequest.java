@@ -40,11 +40,14 @@ public class PullRequest implements Parcelable {
     List<PullRequestMember> reviewers;
     PullRequestAttributes attributes;
     Links links;
+
     public PullRequest() {
     }
+
     protected PullRequest(Parcel in) {
         this.id = in.readInt();
         this.title = in.readString();
+        this.version = in.readLong();
         this.updatedDate = in.readLong();
         //noinspection WrongConstant
         this.state = in.readString();
@@ -147,6 +150,7 @@ public class PullRequest implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.id);
         dest.writeString(this.title);
+        dest.writeLong(this.version);
         dest.writeLong(this.updatedDate);
         dest.writeString(this.state);
         dest.writeParcelable(this.fromRef, 0);

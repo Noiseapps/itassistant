@@ -5,6 +5,7 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -13,7 +14,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.noiseapps.itassistant.AnalyticsTrackers;
-import com.noiseapps.itassistant.BuildConfig;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.StashDetailsActivity;
 import com.noiseapps.itassistant.StashDetailsActivity_;
@@ -34,6 +34,8 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.OptionsItem;
+import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
@@ -41,6 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @EFragment(R.layout.fragment_pr_list)
+@OptionsMenu(R.menu.menu_refresh)
 public class PullRequestListFragment extends Fragment {
 
     @FragmentArg
@@ -73,6 +76,11 @@ public class PullRequestListFragment extends Fragment {
     private ProgressDialog progressDialog;
     private List<StashUser> users;
     private List<BranchModel> branches;
+
+    @OptionsItem(R.id.actionRefresh)
+    void refreshItems() {
+        init();
+    }
 
     @AfterViews
     void init() {
@@ -123,6 +131,8 @@ public class PullRequestListFragment extends Fragment {
     void onPullRequestsDownloaded() {
         hideProgress();
         tabView.setVisibility(View.VISIBLE);
+        viewPager.setAdapter(null);
+        // TODO: 24.02.2016 fix that shit
         final PagerAdapter adapter = new PullRequestsPagerAdapter();
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(2);
@@ -221,7 +231,7 @@ public class PullRequestListFragment extends Fragment {
                 stashAction(StashDetailsActivity.ACTION_PULL_REQUEST_DETAILS).start();
     }
 
-    private class PullRequestsPagerAdapter extends FragmentPagerAdapter {
+    private class PullRequestsPagerAdapter extends FragmentStatePagerAdapter {
         private final PullRequestCategory[] fragments = new PullRequestCategory[3];
         private final String[] pullRequestCategories;
 

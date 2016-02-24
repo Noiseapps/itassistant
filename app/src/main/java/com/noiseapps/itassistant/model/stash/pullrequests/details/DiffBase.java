@@ -2,7 +2,7 @@ package com.noiseapps.itassistant.model.stash.pullrequests.details;
 
 import java.util.List;
 
-public class DetailsBase {
+public class DiffBase {
     String fromHash;
     String toHash;
     int contextLines;
@@ -31,7 +31,7 @@ public class DetailsBase {
 
     @Override
     public String toString() {
-        return "DetailsBase{" +
+        return "DiffBase{" +
                 "fromHash='" + fromHash + '\'' +
                 ", toHash='" + toHash + '\'' +
                 ", contextLines=" + contextLines +

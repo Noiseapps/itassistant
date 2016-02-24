@@ -44,9 +44,22 @@
             style="@style/AppTheme.ButtonPrimary"
             android:layout_width="0dp"
             android:visibility="gone"
+            android:text="@string/reopen"
             android:layout_height="wrap_content"
             android:layout_weight="2" />
     </LinearLayout>
+
+    <TextView
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:padding="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Small Text"
+        android:id="@+id/pullRequestStatus"
+        android:layout_gravity="center_horizontal"
+        android:gravity="end" />
 
     <TextView
         android:visibility="gone"

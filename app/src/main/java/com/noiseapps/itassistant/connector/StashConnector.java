@@ -15,7 +15,7 @@ import com.noiseapps.itassistant.model.stash.general.StashUser;
 import com.noiseapps.itassistant.model.stash.projects.UserProjects;
 import com.noiseapps.itassistant.model.stash.pullrequests.MergeStatus;
 import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
-import com.noiseapps.itassistant.model.stash.pullrequests.details.DetailsBase;
+import com.noiseapps.itassistant.model.stash.pullrequests.details.DiffBase;
 import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterInject;
@@ -138,8 +138,13 @@ public class StashConnector {
         observeOn(AndroidSchedulers.mainThread()).
                 subscribeOn(Schedulers.io());
     }
+    public Observable<PullRequest> getPullRequest(String projectKey, String repoSlug, int prId) {
+        return apiService.getPullRequest(projectKey, repoSlug, prId).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribeOn(Schedulers.io());
+    }
 
-    public Observable<DetailsBase> getPullRequestDetails(String projectKey, String repoSlug, String fromRef, String toRef) {
+    public Observable<DiffBase> getPullRequestDetails(String projectKey, String repoSlug, String fromRef, String toRef) {
         return apiService.getPullRequestDiff(projectKey, repoSlug, fromRef, toRef).
         observeOn(AndroidSchedulers.mainThread()).
                 subscribeOn(Schedulers.io());
