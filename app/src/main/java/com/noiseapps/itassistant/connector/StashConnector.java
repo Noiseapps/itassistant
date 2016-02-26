@@ -181,7 +181,7 @@ public class StashConnector {
     }
 
     public Observable<PullRequest> mergePullRequest(String projectKey, String repoSlug, int pullRequestId, long pullRequestVersion) {
-        return apiService.mergePullRequest(projectKey, repoSlug, pullRequestId, pullRequestVersion).
+        return apiService.mergePullRequest(projectKey, repoSlug, pullRequestId, pullRequestVersion, "").
                 observeOn(AndroidSchedulers.mainThread()).
                 subscribeOn(Schedulers.io());
     }

@@ -63,7 +63,7 @@ public class CreatePullRequestDialog {
         this.users = users;
         this.baseAccount = baseAccount;
         this.callbacks = callbacks;
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setView(R.layout.dialog_create_pull_request);
         builder.setTitle(R.string.createPullRequest);
         builder.setPositiveButton(R.string.createPullRequest, (dialog1, which) -> {});
@@ -83,9 +83,6 @@ public class CreatePullRequestDialog {
         final TextView title = (TextView) alertDialog.findViewById(R.id.pullRequestsTitle);
         final View createPrForm = alertDialog.findViewById(R.id.createPrForm);
         final View creatingProgress = alertDialog.findViewById(R.id.creatingPr);
-        if(BuildConfig.DEBUG) {
-            title.setText("Testy ITAssistant [DO NOT MERGE]");
-        }
         final List<StashUser> reviewers = new ArrayList<>();
         setupReviewerList(branchReviewers, title, reviewers);
 

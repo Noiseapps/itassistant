@@ -82,7 +82,8 @@ public interface StashAPI {
     Observable<PullRequest> mergePullRequest(@Path("projectKey") String projectKey,
                                              @Path("repoSlug") String repoSlug,
                                              @Path("prId") int pullRequestId,
-                                             @Query("version") long pullRequestVersion);
+                                             @Query("version") long pullRequestVersion,
+                                             @Body String emptyBody);
 
     @POST("/rest/api/1.0/projects/{projectKey}/repos/{repoSlug}/pull-requests/{prId}/approve")
     Observable<PullRequest> approvePullRequest(@Path("projectKey") String projectKey,
