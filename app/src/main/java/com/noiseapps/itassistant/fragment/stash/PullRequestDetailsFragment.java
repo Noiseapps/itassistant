@@ -4,6 +4,8 @@ package com.noiseapps.itassistant.fragment.stash;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -114,7 +116,7 @@ public class PullRequestDetailsFragment extends Fragment {
         Logger.d("fill data");
         hideAll();
         contentView.setVisibility(View.VISIBLE);
-        viewPager.setAdapter(new StashDetailsPagerAdapter());
+        viewPager.setAdapter(new DetailsPagerAdapter());
         tabLayout.setupWithViewPager(viewPager);
     }
 
@@ -138,6 +140,45 @@ public class PullRequestDetailsFragment extends Fragment {
         fetchError.setVisibility(View.VISIBLE);
 
     }
+
+    private class DetailsPagerAdapter extends FragmentStatePagerAdapter {
+
+        private final String[] tabTitles = getResources().getStringArray(R.array.prTabs);
+        private final Fragment[] items = new Fragment[2];
+
+        public DetailsPagerAdapter() {
+            super(getChildFragmentManager());
+
+            initItems();
+        }
+
+        private void initItems() {
+            items[0] = PullRequestOverviewFragment_.builder().
+                    account(account).
+                    pullRequest(pullRequest).
+                    mergeStatus(mergeStatus).
+                    repoSlug(repoSlug).
+                    stashProject(stashProject).build();
+
+            items[1] = PullRequestDiffFragment_.builder().build();
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return items[position];
+        }
+
+        @Override
+        public int getCount() {
+            return items.length;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return tabTitles[position];
+        }
+    }
+
 
     private class StashDetailsPagerAdapter extends PagerAdapter {
 

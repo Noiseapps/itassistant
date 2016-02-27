@@ -1,6 +1,9 @@
 package com.noiseapps.itassistant.model.stash.commits;
 
 import com.noiseapps.itassistant.model.stash.general.StashUser;
+import com.noiseapps.itassistant.model.stash.pullrequests.activities.Attributes;
+
+import org.w3c.dom.Attr;
 
 public class Commit {
     private String id;
@@ -8,6 +11,12 @@ public class Commit {
     private String message;
     private long authorTimestamp;
     private StashUser author;
+
+    public Attributes getAttributes() {
+        return attributes;
+    }
+
+    private Attributes attributes;
 
     public String getId() {
         return id;

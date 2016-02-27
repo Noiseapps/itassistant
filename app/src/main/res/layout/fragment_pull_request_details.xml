@@ -51,7 +51,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:visibility="gone" />
 
-    <include layout="@layout/layout_fetching_data" />
+    <include layout="@layout/layout_fetching_data" tools:visibility="gone"/>
 
 
 </FrameLayout>
