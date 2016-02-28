@@ -23,4 +23,11 @@
     <color name="white">#ffffff</color>
     <color name="stateDelete">#F44336</color>
     <color name="mask">#cc000000</color>
+
+    <color name="prMerged">#14892C</color>
+    <color name="prApproved">#14892C</color>
+    <color name="prCommented">#4A6785</color>
+    <color name="prUpdated">#F6C342</color>
+    <color name="prOpened">#4A6785</color>
+    <color name="prDeclined">#D04437</color>
 </resources>

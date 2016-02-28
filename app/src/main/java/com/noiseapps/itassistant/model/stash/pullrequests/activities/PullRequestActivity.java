@@ -10,6 +10,7 @@ public class PullRequestActivity {
     public static final String ACTION_APPROVED = "APPROVED";
     public static final String ACTION_MERGED = "MERGED";
     public static final String ACTION_DECLINED = "DECLINED";
+    public static final String ACTION_REOPENED = "REOPENED";
 
     int id;
     long createdDate;

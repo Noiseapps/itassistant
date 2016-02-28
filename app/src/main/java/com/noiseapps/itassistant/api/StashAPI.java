@@ -9,6 +9,7 @@ import com.noiseapps.itassistant.model.stash.general.StashUser;
 import com.noiseapps.itassistant.model.stash.projects.UserProjects;
 import com.noiseapps.itassistant.model.stash.pullrequests.MergeStatus;
 import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
+import com.noiseapps.itassistant.model.stash.pullrequests.activities.PullRequestActivity;
 import com.noiseapps.itassistant.model.stash.pullrequests.details.DiffBase;
 import com.noiseapps.itassistant.utils.annotations.DELETEBODY;
 
@@ -123,4 +124,9 @@ public interface StashAPI {
                                             @Query("to") String to);
 
 
+    @GET("/rest/api/1.0/projects/{projectKey}/repos/{repoSlug}/pull-requests/{prId}/activities")
+    PagedApiModel<PullRequestActivity> getPullRequestActivities(@Path("projectKey") String projectKey,
+                                                                @Path("repoSlug") String repoSlug,
+                                                                @Path("prId") int pullRequestId,
+                                                                @Query("start") int start);
 }

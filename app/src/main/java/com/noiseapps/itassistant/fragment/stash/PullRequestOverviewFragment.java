@@ -2,6 +2,8 @@ package com.noiseapps.itassistant.fragment.stash;
 
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -9,20 +11,28 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.annimon.stream.Stream;
 import com.noiseapps.itassistant.R;
-import com.noiseapps.itassistant.api.StashAPI;
+import com.noiseapps.itassistant.adapters.stash.PullRequestActivityAdapter;
 import com.noiseapps.itassistant.connector.StashConnector;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.stash.projects.StashProject;
 import com.noiseapps.itassistant.model.stash.pullrequests.MergeStatus;
 import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
 import com.noiseapps.itassistant.model.stash.pullrequests.Veto;
+import com.noiseapps.itassistant.model.stash.pullrequests.activities.PullRequestActivity;
+import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
+import com.noiseapps.itassistant.utils.DividerItemDecoration;
 import com.orhanobut.logger.Logger;
+import com.squareup.picasso.Picasso;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
+
+import java.util.List;
 
 import rx.Observable;
 
@@ -51,7 +61,10 @@ public class PullRequestOverviewFragment extends Fragment {
     MergeStatus mergeStatus;
 
     @ViewById
-    View fragmentRoot, stateButtons;
+    View fragmentRoot, stateButtons, fetchingPrActivities;
+
+    @ViewById
+    RecyclerView activityRecyclerView;
 
     @ViewById
     Button acceptButton, mergeButton, declineButton, reopenButton;
@@ -60,11 +73,36 @@ public class PullRequestOverviewFragment extends Fragment {
     TextView pullRequestStatus, vetoesTextView;
 
     private MaterialDialog progressDialog;
+    private PullRequestActivityAdapter adapter;
 
     @AfterViews
     void init() {
-        // TODO: 26.02.2016 get activities
+        getActivities();
         updateStatusView();
+    }
+
+    private void getActivities() {
+        fetchingPrActivities.setVisibility(View.VISIBLE);
+        activityRecyclerView.setVisibility(View.GONE);
+        fetchActivities();
+    }
+
+    @Background
+    void fetchActivities() {
+        final List<PullRequestActivity> activities = connector.getActivities(stashProject.getKey(), repoSlug, pullRequest.getId());
+        setupListAdapter(activities);
+    }
+
+    @UiThread
+    void setupListAdapter(List<PullRequestActivity> activities) {
+        final Picasso authPicasso = AuthenticatedPicasso.getAuthPicasso(getActivity(), account);
+        adapter = new PullRequestActivityAdapter(getActivity(), activities, authPicasso);
+        activityRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        activityRecyclerView.setAdapter(adapter);
+        activityRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
+
+        fetchingPrActivities.setVisibility(View.GONE);
+        activityRecyclerView.setVisibility(View.VISIBLE);
     }
 
     private void updateStatusView() {

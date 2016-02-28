@@ -15,6 +15,7 @@ import com.noiseapps.itassistant.model.stash.general.StashUser;
 import com.noiseapps.itassistant.model.stash.projects.UserProjects;
 import com.noiseapps.itassistant.model.stash.pullrequests.MergeStatus;
 import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
+import com.noiseapps.itassistant.model.stash.pullrequests.activities.PullRequestActivity;
 import com.noiseapps.itassistant.model.stash.pullrequests.details.DiffBase;
 import com.orhanobut.logger.Logger;
 
@@ -95,6 +96,25 @@ public class StashConnector {
         return apiService.createBranch(projectKey, repoSlug, newBranchModel).
                 observeOn(AndroidSchedulers.mainThread()).
                 subscribeOn(Schedulers.io());
+    }
+
+
+    @SupposeBackground
+    @NonNull
+    public List<PullRequestActivity> getActivities(String projectKey, String repoSlug, int prId) {
+        try {
+            int start = 0;
+            PagedApiModel<PullRequestActivity> singleCallActivities;
+            final List<PullRequestActivity> allActivities = new ArrayList<>();
+            do {
+                singleCallActivities = apiService.getPullRequestActivities(projectKey, repoSlug, prId, start);
+                allActivities.addAll(singleCallActivities.getValues());
+                start = singleCallActivities.getStart() + singleCallActivities.getLimit();
+            } while (!singleCallActivities.isLastPage());
+            return allActivities;
+        } catch (RetrofitError error) {
+            return new ArrayList<>();
+        }
     }
 
     @SupposeBackground
@@ -185,8 +205,6 @@ public class StashConnector {
                 observeOn(AndroidSchedulers.mainThread()).
                 subscribeOn(Schedulers.io());
     }
-
-
 
     public Observable<Response> deleteBranch(String projectKey, String repoSlug, String branchName) {
         final Map<String, Object> params = new HashMap<>();
