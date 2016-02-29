@@ -8,23 +8,29 @@ public class PullRequestActivity {
     public static final String ACTION_UPDATE = "RESCOPED";
     public static final String ACTION_COMMENT = "COMMENTED";
     public static final String ACTION_APPROVED = "APPROVED";
+    public static final String ACTION_UNAPPROVED = "UNAPPROVED";
     public static final String ACTION_MERGED = "MERGED";
     public static final String ACTION_DECLINED = "DECLINED";
     public static final String ACTION_REOPENED = "REOPENED";
-
     int id;
     long createdDate;
     StashUser user;
     String action;
-
     // only if action is "COMMENTED"
     Comment comment;
     CommentAnchor commentAnchor;
     Diff diff;
-
     // only used when action is "RESCOPED"
     Changesets added;
     Changesets removed;
+
+    public Changesets getAdded() {
+        return added;
+    }
+
+    public Changesets getRemoved() {
+        return removed;
+    }
 
     public int getId() {
         return id;

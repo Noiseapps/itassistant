@@ -7,4 +7,12 @@ import java.util.List;
 public class Changesets {
     List<Commit> changesets;
     int total;
+
+    public List<Commit> getChangesets() {
+        return changesets;
+    }
+
+    public int getTotal() {
+        return total;
+    }
 }

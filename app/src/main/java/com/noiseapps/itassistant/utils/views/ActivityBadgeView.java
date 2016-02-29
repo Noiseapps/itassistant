@@ -2,8 +2,6 @@ package com.noiseapps.itassistant.utils.views;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RectShape;
 import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
@@ -38,6 +36,7 @@ public class ActivityBadgeView extends TextView {
                 getDrawable(R.color.prApproved);
                 break;
             case PullRequestActivity.ACTION_DECLINED:
+            case PullRequestActivity.ACTION_UNAPPROVED:
                 getDrawable(R.color.prDeclined);
                 break;
             case PullRequestActivity.ACTION_UPDATE:
