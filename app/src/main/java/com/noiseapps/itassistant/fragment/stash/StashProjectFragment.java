@@ -263,13 +263,9 @@ public class StashProjectFragment extends Fragment {
     }
 
     private void onCreatePullRequest(PullRequest pullRequest, CreatePullRequestDialog dialog) {
-        if (BuildConfig.DEBUG) {
-            onPrCreated(PullRequest.spoof(), dialog);
-        } else {
-            stashConnector.createPullRequest(stashProject.getKey(), currentRepo.getSlug(), pullRequest).
-                    subscribe(request -> onPrCreated(request, dialog),
-                            throwable -> onCreateError(throwable, dialog));
-        }
+        stashConnector.createPullRequest(stashProject.getKey(), currentRepo.getSlug(), pullRequest).
+                subscribe(request -> onPrCreated(request, dialog),
+                        throwable -> onCreateError(throwable, dialog));
     }
 
     private void onPrCreated(PullRequest response, CreatePullRequestDialog dialog) {

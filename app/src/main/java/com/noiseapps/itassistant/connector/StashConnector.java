@@ -13,7 +13,10 @@ import com.noiseapps.itassistant.model.stash.branches.NewBranchModel;
 import com.noiseapps.itassistant.model.stash.general.ProjectRepos;
 import com.noiseapps.itassistant.model.stash.general.StashUser;
 import com.noiseapps.itassistant.model.stash.projects.UserProjects;
+import com.noiseapps.itassistant.model.stash.pullrequests.MergeStatus;
 import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
+import com.noiseapps.itassistant.model.stash.pullrequests.activities.PullRequestActivity;
+import com.noiseapps.itassistant.model.stash.pullrequests.details.DiffBase;
 import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.AfterInject;
@@ -95,6 +98,25 @@ public class StashConnector {
                 subscribeOn(Schedulers.io());
     }
 
+
+    @SupposeBackground
+    @NonNull
+    public List<PullRequestActivity> getActivities(String projectKey, String repoSlug, int prId) {
+        try {
+            int start = 0;
+            PagedApiModel<PullRequestActivity> singleCallActivities;
+            final List<PullRequestActivity> allActivities = new ArrayList<>();
+            do {
+                singleCallActivities = apiService.getPullRequestActivities(projectKey, repoSlug, prId, start);
+                allActivities.addAll(singleCallActivities.getValues());
+                start = singleCallActivities.getStart() + singleCallActivities.getLimit();
+            } while (!singleCallActivities.isLastPage());
+            return allActivities;
+        } catch (RetrofitError error) {
+            return new ArrayList<>();
+        }
+    }
+
     @SupposeBackground
     @NonNull
     public List<PullRequest> getPullRequests(String projectKey, String repoSlug) {
@@ -134,6 +156,53 @@ public class StashConnector {
     public Observable<PullRequest> createPullRequest(String projectKey, String repoSlug, PullRequest pullRequest) {
         return apiService.addPullRequest(projectKey, repoSlug, pullRequest).
         observeOn(AndroidSchedulers.mainThread()).
+                subscribeOn(Schedulers.io());
+    }
+    public Observable<PullRequest> getPullRequest(String projectKey, String repoSlug, int prId) {
+        return apiService.getPullRequest(projectKey, repoSlug, prId).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribeOn(Schedulers.io());
+    }
+
+    public Observable<DiffBase> getPullRequestDetails(String projectKey, String repoSlug, String fromRef, String toRef) {
+        return apiService.getPullRequestDiff(projectKey, repoSlug, fromRef, toRef).
+        observeOn(AndroidSchedulers.mainThread()).
+                subscribeOn(Schedulers.io());
+    }
+
+    public Observable<MergeStatus> checkPullRequestStatus(String projectKey, String repoSlug, int pullRequestId) {
+        return apiService.checkPullRequestStatus(projectKey, repoSlug, pullRequestId).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribeOn(Schedulers.io());
+    }
+
+    public Observable<PullRequest> reopenPullRequest(String projectKey, String repoSlug, int pullRequestId, long pullRequestVersion) {
+        return apiService.reopenPullRequest(projectKey, repoSlug, pullRequestId, "", pullRequestVersion).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribeOn(Schedulers.io());
+    }
+
+    public Observable<StashUser> approvePullRequest(String projectKey, String repoSlug, int pullRequestId, long pullRequestVersion) {
+        return apiService.approvePullRequest(projectKey, repoSlug, pullRequestId, "", pullRequestVersion).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribeOn(Schedulers.io());
+    }
+
+    public Observable<StashUser> unApprovePullRequest(String projectKey, String repoSlug, int pullRequestId, long pullRequestVersion) {
+        return apiService.unApprovePullRequest(projectKey, repoSlug, pullRequestId, pullRequestVersion).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribeOn(Schedulers.io());
+    }
+
+    public Observable<PullRequest> declinePullRequest(String projectKey, String repoSlug, int pullRequestId, long pullRequestVersion) {
+        return apiService.declinePullRequest(projectKey, repoSlug, pullRequestId, "", pullRequestVersion).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribeOn(Schedulers.io());
+    }
+
+    public Observable<PullRequest> mergePullRequest(String projectKey, String repoSlug, int pullRequestId, long pullRequestVersion) {
+        return apiService.mergePullRequest(projectKey, repoSlug, pullRequestId, pullRequestVersion, "").
+                observeOn(AndroidSchedulers.mainThread()).
                 subscribeOn(Schedulers.io());
     }
 

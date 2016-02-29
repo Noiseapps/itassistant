@@ -543,11 +543,13 @@ public class IssueListActivity extends AppCompatActivity
             final PullRequestListFragment fragment = PullRequestListFragment_.builder().
                     stashProject(project).
                     repoSlug(repoSlug).
+                    baseAccount(baseAccount).
                     build();
             setDetailsFragment(fragment, "COMMITS");
         } else {
             StashDetailsActivity_.intent(this).
                     stashAction(StashDetailsActivity.ACTION_PULL_REQUESTS).
+                    baseAccount(baseAccount).
                     project(project).
                     repoSlug(repoSlug).
                     start();

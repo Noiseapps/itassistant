@@ -5,6 +5,7 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -13,8 +14,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.noiseapps.itassistant.AnalyticsTrackers;
-import com.noiseapps.itassistant.BuildConfig;
 import com.noiseapps.itassistant.R;
+import com.noiseapps.itassistant.StashDetailsActivity;
+import com.noiseapps.itassistant.StashDetailsActivity_;
 import com.noiseapps.itassistant.connector.StashConnector;
 import com.noiseapps.itassistant.dialogs.CreatePullRequestDialog;
 import com.noiseapps.itassistant.dialogs.CreatePullRequestDialog_;
@@ -32,6 +34,8 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.OptionsItem;
+import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
@@ -39,6 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @EFragment(R.layout.fragment_pr_list)
+@OptionsMenu(R.menu.menu_refresh)
 public class PullRequestListFragment extends Fragment {
 
     @FragmentArg
@@ -71,6 +76,11 @@ public class PullRequestListFragment extends Fragment {
     private ProgressDialog progressDialog;
     private List<StashUser> users;
     private List<BranchModel> branches;
+
+    @OptionsItem(R.id.actionRefresh)
+    void refreshItems() {
+        init();
+    }
 
     @AfterViews
     void init() {
@@ -121,6 +131,8 @@ public class PullRequestListFragment extends Fragment {
     void onPullRequestsDownloaded() {
         hideProgress();
         tabView.setVisibility(View.VISIBLE);
+        viewPager.setAdapter(null);
+        // TODO: 24.02.2016 fix that shit
         final PagerAdapter adapter = new PullRequestsPagerAdapter();
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(2);
@@ -185,13 +197,9 @@ public class PullRequestListFragment extends Fragment {
     }
 
     private void onCreatePullRequest(PullRequest pullRequest, CreatePullRequestDialog dialog) {
-        if (BuildConfig.DEBUG) {
-            onPrCreated(PullRequest.spoof(), dialog);
-        } else {
             connector.createPullRequest(stashProject.getKey(), repoSlug, pullRequest).
                     subscribe(request -> onPrCreated(request, dialog),
                             throwable -> onCreateError(throwable, dialog));
-        }
     }
 
     private void onPrCreated(PullRequest response, CreatePullRequestDialog dialog) {
@@ -214,10 +222,16 @@ public class PullRequestListFragment extends Fragment {
         Snackbar.make(viewPager, R.string.failedToFetchDetails, Snackbar.LENGTH_LONG).show();
     }
 
-    private class PullRequestsPagerAdapter extends FragmentPagerAdapter {
-        private static final String STATUS_MERGED = "MERGED";
-        private static final String STATUS_DECLINED = "DECLINED";
-        private static final String STATUS_OPEN = "OPEN";
+    public void onPrSelected(PullRequest pullRequest) {
+        StashDetailsActivity_.intent(this).
+                project(stashProject).
+                repoSlug(repoSlug).
+                pullRequest(pullRequest).
+                baseAccount(baseAccount).
+                stashAction(StashDetailsActivity.ACTION_PULL_REQUEST_DETAILS).start();
+    }
+
+    private class PullRequestsPagerAdapter extends FragmentStatePagerAdapter {
         private final PullRequestCategory[] fragments = new PullRequestCategory[3];
         private final String[] pullRequestCategories;
 
@@ -234,11 +248,11 @@ public class PullRequestListFragment extends Fragment {
 
             for (PullRequest pullRequest : pullRequests) {
                 final String state = pullRequest.getState();
-                if (STATUS_MERGED.equalsIgnoreCase(state)) {
+                if (PullRequest.STATUS_MERGED.equalsIgnoreCase(state)) {
                     merged.add(pullRequest);
-                } else if (STATUS_DECLINED.equalsIgnoreCase(state)) {
+                } else if (PullRequest.STATUS_DECLINED.equalsIgnoreCase(state)) {
                     declined.add(pullRequest);
-                } else if (STATUS_OPEN.equalsIgnoreCase(state)) {
+                } else if (PullRequest.STATUS_OPEN.equalsIgnoreCase(state)) {
                     open.add(pullRequest);
                 }
             }

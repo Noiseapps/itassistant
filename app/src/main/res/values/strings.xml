@@ -190,4 +190,19 @@
     <string name="failedToAddPullRequest">Failed to add Pull Request</string>
     <string name="creatingPullRequest">Creating pull request…</string>
     <string name="pullRequestCreated">Pull request #%d successfully created</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="conflicted">Merging is not possible due to conflicts in the codebase</string>
+    <string name="merged">Merged</string>
+    <string name="merge">Merge</string>
+    <string name="approve">Approve</string>
+    <string name="decline">Decline</string>
+    <string name="updating">Updating…</string>
+    <string name="failedToUpdatePr">Failed to update pull request</string>
+    <string name="unapprove">Un-approve</string>
+    <string name="pullRequestDetails">Details of Pull Request #%d</string>
+    <string name="reopen">Reopen</string>
+    <string name="prIsDeclined">This pull request is declined.</string>
+    <string name="prIsMerged">This pull request has already been merged</string>
 </resources>

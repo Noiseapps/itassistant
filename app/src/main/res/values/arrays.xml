@@ -39,4 +39,8 @@
         <item>MERGED</item>
         <item>DECLINED</item>
     </string-array>
+    <string-array name="prTabs">
+        <item>Overview</item>
+        <item>Diff</item>
+    </string-array>
 </resources>
