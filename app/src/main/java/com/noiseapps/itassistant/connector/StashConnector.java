@@ -182,13 +182,13 @@ public class StashConnector {
                 subscribeOn(Schedulers.io());
     }
 
-    public Observable<PullRequest> approvePullRequest(String projectKey, String repoSlug, int pullRequestId, long pullRequestVersion) {
+    public Observable<StashUser> approvePullRequest(String projectKey, String repoSlug, int pullRequestId, long pullRequestVersion) {
         return apiService.approvePullRequest(projectKey, repoSlug, pullRequestId, "", pullRequestVersion).
                 observeOn(AndroidSchedulers.mainThread()).
                 subscribeOn(Schedulers.io());
     }
 
-    public Observable<PullRequest> unApprovePullRequest(String projectKey, String repoSlug, int pullRequestId, long pullRequestVersion) {
+    public Observable<StashUser> unApprovePullRequest(String projectKey, String repoSlug, int pullRequestId, long pullRequestVersion) {
         return apiService.unApprovePullRequest(projectKey, repoSlug, pullRequestId, pullRequestVersion).
                 observeOn(AndroidSchedulers.mainThread()).
                 subscribeOn(Schedulers.io());

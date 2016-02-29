@@ -14,6 +14,7 @@ import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.stash.PullRequestActivityAdapter;
 import com.noiseapps.itassistant.connector.StashConnector;
 import com.noiseapps.itassistant.model.account.BaseAccount;
+import com.noiseapps.itassistant.model.stash.general.StashUser;
 import com.noiseapps.itassistant.model.stash.projects.StashProject;
 import com.noiseapps.itassistant.model.stash.pullrequests.MergeStatus;
 import com.noiseapps.itassistant.model.stash.pullrequests.PullRequest;
@@ -77,7 +78,6 @@ public class PullRequestOverviewFragment extends Fragment {
 
     @AfterViews
     void init() {
-        getActivities();
         updateStatusView();
     }
 
@@ -106,6 +106,7 @@ public class PullRequestOverviewFragment extends Fragment {
     }
 
     private void updateStatusView() {
+        getActivities();
         if (pullRequest.getState().equalsIgnoreCase(PullRequest.STATUS_MERGED)) {
             createMergedState();
         } else if (pullRequest.getState().equalsIgnoreCase(PullRequest.STATUS_DECLINED)) {
@@ -142,32 +143,55 @@ public class PullRequestOverviewFragment extends Fragment {
 
         if(isApproved[0]) {
             acceptButton.setText(R.string.unapprove);
+        } else {
+            acceptButton.setText(R.string.approve);
         }
 
         setVetoesView(vetoesTextView);
 
         mergeButton.setEnabled(mergeStatus.isCanMerge());
-        mergeButton.setOnClickListener(v ->  {
-            final Observable<PullRequest> observable = connector.mergePullRequest(stashProject.getKey(), repoSlug, pullRequest.getId(), pullRequest.getVersion());
-            subscribeForUpdate(observable);
-        });
-        acceptButton.setOnClickListener(v ->  {
-            final Observable<PullRequest> observable;
-            if(isApproved[0]) {
-                observable = connector.unApprovePullRequest(stashProject.getKey(), repoSlug, pullRequest.getId(), pullRequest.getVersion());
-            } else {
-                observable = connector.approvePullRequest(stashProject.getKey(), repoSlug, pullRequest.getId(), pullRequest.getVersion());
-            }
-//            subscribeForUpdate(observable);
+        setOnClickListeners(isApproved);
+    }
 
-        });
+    private void setOnClickListeners(boolean[] isApproved) {
+        mergeButton.setOnClickListener(v -> onPrMergeClicked());
+        acceptButton.setOnClickListener(v -> onPrAcceptClicked(isApproved));
         declineButton.setOnClickListener(v ->  {
-            final Observable<PullRequest> observable = connector.declinePullRequest(stashProject.getKey(), repoSlug, pullRequest.getId(), pullRequest.getVersion());
-            subscribeForUpdate(observable);
+            onPrDeclineClicked();
         });
     }
 
+    private void onPrDeclineClicked() {
+        final Observable<PullRequest> observable = connector.declinePullRequest(stashProject.getKey(), repoSlug, pullRequest.getId(), pullRequest.getVersion());
+        subscribeForUpdate(observable);
+    }
+
+    private void onPrMergeClicked() {
+        final Observable<PullRequest> observable = connector.mergePullRequest(stashProject.getKey(), repoSlug, pullRequest.getId(), pullRequest.getVersion());
+        subscribeForUpdate(observable);
+    }
+
+    private void onPrAcceptClicked(boolean[] isApproved) {
+        showProgress();
+        final Observable<StashUser> observable;
+        if(isApproved[0]) {
+            observable = connector.unApprovePullRequest(stashProject.getKey(), repoSlug, pullRequest.getId(), pullRequest.getVersion());
+        } else {
+            observable = connector.approvePullRequest(stashProject.getKey(), repoSlug, pullRequest.getId(), pullRequest.getVersion());
+        }
+        observable.flatMap(stashUser1 -> connector.getPullRequest(stashProject.getKey(), repoSlug, pullRequest.getId())).
+        flatMap(pullRequest1 -> {
+            this.pullRequest = pullRequest1;
+            return connector.checkPullRequestStatus(stashProject.getKey(), repoSlug, pullRequest.getId());
+        }).subscribe(mergeStatusLocal -> {
+            mergeStatus = mergeStatusLocal;
+            hideProgress();
+            updateStatusView();
+        }, this::onUpdateError);
+    }
+
     private void setVetoesView(TextView vetoes) {
+        vetoes.setVisibility(View.GONE);
         if(!mergeStatus.isCanMerge()) {
             final StringBuilder sb = new StringBuilder();
             for (Veto veto : mergeStatus.getVetoes()) {

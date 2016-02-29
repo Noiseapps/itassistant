@@ -196,7 +196,7 @@
     <string name="conflicted">Merging is not possible due to conflicts in the codebase</string>
     <string name="merged">Merged</string>
     <string name="merge">Merge</string>
-    <string name="accept">Approve</string>
+    <string name="approve">Approve</string>
     <string name="decline">Decline</string>
     <string name="updating">Updating…</string>
     <string name="failedToUpdatePr">Failed to update pull request</string>

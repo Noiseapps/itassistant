@@ -87,14 +87,14 @@ public interface StashAPI {
                                              @Body String emptyBody);
 
     @POST("/rest/api/1.0/projects/{projectKey}/repos/{repoSlug}/pull-requests/{prId}/approve")
-    Observable<PullRequest> approvePullRequest(@Path("projectKey") String projectKey,
+    Observable<StashUser> approvePullRequest(@Path("projectKey") String projectKey,
                                                @Path("repoSlug") String repoSlug,
                                                @Path("prId") int pullRequestId,
                                                @Body String body,
                                                @Query("version") long pullRequestVersion);
 
     @DELETE("/rest/api/1.0/projects/{projectKey}/repos/{repoSlug}/pull-requests/{prId}/approve")
-    Observable<PullRequest> unApprovePullRequest(@Path("projectKey") String projectKey,
+    Observable<StashUser> unApprovePullRequest(@Path("projectKey") String projectKey,
                                                  @Path("repoSlug") String repoSlug,
                                                  @Path("prId") int pullRequestId,
                                                  @Query("version") long pullRequestVersion);
