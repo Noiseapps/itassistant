@@ -10,7 +10,7 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_above="@+id/prActions">
 
         <include
@@ -19,9 +19,9 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/activityRecyclerView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="top|center_horizontal"
             tools:listitem="@layout/item_pull_request_activity" />
     </FrameLayout>
 

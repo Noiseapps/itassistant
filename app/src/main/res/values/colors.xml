@@ -30,4 +30,7 @@
     <color name="prUpdated">#F6C342</color>
     <color name="prOpened">#4A6785</color>
     <color name="prDeclined">#D04437</color>
+
+    <color name="diffAdded">#DDFFDD</color>
+    <color name="diffRemoved">#FEE8E9</color>
 </resources>

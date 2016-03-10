@@ -15,14 +15,10 @@ import com.noiseapps.itassistant.model.stash.pullrequests.details.Ref;
 import java.util.List;
 
 public class DiffFileSpinnerAdapter extends BaseAdapter {
-
-
-    private final Context context;
     private final List<Diff> refs;
     private final LayoutInflater layoutInflater;
 
     public DiffFileSpinnerAdapter(Context context, List<Diff> refs) {
-        this.context = context;
         this.refs = refs;
         this.layoutInflater = LayoutInflater.from(context);
     }

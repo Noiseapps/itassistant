@@ -2,6 +2,8 @@ package com.noiseapps.itassistant;
 
 import android.support.multidex.MultiDexApplication;
 
+import com.orhanobut.logger.Logger;
+
 import net.danlew.android.joda.JodaTimeAndroid;
 
 import org.acra.ACRA;
@@ -24,6 +26,7 @@ public class AssistantApplication extends MultiDexApplication {
         super.onCreate();
         AnalyticsTrackers_.getInstance_(this);
         JodaTimeAndroid.init(this);
+        Logger.init(this.getClass().getSimpleName());
         Once.initialise(this);
         if(!BuildConfig.DEBUG){
             ACRA.init(this);

@@ -11,6 +11,7 @@ import android.widget.Spinner;
 
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.adapters.stash.DiffFileSpinnerAdapter;
+import com.noiseapps.itassistant.adapters.stash.FileDiffAdapter;
 import com.noiseapps.itassistant.model.stash.pullrequests.details.Diff;
 import com.noiseapps.itassistant.model.stash.pullrequests.details.DiffBase;
 import com.orhanobut.logger.Logger;
@@ -67,6 +68,8 @@ public class DiffViewBase extends LinearLayout {
     }
 
     private void onFileItemSelected(Diff diffBase) {
+        final FileDiffAdapter adapter = new FileDiffAdapter(getContext(), diffBase.getHunks());
+        diffViewList.setAdapter(adapter);
         Logger.d(diffBase.toString());
     }
 
