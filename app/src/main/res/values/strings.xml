@@ -205,4 +205,6 @@
     <string name="reopen">Reopen</string>
     <string name="prIsDeclined">This pull request is declined.</string>
     <string name="prIsMerged">This pull request has already been merged</string>
+    <string name="selectedFile">Selected file:</string>
+    <string name="diff">File diff:</string>
 </resources>
