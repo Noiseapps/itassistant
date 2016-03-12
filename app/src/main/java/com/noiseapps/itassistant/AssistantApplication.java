@@ -15,7 +15,7 @@ import jonathanfinerty.once.Once;
 @ReportsCrashes(
         httpMethod = HttpSender.Method.PUT,
         reportType = HttpSender.Type.JSON,
-        formUri = "http://176.31.165.225:5984/acra-itassistant/_design/acra-storage/_update/report",
+        formUri = "http://vps232308.ovh.net:5984/acra-itassistant/_design/acra-storage/_update/report",
         formUriBasicAuthLogin = "itassistant",
         formUriBasicAuthPassword = "itassistant12"
 )

@@ -128,9 +128,6 @@ public class GeneralInfoFragment extends Fragment implements IssueDetailFragment
     private void initTimeTrackingInfo(TimeTrackingInfo timeTrackingInfo, EditText workedText, EditText remainingText, EditText commentText) {
         final long timeTrackEnd = System.currentTimeMillis();
         long trackedMillis = timeTrackEnd - timeTrackingInfo.getStarted();
-        if (BuildConfig.DEBUG) {
-            trackedMillis = TimeUnit.HOURS.toMillis(4) + TimeUnit.MINUTES.toMillis(53);
-        }
         final int millisWeek = WEEK_DAYS * DAY_HOURS * HOUR_MINUTES * MINUTE_SECONDS * SECOND_MILLIS;
         final int fullWeeks = (int) Math.floor(trackedMillis / millisWeek);
         trackedMillis -= millisWeek * fullWeeks;
