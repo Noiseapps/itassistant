@@ -87,4 +87,19 @@ public class PullRequestActivity {
     public void setDiff(Diff diff) {
         this.diff = diff;
     }
+
+    @Override
+    public String toString() {
+        return "PullRequestActivity{" +
+                "id=" + id +
+                ", createdDate=" + createdDate +
+                ", user=" + user +
+                ", action='" + action + '\'' +
+                ", comment=" + comment +
+                ", commentAnchor=" + commentAnchor +
+                ", diff=" + diff +
+                ", added=" + added +
+                ", removed=" + removed +
+                '}';
+    }
 }

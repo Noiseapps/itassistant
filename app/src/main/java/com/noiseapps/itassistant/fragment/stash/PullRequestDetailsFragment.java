@@ -161,7 +161,7 @@ public class PullRequestDetailsFragment extends Fragment {
                     repoSlug(repoSlug).
                     stashProject(stashProject).build();
 
-            items[1] = PullRequestDiffFragment_.builder().diffBase(diffBase).build();
+            items[1] = PullRequestDiffFragment_.builder().account(account).diffBase(diffBase).build();
         }
 
         @Override

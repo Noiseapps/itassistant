@@ -99,7 +99,6 @@ public class PullRequestOverviewFragment extends Fragment {
         adapter = new PullRequestActivityAdapter(getActivity(), activities, authPicasso);
         activityRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         activityRecyclerView.setAdapter(adapter);
-        activityRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
 
         fetchingPrActivities.setVisibility(View.GONE);
         activityRecyclerView.setVisibility(View.VISIBLE);

@@ -15,9 +15,12 @@ import com.noiseapps.itassistant.adapters.stash.FileDiffAdapter;
 import com.noiseapps.itassistant.model.stash.pullrequests.details.Diff;
 import com.noiseapps.itassistant.model.stash.pullrequests.details.DiffBase;
 import com.orhanobut.logger.Logger;
+import com.squareup.picasso.Picasso;
 
 import org.androidannotations.annotations.EViewGroup;
 import org.androidannotations.annotations.ViewById;
+
+import java.util.Collections;
 
 
 @EViewGroup(R.layout.view_diff_base)
@@ -29,6 +32,7 @@ public class DiffViewBase extends LinearLayout {
     @ViewById
     RecyclerView diffViewList;
     DiffBase diff;
+    Picasso picasso;
 
     public DiffViewBase(Context context) {
         super(context);
@@ -43,6 +47,10 @@ public class DiffViewBase extends LinearLayout {
     public DiffViewBase(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         commonInit();
+    }
+
+    public void setPicasso(Picasso picasso) {
+        this.picasso = picasso;
     }
 
     public void setDiff(DiffBase diff) {
@@ -68,7 +76,7 @@ public class DiffViewBase extends LinearLayout {
     }
 
     private void onFileItemSelected(Diff diffBase) {
-        final FileDiffAdapter adapter = new FileDiffAdapter(getContext(), diffBase.getHunks());
+        final FileDiffAdapter adapter = new FileDiffAdapter(getContext(), diffBase.getHunks(), Collections.emptyList(), picasso);
         diffViewList.setAdapter(adapter);
         Logger.d(diffBase.toString());
     }

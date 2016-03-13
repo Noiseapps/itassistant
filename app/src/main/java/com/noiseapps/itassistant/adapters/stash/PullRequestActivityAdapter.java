@@ -1,6 +1,7 @@
 package com.noiseapps.itassistant.adapters.stash;
 
 import android.content.Context;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,8 @@ import com.squareup.picasso.Picasso;
 
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class PullRequestActivityAdapter extends RecyclerView.Adapter<PullRequestActivityAdapter.ViewHolder> {
@@ -109,7 +112,14 @@ public class PullRequestActivityAdapter extends RecyclerView.Adapter<PullRequest
         }
 
         private void createCommentView() {
-
+            final RecyclerView recyclerView = new RecyclerView(context);
+            final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            recyclerView.setLayoutParams(params);
+            final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+            layoutManager.setAutoMeasureEnabled(true);
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(new FileDiffAdapter(context, pullRequestActivity.getDiff().getHunks(), Collections.singletonList(pullRequestActivity), picasso));
+            otherContainer.addView(recyclerView);
         }
     }
 }
