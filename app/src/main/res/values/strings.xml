@@ -207,4 +207,6 @@
     <string name="prIsMerged">This pull request has already been merged</string>
     <string name="selectedFile">Selected file:</string>
     <string name="diff">File diff:</string>
+    <string name="comment">Add comment</string>
+    <string name="commentedOnFile">Comment for: %s</string>
 </resources>

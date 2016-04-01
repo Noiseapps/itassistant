@@ -13,13 +13,14 @@ import android.widget.TextView;
 
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.model.stash.commits.Commit;
+import com.noiseapps.itassistant.model.stash.pullrequests.activities.Comment;
 import com.noiseapps.itassistant.model.stash.pullrequests.activities.PullRequestActivity;
 import com.noiseapps.itassistant.utils.Consts;
 import com.squareup.picasso.Picasso;
 
 import org.joda.time.DateTime;
+import org.w3c.dom.Text;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -88,9 +89,38 @@ public class PullRequestActivityAdapter extends RecyclerView.Adapter<PullRequest
                     createRescopedView();
                     break;
                 case PullRequestActivity.ACTION_COMMENT:
-                    createCommentView();
+                    if (pullRequestActivity.getDiff() != null) {
+                        createCommentView();
+                    } else if (pullRequestActivity.getCommentAnchor() != null) {
+                        createFileCommentView();
+                    } else {
+                        createPullRequestCommentView();
+                    }
                     break;
             }
+        }
+
+        private void createPullRequestCommentView() {
+            final View view = inflater.inflate(R.layout.item_spinner_textonly, otherContainer);
+            final TextView textView = (TextView) view.findViewById(R.id.title);
+            textView.setText(pullRequestActivity.getComment().getText());
+        }
+
+        private void createFileCommentView() {
+            final View fileComment = inflater.inflate(R.layout.item_file_comment, otherContainer);
+
+            final TextView fileText = (TextView) fileComment.findViewById(R.id.commentedOnFile);
+            final TextView commentText = (TextView) fileComment.findViewById(R.id.commentText);
+            final TextView commentAuthor = (TextView) fileComment.findViewById(R.id.commentAuthor);
+            final TextView commentTimestamp = (TextView) fileComment.findViewById(R.id.commentTimestamp);
+            final ImageView commentAuthorImage = (ImageView) fileComment.findViewById(R.id.commentAuthorImage);
+
+            final Comment comment = pullRequestActivity.getComment();
+            fileText.setText(pullRequestActivity.getCommentAnchor().getPath());
+            commentText.setText(comment.getText());
+            commentAuthor.setText(comment.getAuthor().getDisplayName());
+            commentTimestamp.setText(new DateTime(comment.getCreatedDate()).toString(Consts.DATE_TIME_FORMAT));
+            picasso.load(comment.getAuthor().getAvatarUrl()).into(commentAuthorImage);
         }
 
         private void createRescopedView() {

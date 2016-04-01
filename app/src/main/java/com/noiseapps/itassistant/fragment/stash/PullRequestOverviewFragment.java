@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -28,6 +29,7 @@ import com.squareup.picasso.Picasso;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.UiThread;
@@ -73,6 +75,9 @@ public class PullRequestOverviewFragment extends Fragment {
     @ViewById
     TextView pullRequestStatus, vetoesTextView;
 
+    @ViewById
+    EditText prCommentEditText;
+
     private MaterialDialog progressDialog;
     private PullRequestActivityAdapter adapter;
 
@@ -91,6 +96,17 @@ public class PullRequestOverviewFragment extends Fragment {
     void fetchActivities() {
         final List<PullRequestActivity> activities = connector.getActivities(stashProject.getKey(), repoSlug, pullRequest.getId());
         setupListAdapter(activities);
+    }
+
+    @Click(R.id.postCommentButton)
+    void onAddPrComment() {
+        prCommentEditText.setError(null);
+        final String text = prCommentEditText.getText().toString();
+        if(text.isEmpty()) {
+            prCommentEditText.setError(getString(R.string.fieldRequired));
+        } else {
+            // TODO: 01.04.2016 post comment, show progress
+        }
     }
 
     @UiThread
