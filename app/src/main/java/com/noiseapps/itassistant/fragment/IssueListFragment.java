@@ -29,12 +29,8 @@ import java.util.List;
 import java.util.Set;
 
 import com.afollestad.materialdialogs.AlertDialogWrapper;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.noiseapps.itassistant.R;
 import com.noiseapps.itassistant.connector.JiraConnector;
 import com.noiseapps.itassistant.model.account.BaseAccount;
@@ -47,6 +43,7 @@ import com.noiseapps.itassistant.model.jira.issues.Status;
 import com.noiseapps.itassistant.model.jira.projects.JiraProject;
 import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 import com.noiseapps.itassistant.utils.Comparators;
+import com.noiseapps.itassistant.utils.ListMultimap;
 import com.noiseapps.itassistant.utils.views.MyFabProgressCircle;
 import com.orhanobut.logger.Logger;
 
@@ -219,7 +216,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
 
     private PagerAdapter fillAdapter(List<Issue> jiraIssueList, boolean assignedToMe) {
         final Set<WorkflowObject> workflows = new HashSet<>();
-        final ListMultimap<String, Issue> issuesInWorkflow = ArrayListMultimap.create();
+        final ListMultimap<String, Issue> issuesInWorkflow = ListMultimap.create();
         for (Issue issue : jiraIssueList) {
             final String name, id;
             if (assignedToMe) {
@@ -232,7 +229,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
                 name = status.getName();
             }
             workflows.add(new WorkflowObject(id, name));
-            issuesInWorkflow.put(name, issue);
+            issuesInWorkflow.putItem(name, issue);
         }
         return new WorkflowAdapter(workflows, issuesInWorkflow, false);
     }
@@ -370,8 +367,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
                     onListFiltered(issues);
                     return true;
                 }
-                final Iterable<Issue> filter = Iterables.filter(issues, new SearchFilter(query));
-                final ArrayList<Issue> filtered = Lists.newArrayList(filter);
+                final List<Issue> filtered = Stream.of(issues).filter(issue -> filterByQuery(query, issue)).collect(Collectors.toList());
                 onListFiltered(filtered);
                 Logger.d(query);
                 return true;
@@ -417,13 +413,11 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
             onListFiltered(issues);
             return;
         }
-        final Predicate<Issue> assigneeFilter = new AssignedToMeFilter(checkedItems[0]);
-        final Predicate<Issue> reporterFilter = new ReportedByMeFilter(checkedItems[1]);
-        final Predicate<Issue> unreleasedFilter = new UnreleasedFilter(checkedItems[2]);
-        //noinspection unchecked
-        final Predicate<Issue> filterQuery = Predicates.and(assigneeFilter, reporterFilter, unreleasedFilter);
-        final Iterable<Issue> filteredIssues = Iterables.filter(issues, filterQuery);
-        final ArrayList<Issue> filteredList = Lists.newArrayList(filteredIssues);
+        final List<Issue> filteredList = Stream.of(issues).
+                filter(issue -> filterAssignedToMe(checkedItems[0], issue)).
+                filter(issue -> filterReportedByMe(checkedItems[1], issue)).
+                filter(issue -> filterUnreleased(checkedItems[2], issue)).
+                collect(Collectors.toList());
         onListFiltered(filteredList);
     }
 
@@ -469,80 +463,41 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         void onEditIssue(Issue issue);
     }
 
-    private class AssignedToMeFilter implements Predicate<Issue> {
-
-        private final boolean active;
-
-        private AssignedToMeFilter(boolean active) {
-            this.active = active;
+    private boolean filterAssignedToMe(boolean active, Issue issue) {
+        if (!active) {
+            return true;
         }
-
-        @Override
-        public boolean apply(Issue input) {
-            if (!active) {
-                return true;
-            }
-            final Assignee assignee = input.getFields().getAssignee();
-            return assignee != null && baseAccount.getUsername().equalsIgnoreCase(assignee.getName());
-        }
+        final Assignee assignee = issue.getFields().getAssignee();
+        return assignee != null && baseAccount.getUsername().equalsIgnoreCase(assignee.getName());
     }
 
-    private class UnreleasedFilter implements Predicate<Issue> {
-
-        private final boolean active;
-
-        private UnreleasedFilter(boolean active) {
-            this.active = active;
+    private boolean filterReportedByMe(boolean active, Issue issue) {
+        if (!active) {
+            return true;
         }
-
-        @Override
-        public boolean apply(Issue input) {
-            if (!active) {
-                return true;
-            }
-            final List<FixVersion> fixVersions = input.getFields().getFixVersions();
-            return fixVersions.isEmpty();
-        }
+        final List<FixVersion> fixVersions = issue.getFields().getFixVersions();
+        return fixVersions.isEmpty();
     }
 
-    private class ReportedByMeFilter implements Predicate<Issue> {
-
-        private final boolean active;
-
-        private ReportedByMeFilter(boolean active) {
-            this.active = active;
+    private boolean filterUnreleased(boolean active, Issue issue) {
+        if (!active) {
+            return true;
         }
-
-        @Override
-        public boolean apply(Issue input) {
-            if (!active) {
-                return true;
-            }
-            final String username = baseAccount.getUsername();
-            final String reporter = input.getFields().getReporter().getName();
-            final boolean result = username.equalsIgnoreCase(reporter);
-            Logger.d(String.valueOf(result));
-            return result;
-        }
+        final String username = baseAccount.getUsername();
+        final String reporter = issue.getFields().getReporter().getName();
+        final boolean result = username.equalsIgnoreCase(reporter);
+        Logger.d(String.valueOf(result));
+        return result;
     }
 
-    private class SearchFilter implements Predicate<Issue> {
-        final String query;
-
-        private SearchFilter(String query) {
-            this.query = query;
-        }
-
-        @Override
-        public boolean apply(Issue issue) {
-            final String lowerQuery = query.toLowerCase();
-            final boolean keyContains = issue.getKey().toLowerCase().contains(lowerQuery);
-            final Fields fields = issue.getFields();
-            final boolean summaryContains = fields.getSummary().toLowerCase().contains(lowerQuery);
-            final boolean descriptionContains = fields.getDescription() != null && fields.getDescription().toLowerCase().contains(lowerQuery);
-            final boolean assigneeContains = fields.getAssignee() != null && fields.getAssignee().getDisplayName().toLowerCase().contains(lowerQuery);
-            return keyContains || summaryContains || descriptionContains || assigneeContains;
-        }
+    private boolean filterByQuery(String query, Issue issue) {
+        final String lowerQuery = query.toLowerCase();
+        final boolean keyContains = issue.getKey().toLowerCase().contains(lowerQuery);
+        final Fields fields = issue.getFields();
+        final boolean summaryContains = fields.getSummary().toLowerCase().contains(lowerQuery);
+        final boolean descriptionContains = fields.getDescription() != null && fields.getDescription().toLowerCase().contains(lowerQuery);
+        final boolean assigneeContains = fields.getAssignee() != null && fields.getAssignee().getDisplayName().toLowerCase().contains(lowerQuery);
+        return keyContains || summaryContains || descriptionContains || assigneeContains;
     }
 
     private class WorkflowObject {

@@ -28,8 +28,6 @@ public class AssistantApplication extends MultiDexApplication {
         JodaTimeAndroid.init(this);
         Logger.init(this.getClass().getSimpleName());
         Once.initialise(this);
-        if(!BuildConfig.DEBUG){
-            ACRA.init(this);
-        }
+        ACRA.init(this);
     }
 }
