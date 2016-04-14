@@ -1,0 +1,248 @@
+
+BUILD CONFIGURATION : 
+
+Application version: dev
+AndroidAnnotations version: 3.3.2
+BuildToolsVersion : 23.0.2
+AppName: ProjectAssistant
+SigningFile: ../AssistantKey.jks
+AppId: com.noiseapps.itassistant
+
+BUILD CONFIG END
+
+Incremental java compilation is an incubating feature.
+:app:preBuild UP-TO-DATE
+:app:preReleaseBuild UP-TO-DATE
+:app:checkReleaseManifest
+:app:preDebugBuild UP-TO-DATE
+:app:prepareComAkexorcistRoundCornerProgressBar203Library UP-TO-DATE
+:app:prepareComAndroidSupportAnimatedVectorDrawable2321Library UP-TO-DATE
+:app:prepareComAndroidSupportAppcompatV72321Library UP-TO-DATE
+:app:prepareComAndroidSupportCardviewV72321Library UP-TO-DATE
+:app:prepareComAndroidSupportDesign2321Library UP-TO-DATE
+:app:prepareComAndroidSupportMultidex101Library UP-TO-DATE
+:app:prepareComAndroidSupportRecyclerviewV72321Library UP-TO-DATE
+:app:prepareComAndroidSupportSupportV42321Library UP-TO-DATE
+:app:prepareComAndroidSupportSupportVectorDrawable2321Library UP-TO-DATE
+:app:prepareComGithubAfollestadMaterialDialogsCore0856Library UP-TO-DATE
+:app:prepareComGithubAfollestadSectionedRecyclerview020Library UP-TO-DATE
+:app:prepareComGithubJorgecastilloprzFabprogresscircle101Library UP-TO-DATE
+:app:prepareComGithubOrhanobutLogger112Library UP-TO-DATE
+:app:prepareComGoogleAndroidGmsPlayServicesAnalytics840Library UP-TO-DATE
+:app:prepareComGoogleAndroidGmsPlayServicesBasement840Library UP-TO-DATE
+:app:prepareComH6ah4iAndroidWidgetAdvrecyclerviewAdvrecyclerview085Library UP-TO-DATE
+:app:prepareComJonathanfinertyOnceOnce040Library UP-TO-DATE
+:app:prepareComSplitwiseTokenautocomplete202Library UP-TO-DATE
+:app:prepareDeHdodenhofCircleimageview130Library UP-TO-DATE
+:app:prepareIoReactivexRxandroid110Library UP-TO-DATE
+:app:prepareMeZhanghaiAndroidMaterialprogressbarLibrary114Library UP-TO-DATE
+:app:prepareNetDanlewAndroidJoda281Library UP-TO-DATE
+:app:prepareReleaseDependencies
+:app:compileReleaseAidl UP-TO-DATE
+:app:compileReleaseRenderscript UP-TO-DATE
+:app:generateReleaseBuildConfig UP-TO-DATE
+:app:generateReleaseAssets UP-TO-DATE
+:app:mergeReleaseAssets UP-TO-DATE
+:app:generateReleaseResValues UP-TO-DATE
+:app:generateReleaseResources UP-TO-DATE
+:app:mergeReleaseResources UP-TO-DATE
+:app:processReleaseManifest UP-TO-DATE
+:app:processReleaseResources UP-TO-DATE
+:app:generateReleaseSources UP-TO-DATE
+:app:compileReleaseJavaWithJavac UP-TO-DATE
+:app:compileRetrolambdaRelease UP-TO-DATE
+:app:compileReleaseNdk UP-TO-DATE
+:app:compileReleaseSources UP-TO-DATE
+:app:lintVitalRelease
+:app:prePackageMarkerForRelease
+:app:processReleaseJavaRes UP-TO-DATE
+:app:transformResourcesWithMergeJavaResForRelease UP-TO-DATE
+:app:transformClassesAndResourcesWithProguardForRelease
+ProGuard, version 5.2.1
+Reading input...
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/libs/feedback_v6.jar] (filtered)
+Reading program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/com.squareup.retrofit/retrofit/1.9.0/a681c044244d9fc375198588297a39ba78028423/retrofit-1.9.0.jar] (filtered)
+Reading program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-lang3/3.4/5fe28b9518e58819180a43a850fbc0dd24b7c050/commons-lang3-3.4.jar] (filtered)
+Reading program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/ch.acra/acra/4.6.1/60a854db6e9445f56efc72bfb3da39f583eb6e89/acra-4.6.1.jar] (filtered)
+Reading program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/org.androidannotations/androidannotations-api/3.3.2/7d6149d856b880bbd676047aacb8446a758fbbdb/androidannotations-api-3.3.2.jar] (filtered)
+Reading program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/com.squareup.okio/okio/1.6.0/98476622f10715998eacf9240d6b479f12c66143/okio-1.6.0.jar] (filtered)
+Reading program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/com.squareup.picasso/picasso/2.5.2/7446d06ec8d4f7ffcc53f1da37c95f200dcb9387/picasso-2.5.2.jar] (filtered)
+Reading program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/io.reactivex/rxjava/1.1.0/748f0546d5c3c27f1aef07270ffea0c45f0c42a4/rxjava-1.1.0.jar] (filtered)
+Reading program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/com.squareup.okhttp/okhttp/2.5.0/4de2b4ed3445c37ec1720a7d214712e845a24636/okhttp-2.5.0.jar] (filtered)
+Reading program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/com.mobsandgeeks/android-saripaar/2.0.2/73d121ae26214e5dddcfc535cb24d79d76349d10/android-saripaar-2.0.2.jar] (filtered)
+Reading program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/com.annimon/stream/1.0.5/564953a3f5918cf62c521a2cc219f10150c4ccd4/stream-1.0.5.jar] (filtered)
+Reading program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.6.2/f1bc476cc167b18e66c297df599b2377131a8947/gson-2.6.2.jar] (filtered)
+Reading program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/joda-time/joda-time/2.8.1/1e832c24db179ea0e9bdc99eeab73e860465f65b/joda-time-2.8.1-no-tzdb.jar] (filtered)
+Reading program jar [/Users/tomasz/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/23.2.1/support-annotations-23.2.1.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.android.support/multidex/1.0.1/jars/classes.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.h6ah4i.android.widget.advrecyclerview/advrecyclerview/0.8.5/jars/classes.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.github.afollestad.material-dialogs/core/0.8.5.6/jars/classes.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.splitwise/tokenautocomplete/2.0.2/jars/classes.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.android.support/design/23.2.1/jars/classes.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.android.support/cardview-v7/23.2.1/jars/classes.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.github.orhanobut/logger/1.12/jars/classes.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/de.hdodenhof/circleimageview/1.3.0/jars/classes.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.jonathanfinerty.once/once/0.4.0/jars/classes.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.akexorcist/RoundCornerProgressBar/2.0.3/jars/classes.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/net.danlew/android.joda/2.8.1/jars/classes.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.github.jorgecastilloprz/fabprogresscircle/1.01/jars/classes.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/io.reactivex/rxandroid/1.1.0/jars/classes.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-analytics/8.4.0/jars/classes.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/8.4.0/jars/classes.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/me.zhanghai.android.materialprogressbar/library/1.1.4/jars/classes.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/jars/classes.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/23.2.1/jars/classes.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/23.2.1/jars/classes.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.github.afollestad/sectioned-recyclerview/0.2.0/jars/classes.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/23.2.1/jars/classes.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.2.1/jars/classes.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.2.1/jars/libs/internal_impl-23.2.1.jar] (filtered)
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/transforms/mergeJavaRes/release/jars/2/1f/main.jar] (filtered)
+Reading program directory [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/classes/release] (filtered)
+Reading library jar [/Users/tomasz/Library/Android/sdk/platforms/android-23/android.jar]
+Reading library jar [/Users/tomasz/Library/Android/sdk/platforms/android-23/optional/org.apache.http.legacy.jar]
+Initializing...
+Ignoring unused library classes...
+  Original number of library classes: 3880
+  Final number of library classes:    1349
+Setting target versions...
+Printing kept classes, fields, and methods...
+Shrinking...
+Printing usage to [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/outputs/mapping/release/usage.txt]...
+Removing unused program classes and class elements...
+  Original number of program classes: 6003
+  Final number of program classes:    3263
+Optimizing...
+  Number of finalized classes:                 1374
+  Number of unboxed enum classes:              10
+  Number of vertically merged classes:         45
+  Number of horizontally merged classes:       346
+  Number of removed write-only fields:         510
+  Number of privatized fields:                 2633
+  Number of inlined constant fields:           999
+  Number of privatized methods:                1436
+  Number of staticized methods:                691
+  Number of finalized methods:                 9095
+  Number of removed method parameters:         618
+  Number of inlined constant parameters:       262
+  Number of inlined constant return values:    108
+  Number of inlined short method calls:        1378
+  Number of inlined unique method calls:       3205
+  Number of inlined tail recursion calls:      29
+  Number of merged code blocks:                126
+  Number of variable peephole optimizations:   9532
+  Number of arithmetic peephole optimizations: 0   (disabled)
+  Number of cast peephole optimizations:       110
+  Number of field peephole optimizations:      56
+  Number of branch peephole optimizations:     3240
+  Number of string peephole optimizations:     1020
+  Number of simplified instructions:           2876
+  Number of removed instructions:              14988
+  Number of removed local variables:           627
+  Number of removed exception blocks:          143
+  Number of optimized local variable frames:   4301
+Shrinking...
+Removing unused program classes and class elements...
+  Original number of program classes: 3263
+  Final number of program classes:    2835
+Optimizing...
+  Number of finalized classes:                 73
+  Number of unboxed enum classes:              0
+  Number of vertically merged classes:         23
+  Number of horizontally merged classes:       22
+  Number of removed write-only fields:         210
+  Number of privatized fields:                 52
+  Number of inlined constant fields:           485
+  Number of privatized methods:                17
+  Number of staticized methods:                82
+  Number of finalized methods:                 169
+  Number of removed method parameters:         774
+  Number of inlined constant parameters:       330
+  Number of inlined constant return values:    141
+  Number of inlined short method calls:        74
+  Number of inlined unique method calls:       97
+  Number of inlined tail recursion calls:      4
+  Number of merged code blocks:                16
+  Number of variable peephole optimizations:   1069
+  Number of arithmetic peephole optimizations: 0   (disabled)
+  Number of cast peephole optimizations:       0
+  Number of field peephole optimizations:      0
+  Number of branch peephole optimizations:     137
+  Number of string peephole optimizations:     24
+  Number of simplified instructions:           835
+  Number of removed instructions:              10735
+  Number of removed local variables:           341
+  Number of removed exception blocks:          0
+  Number of optimized local variable frames:   255
+Shrinking...
+Removing unused program classes and class elements...
+  Original number of program classes: 2835
+  Final number of program classes:    2777
+Obfuscating...
+Printing mapping to [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/outputs/mapping/release/mapping.txt]...
+Writing output...
+Preparing output jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/transforms/proguard/release/jars/3/1f/main.jar]
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/libs/feedback_v6.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/com.squareup.retrofit/retrofit/1.9.0/a681c044244d9fc375198588297a39ba78028423/retrofit-1.9.0.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-lang3/3.4/5fe28b9518e58819180a43a850fbc0dd24b7c050/commons-lang3-3.4.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/ch.acra/acra/4.6.1/60a854db6e9445f56efc72bfb3da39f583eb6e89/acra-4.6.1.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/org.androidannotations/androidannotations-api/3.3.2/7d6149d856b880bbd676047aacb8446a758fbbdb/androidannotations-api-3.3.2.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/com.squareup.okio/okio/1.6.0/98476622f10715998eacf9240d6b479f12c66143/okio-1.6.0.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/com.squareup.picasso/picasso/2.5.2/7446d06ec8d4f7ffcc53f1da37c95f200dcb9387/picasso-2.5.2.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/io.reactivex/rxjava/1.1.0/748f0546d5c3c27f1aef07270ffea0c45f0c42a4/rxjava-1.1.0.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/com.squareup.okhttp/okhttp/2.5.0/4de2b4ed3445c37ec1720a7d214712e845a24636/okhttp-2.5.0.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/com.mobsandgeeks/android-saripaar/2.0.2/73d121ae26214e5dddcfc535cb24d79d76349d10/android-saripaar-2.0.2.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/com.annimon/stream/1.0.5/564953a3f5918cf62c521a2cc219f10150c4ccd4/stream-1.0.5.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.6.2/f1bc476cc167b18e66c297df599b2377131a8947/gson-2.6.2.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/.gradle/caches/modules-2/files-2.1/joda-time/joda-time/2.8.1/1e832c24db179ea0e9bdc99eeab73e860465f65b/joda-time-2.8.1-no-tzdb.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/23.2.1/support-annotations-23.2.1.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.android.support/multidex/1.0.1/jars/classes.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.h6ah4i.android.widget.advrecyclerview/advrecyclerview/0.8.5/jars/classes.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.github.afollestad.material-dialogs/core/0.8.5.6/jars/classes.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.splitwise/tokenautocomplete/2.0.2/jars/classes.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.android.support/design/23.2.1/jars/classes.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.android.support/cardview-v7/23.2.1/jars/classes.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.github.orhanobut/logger/1.12/jars/classes.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/de.hdodenhof/circleimageview/1.3.0/jars/classes.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.jonathanfinerty.once/once/0.4.0/jars/classes.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.akexorcist/RoundCornerProgressBar/2.0.3/jars/classes.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/net.danlew/android.joda/2.8.1/jars/classes.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.github.jorgecastilloprz/fabprogresscircle/1.01/jars/classes.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/io.reactivex/rxandroid/1.1.0/jars/classes.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-analytics/8.4.0/jars/classes.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/8.4.0/jars/classes.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/me.zhanghai.android.materialprogressbar/library/1.1.4/jars/classes.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/jars/classes.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/23.2.1/jars/classes.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/23.2.1/jars/classes.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.github.afollestad/sectioned-recyclerview/0.2.0/jars/classes.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/23.2.1/jars/classes.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.2.1/jars/classes.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.2.1/jars/libs/internal_impl-23.2.1.jar] (filtered)
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/transforms/mergeJavaRes/release/jars/2/1f/main.jar] (filtered)
+  Copying resources from program directory [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/classes/release] (filtered)
+Printing classes to [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/outputs/mapping/release/dump.txt]...
+:app:collectReleaseMultiDexComponents
+:app:transformClassesWithMultidexlistForRelease
+ProGuard, version 5.2.1
+Reading program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/transforms/proguard/release/jars/3/1f/main.jar]
+Reading library jar [/Users/tomasz/Library/Android/sdk/build-tools/23.0.2/lib/shrinkedAndroid.jar]
+Preparing output jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/multi-dex/release/componentClasses.jar]
+  Copying resources from program jar [/Users/tomasz/Documents/AndroidProjects/itassistant/app/build/intermediates/transforms/proguard/release/jars/3/1f/main.jar]
+:app:transformClassesWithDexForRelease
+:app:transformClassesWithShrinkResForRelease
+Removed unused resources: Binary resource data reduced from 1448KB to 1441KB: Removed 0%
+:app:mergeReleaseJniLibFolders
+:app:transformNative_libsWithMergeJniLibsForRelease
+:app:validateReleaseSigning
+:app:packageRelease
+:app:zipalignRelease
+:app:assembleRelease
+Total methods in ProjectAssistant-dev-release.apk: 22366 (34,13% used)
+Total fields in ProjectAssistant-dev-release.apk:  9540 (14,56% used)
+Methods remaining in ProjectAssistant-dev-release.apk: 43169
+Fields remaining in ProjectAssistant-dev-release.apk:  55995
+
+BUILD SUCCESSFUL
+
+Total time: 1 mins 12.624 secs

@@ -3,6 +3,7 @@ package com.noiseapps.itassistant;
 import android.support.multidex.MultiDexApplication;
 
 import com.orhanobut.logger.Logger;
+import com.squareup.leakcanary.LeakCanary;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
@@ -29,5 +30,6 @@ public class AssistantApplication extends MultiDexApplication {
         Logger.init(this.getClass().getSimpleName());
         Once.initialise(this);
         ACRA.init(this);
+        LeakCanary.install(this);
     }
 }

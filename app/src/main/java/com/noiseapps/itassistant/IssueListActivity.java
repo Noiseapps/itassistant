@@ -2,6 +2,7 @@ package com.noiseapps.itassistant;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -54,9 +55,8 @@ import com.noiseapps.itassistant.model.stash.projects.UserProjects;
 import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 import com.noiseapps.itassistant.utils.Consts;
 import com.noiseapps.itassistant.utils.DividerItemDecoration;
-import com.noiseapps.itassistant.utils.events.EventBusAction;
-import com.noiseapps.itassistant.utils.events.OpenDrawerEvent;
 import com.orhanobut.logger.Logger;
+import com.squareup.leakcanary.LeakCanary;
 import com.suredigit.inappfeedback.FeedbackDialog;
 import com.suredigit.inappfeedback.FeedbackSettings;
 
@@ -73,7 +73,6 @@ import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.greenrobot.event.EventBus;
 import jonathanfinerty.once.Once;
 
 import static com.noiseapps.itassistant.AnalyticsTrackers.CATEGORY_APP;
@@ -101,9 +100,6 @@ public class IssueListActivity extends AppCompatActivity
     View nothingSelectedInfo;
     @ViewById
     DrawerLayout drawerLayout;
-
-    private IssueListFragment listFragment;
-    private StashProjectFragment stashFragment;
     @Bean
     AccountsDao accountsDao;
     @Bean
@@ -113,6 +109,8 @@ public class IssueListActivity extends AppCompatActivity
     ArrayList<NavigationModel> navigationModels;
     @Bean
     AnalyticsTrackers tracker;
+    private IssueListFragment listFragment;
+    private StashProjectFragment stashFragment;
     private boolean mTwoPane;
     private MaterialDialog progressDialog;
     private ArrayList<Issue> myIssues;
@@ -162,11 +160,6 @@ public class IssueListActivity extends AppCompatActivity
         } else {
             NewIssueActivity_.intent(this).projectKey(key).issue(issue).startForResult(NEW_ISSUE_REQUEST);
         }
-    }
-
-    @EventBusAction
-    public void onEvent(@Nullable OpenDrawerEvent event) {
-        drawerLayout.openDrawer(GravityCompat.START);
     }
 
     @Override
@@ -264,7 +257,7 @@ public class IssueListActivity extends AppCompatActivity
         myIssues = new ArrayList<>();
         int failedAccounts = 0;
         for (final BaseAccount baseAccount : accountsDao.getAll()) {
-            if(baseAccount.getAccountType() == AccountTypes.ACC_JIRA) {
+            if (baseAccount.getAccountType() == AccountTypes.ACC_JIRA) {
                 failedAccounts = fetchJiraAccountInfo(failedAccounts, baseAccount);
             } else {
                 failedAccounts = fetchStashAccountInfo(failedAccounts, baseAccount);
@@ -347,9 +340,9 @@ public class IssueListActivity extends AppCompatActivity
         final RecyclerViewExpandableItemManager manager = new RecyclerViewExpandableItemManager(null);
         final NavigationMenuAdapter adapter = new NavigationMenuAdapter(this, navigationModels, (project, baseAccount) -> {
             drawerLayout.closeDrawer(GravityCompat.START);
-            if(project.getAccountType() == AccountTypes.ACC_JIRA) {
+            if (project.getAccountType() == AccountTypes.ACC_JIRA) {
                 showJiraFragment((JiraProject) project, baseAccount);
-            } else if(project.getAccountType() == AccountTypes.ACC_STASH){
+            } else if (project.getAccountType() == AccountTypes.ACC_STASH) {
                 showStashFragment((StashProject) project, baseAccount);
             }
         });
@@ -489,7 +482,6 @@ public class IssueListActivity extends AppCompatActivity
 
     @Override
     protected void onPause() {
-        EventBus.getDefault().unregister(this);
         if (feedbackDialog != null) {
             feedbackDialog.dismiss();
         }
@@ -498,13 +490,12 @@ public class IssueListActivity extends AppCompatActivity
 
     @Override
     protected void onResume() {
-        EventBus.getDefault().register(this);
         super.onResume();
     }
 
     @Override
     public void onShowBranchesList(@NonNull StashProject project, @NonNull String repoSlug) {
-        if(mTwoPane){
+        if (mTwoPane) {
             final BranchListFragment fragment = BranchListFragment_.builder().
                     project(project).
                     repoSlug(repoSlug).
@@ -521,7 +512,7 @@ public class IssueListActivity extends AppCompatActivity
 
     @Override
     public void onShowCommitsList(@NonNull StashProject project, @NonNull String repoSlug, BaseAccount baseAccount) {
-        if(mTwoPane){
+        if (mTwoPane) {
             final CommitListFragment fragment = CommitListFragment_.builder().
                     project(project).
                     account(baseAccount).
@@ -539,7 +530,7 @@ public class IssueListActivity extends AppCompatActivity
 
     @Override
     public void onShowPullRequestList(StashProject project, String repoSlug, BaseAccount baseAccount) {
-        if(mTwoPane){
+        if (mTwoPane) {
             final PullRequestListFragment fragment = PullRequestListFragment_.builder().
                     stashProject(project).
                     repoSlug(repoSlug).

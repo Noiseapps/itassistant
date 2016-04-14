@@ -8,6 +8,10 @@
 -printseeds seeds.txt
 -printusage unused.txt
 -printmapping mapping.txt
+-dontnote **
+
+-keepattributes *Annotation*
+
 
 # The -optimizations option disables some arithmetic simplifications that Dalvik 1.0 and 1.5 can't handle.
 -optimizations !code/simplification/arithmetic
@@ -31,3 +35,30 @@ public void set*(...);
     public static **[] values();
     public static ** valueOf(java.lang.String);
 }
+
+-keep class android.net.** { *; }
+-dontnote android.net.**
+-keep class org.apache.http.** { *; }
+-dontnote org.apache.http.**
+-dontwarn java.lang.invoke.*
+
+-dontwarn sun.misc.**
+
+-keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
+   long producerIndex;
+   long consumerIndex;
+}
+
+-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueProducerNodeRef {
+    rx.internal.util.atomic.LinkedQueueNode producerNode;
+}
+
+-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueConsumerNodeRef {
+    rx.internal.util.atomic.LinkedQueueNode consumerNode;
+}
+-dontwarn okio.**
+-dontwarn org.androidannotations.api.rest.**
+-dontwarn retrofit.appengine.**
+-dontwarn android.support.v4.app.**
+-dontwarn com.akexorcist.roundcornerprogressbar.**
+-dontwarn org.acra.**
