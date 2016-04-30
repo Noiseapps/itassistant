@@ -3,6 +3,7 @@
 buildscript {
     repositories {
         jcenter()
+        maven { url 'https://maven.fabric.io/public' }
 
     }
     dependencies {
@@ -11,6 +12,8 @@ buildscript {
         classpath 'me.tatarka:gradle-retrolambda:3.3.0-beta4'
         classpath 'me.tatarka.retrolambda.projectlombok:lombok.ast:0.2.3.a2'
         classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.4.4'
+        classpath 'io.fabric.tools:gradle:1.21.6'
+
     }
     configurations.classpath.exclude group: 'com.android.tools.external.lombok'
 }

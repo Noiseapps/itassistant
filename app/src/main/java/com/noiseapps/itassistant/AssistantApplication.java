@@ -2,9 +2,14 @@ package com.noiseapps.itassistant;
 
 import android.support.multidex.MultiDexApplication;
 
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.CustomEvent;
+import com.crashlytics.android.answers.LoginEvent;
 import com.orhanobut.logger.Logger;
 import com.squareup.leakcanary.LeakCanary;
 
+import io.fabric.sdk.android.Fabric;
 import net.danlew.android.joda.JodaTimeAndroid;
 
 import org.acra.ACRA;
@@ -25,6 +30,8 @@ public class AssistantApplication extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics(), new Answers());
+        Answers.getInstance().logCustom(new CustomEvent("AppStarted"));
         AnalyticsTrackers_.getInstance_(this);
         JodaTimeAndroid.init(this);
         Logger.init(this.getClass().getSimpleName());

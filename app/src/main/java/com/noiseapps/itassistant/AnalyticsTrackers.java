@@ -5,6 +5,9 @@ import android.support.annotation.IntDef;
 import android.support.annotation.StringDef;
 import android.util.SparseArray;
 
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
+import com.crashlytics.android.answers.CustomEvent;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Logger;
@@ -67,12 +70,22 @@ public class AnalyticsTrackers {
     }
 
     public void sendScreenVisit(@ScreenNames String screenName) {
+        final CustomEvent customEvent = new CustomEvent(screenName);
+        Answers.getInstance().logCustom(customEvent);
+
+
+        Answers.getInstance().logContentView(new ContentViewEvent().putContentName(screenName));
         final Tracker tracker = getDefault();
         tracker.setScreenName(screenName);
         tracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     public void sendEvent(@ScreenNames String screenName, @Categories String category, String action) {
+        final CustomEvent customEvent = new CustomEvent(screenName).
+                putCustomAttribute("category", category).
+                putCustomAttribute("action", action);
+        Answers.getInstance().logCustom(customEvent);
+
         final Tracker tracker = getDefault();
         tracker.setScreenName(screenName);
         HitBuilders.EventBuilder eventBuilder = new HitBuilders.EventBuilder(category, action);
@@ -80,6 +93,13 @@ public class AnalyticsTrackers {
     }
 
     public void sendEvent(@ScreenNames String screenName, @Categories String category, String action, String label) {
+        final CustomEvent customEvent = new CustomEvent(screenName).
+                putCustomAttribute("category", category).
+                putCustomAttribute("action", action).
+                putCustomAttribute("label", label);
+        Answers.getInstance().logCustom(customEvent);
+
+
         final Tracker tracker = getDefault();
         tracker.setScreenName(screenName);
         HitBuilders.EventBuilder eventBuilder = new HitBuilders.EventBuilder(category, action);
