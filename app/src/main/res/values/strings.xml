@@ -210,5 +210,6 @@
     <string name="comment">Add comment</string>
     <string name="commentedOnFile">Comment for: %s</string>
     <string name="title_activity_settings">App settings</string>
-    <string name="shownProjects">Select Projects to show in Assigned to me list</string>
+    <string name="shownProjects">Select which projects should appear in Assigned to me list. Selecting only part of the projects will have positive impact on the load speed</string>
+    <string name="visibleProjects">Projects in Assigned to me</string>
 </resources>

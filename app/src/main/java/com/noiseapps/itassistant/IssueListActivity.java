@@ -2,7 +2,6 @@ package com.noiseapps.itassistant;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -56,7 +55,6 @@ import com.noiseapps.itassistant.utils.AuthenticatedPicasso;
 import com.noiseapps.itassistant.utils.Consts;
 import com.noiseapps.itassistant.utils.DividerItemDecoration;
 import com.orhanobut.logger.Logger;
-import com.squareup.leakcanary.LeakCanary;
 import com.suredigit.inappfeedback.FeedbackDialog;
 import com.suredigit.inappfeedback.FeedbackSettings;
 
@@ -246,7 +244,7 @@ public class IssueListActivity extends AppCompatActivity
         }
 
         final ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.openDrawer, R.string.closeDrawer);
-        drawerLayout.setDrawerListener(drawerToggle);
+        drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
     }
 
@@ -404,7 +402,7 @@ public class IssueListActivity extends AppCompatActivity
     @Click(R.id.actionSettings)
     void onSettingsAction() {
         drawerLayout.closeDrawer(GravityCompat.START);
-        AppSettingsActivity_.intent(this).start();
+        AppSettingsActivity_.intent(this).startForResult(ACCOUNTS_REQUEST);
     }
 
     @Click(R.id.actionAssignedToMe)

@@ -45,8 +45,8 @@ public interface JiraAPI {
     @GET("/rest/api/2/project")
     List<JiraProject> getUserProjects();
 
-    @GET("/rest/api/2/search?expand=transitions")
-    JiraIssueList getAssignedToMe(@Query("jql") String query, @Query("startAt") long startAt);
+    @GET("/rest/api/2/search")
+    JiraIssueList getAssignedToMe(@Query("jql") String query, @Query("startAt") long startAt, @Query("expand") String expand);
 
     @GET("/rest/api/2/project/{projectIdOrKey}")
     Observable<JiraProjectDetails> getProjectDetails(@Path("projectIdOrKey") String projectId);

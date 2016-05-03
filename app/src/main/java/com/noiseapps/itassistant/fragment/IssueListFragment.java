@@ -109,7 +109,7 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     private Subscription projectDownloadSubscriber;
     private boolean[] checkedItems;
     private String[] filters, sorts, splits;
-    private int selectedSort;
+    private int selectedSort, selectedSplit;
     private SearchView actionView;
 
     @Override
@@ -214,12 +214,12 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
         setHasOptionsMenu(true);
     }
 
-    private PagerAdapter fillAdapter(List<Issue> jiraIssueList, boolean assignedToMe) {
+    private PagerAdapter fillAdapter(List<Issue> jiraIssueList, boolean splitByProjectName) {
         final Set<WorkflowObject> workflows = new HashSet<>();
         final ListMultimap<String, Issue> issuesInWorkflow = ListMultimap.create();
         for (Issue issue : jiraIssueList) {
             final String name, id;
-            if (assignedToMe) {
+            if (splitByProjectName) {
                 final Project project = issue.getFields().getProject();
                 id = project.getId();
                 name = project.getKey();
@@ -308,10 +308,10 @@ public class IssueListFragment extends Fragment implements JiraIssueListFragment
     public void onSplitSelected() {
         final AlertDialogWrapper.Builder builder = new AlertDialogWrapper.Builder(getActivity());
         builder.setTitle(R.string.selectSplit);
-        builder.setSingleChoiceItems(splits, selectedSort, (dialog, which) -> selectedSort = which);
+        builder.setSingleChoiceItems(splits, selectedSort, (dialog, which) -> selectedSplit = which);
         builder.setPositiveButton(R.string.sort, (dialog, which) -> {
             final List<Issue> issues = this.issues;
-            final PagerAdapter pagerAdapter = fillAdapter(issues, selectedSort == 0);
+            final PagerAdapter pagerAdapter = fillAdapter(issues, selectedSplit == 0);
             viewPager.setAdapter(pagerAdapter);
             tabLayout.setupWithViewPager(viewPager);
         });

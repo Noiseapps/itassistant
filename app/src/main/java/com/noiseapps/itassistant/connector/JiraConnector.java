@@ -2,8 +2,11 @@ package com.noiseapps.itassistant.connector;
 
 import android.support.annotation.NonNull;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.noiseapps.itassistant.api.JiraAPI;
 import com.noiseapps.itassistant.database.PreferencesDAO;
+import com.noiseapps.itassistant.database.Preferences_;
 import com.noiseapps.itassistant.model.account.BaseAccount;
 import com.noiseapps.itassistant.model.jira.issues.Assignee;
 import com.noiseapps.itassistant.model.jira.issues.Issue;
@@ -26,10 +29,13 @@ import com.orhanobut.logger.Logger;
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import retrofit.Callback;
 import retrofit.ErrorHandler;
@@ -44,6 +50,8 @@ public class JiraConnector {
 
     @Bean
     PreferencesDAO preferencesDAO;
+    @Pref
+    Preferences_ preferences;
 
     private BaseAccount currentConfig;
     private JiraAPI apiService;
@@ -76,8 +84,13 @@ public class JiraConnector {
         long startAt = 0;
         try {
             do {
-                final String query = String.format("assignee=\"%s\"", getCurrentConfig().getUsername());
-                final JiraIssueList assignedToMe = apiService.getAssignedToMe(query, startAt);
+                String query = String.format("assignee=\"%s\"", getCurrentConfig().getUsername());
+                final Set<String> projectSet = preferences.shownProjects().getOr(new HashSet<>());
+                if (!projectSet.isEmpty()) {
+                    query += String.format("&project in (%s)", Stream.of(projectSet).collect(Collectors.joining(",")));
+                }
+                Logger.d(query);
+                final JiraIssueList assignedToMe = apiService.getAssignedToMe(query, startAt, "transitions");
                 total = assignedToMe.getTotal();
                 startAt += assignedToMe.getMaxResults();
                 issues.addAll(assignedToMe.getIssues());

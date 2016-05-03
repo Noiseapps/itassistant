@@ -110,17 +110,6 @@ public class JiraAccountCreateFragment extends Fragment implements Validator.Val
             accountName.setText(editAccount.getName());
             host.setText(editAccount.getUrl());
             username.setText(editAccount.getUsername());
-
-            return;
-        }
-        if (BuildConfig.DEBUG) {
-            accountName.setText("Exaco");
-//            accountName.setText("DTT");
-            host.setText("jira.exaco.pl");
-//            host.setText("jira.przedwojski.com");
-            username.setText("tomasz.scibiorek");
-            password.setText("kotek77@");
-//            password.setText("Tomek0269122@");
         }
     }
 
