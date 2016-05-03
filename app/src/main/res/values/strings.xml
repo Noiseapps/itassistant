@@ -209,4 +209,6 @@
     <string name="diff">File diff:</string>
     <string name="comment">Add comment</string>
     <string name="commentedOnFile">Comment for: %s</string>
+    <string name="title_activity_settings">App settings</string>
+    <string name="shownProjects">Select Projects to show in Assigned to me list</string>
 </resources>

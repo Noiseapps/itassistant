@@ -404,11 +404,7 @@ public class IssueListActivity extends AppCompatActivity
     @Click(R.id.actionSettings)
     void onSettingsAction() {
         drawerLayout.closeDrawer(GravityCompat.START);
-        showNotImplemented();
-    }
-
-    private void showNotImplemented() {
-        Snackbar.make(coordinatorLayout, R.string.optionUnavailable, Snackbar.LENGTH_LONG).show();
+        AppSettingsActivity_.intent(this).start();
     }
 
     @Click(R.id.actionAssignedToMe)

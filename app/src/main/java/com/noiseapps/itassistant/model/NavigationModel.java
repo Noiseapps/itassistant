@@ -19,4 +19,6 @@ public class NavigationModel {
     public BaseAccount getBaseAccount() {
         return baseAccount;
     }
+
+
 }
