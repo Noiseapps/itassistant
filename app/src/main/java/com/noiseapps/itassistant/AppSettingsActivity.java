@@ -97,7 +97,6 @@ public class AppSettingsActivity extends AppCompatActivity {
         }
         Integer[] indexArr = new Integer[indices.size()];
         indexArr = indices.toArray(indexArr);
-
         final List<String> list = Stream.of(jiraProjects).map(AbstractBaseProject::getName).collect(Collectors.toList());
         final MaterialDialog dialog = new MaterialDialog.Builder(this).
                 items(list).
@@ -113,5 +112,4 @@ public class AppSettingsActivity extends AppCompatActivity {
                 }).positiveText(R.string.ok).onPositive((dialog1, which) -> dialog1.dismiss()).build();
         dialog.show();
     }
-
 }
